@@ -8,4 +8,4 @@ class Lobby:
 
     def __init__(self, host):
         self.players = []
-        self.game = Game(host=host, players=None)
+        self.game = Game()

@@ -1,4 +1,5 @@
-from game.Game import PlayerRights, State, PlayerState
+from game.Game import State
+from game.PlayerData import PlayerRights, PlayerState
 from game.Player import Player
 from game.LobbyServer import LobbyServer
 
@@ -7,12 +8,12 @@ class TestStuff:
     host = Player()
     server = LobbyServer()
     server.new_lobby(player=host)
-    lobby = server.lobbies.get(host)
+    lobby = server.player_lobbies.get(host)
     normal_player = Player()
 
     def test_create_lobby(self):
-        assert self.server.lobbies.get(self.host) is not None
-        assert self.host in self.server.lobbies[self.host].players
+        assert self.server.player_lobbies.get(self.host) is not None
+        assert self.host in self.server.player_lobbies[self.host].players
 
     def test_join_lobby(self):
 
@@ -21,7 +22,7 @@ class TestStuff:
             player=self.normal_player
         )
 
-        assert self.normal_player in self.server.lobbies.get(self.normal_player).players
+        assert self.normal_player in self.server.player_lobbies.get(self.normal_player).players
 
     def test_start_game(self):
         self.lobby.game.start(host=self.host)

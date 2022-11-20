@@ -1,9 +1,12 @@
+from dataclasses import asdict
 from enum import Enum
 
 from fastapi import FastAPI, WebSocket
 from starlette.websockets import WebSocketDisconnect
 
+from game.LobbyServer import LobbyServer
 from game.Player import Player
+from game.Response import Response
 
 app = FastAPI()
 
@@ -31,12 +34,15 @@ class ConnectionManager:
         self.active_connections[player] = websocket
         return player
 
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
+    def disconnect(self, Player: Player):
+        del self.active_connections[Player]
 
     async def send_personal_message(self, message: dict, player: Player):
         await self.active_connections[player].send_json(message)
 
+    async def send_response(self, message: Response):
+        for player in message.recipients:
+            await self.active_connections[player].send_json(asdict(message.data))
     async def send_group_message(self, message: dict, players: list[Player]):
         for player in players:
             await self.active_connections[player].send_json(message)
@@ -49,28 +55,42 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-class MessagesIncoming(Enum):
-    new_lobby = "new_lobby"
-
-class MessagesOutgoing(Enum):
-    state = "state"
-
-
+lobbyServer = LobbyServer()
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
     player = await manager.connect(websocket, id=client_id)
     try:
         while True:
             data = await websocket.receive_json()
-            message = data.get("message")
-            if message == MessagesIncoming.new_lobby.value:
-                await manager.send_personal_message({
-                    "message": MessagesOutgoing.state.value,
-                    "data": "lobby created"
-                }, player)
-            else:
-                await manager.send_personal_message(f"message not found {message}", player)
+
+            match data:
+                #FIXME: maybe unsafe?
+                case {
+                    "type": "game"| "lobby",
+                    "method": method,
+                    "args": args
+                }:
+                    try:
+                        if method.startswith("_"):
+                            raise Exception("not allowed")
+                        if data.get("type") == "game":
+                            target = lobbyServer.player_lobbies.get(player).game
+                        else:
+                            target = lobbyServer
+                        await manager.send_response(getattr(target, method)(player, **args))
+                    except Exception as e:
+                        print(e)
+                        await manager.send_personal_message(f"message not allowed {data}", player)
+
+                case _ :
+                    await manager.send_personal_message(f"message not found {data}", player)
+
+
+
+            #     await manager.send_personal_message(
+            #         asdict(lobbyServer.new_lobby(player)), player)
+            # else:
 
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        manager.disconnect(player)
         await manager.broadcast(f"Client #{client_id} left the chat")

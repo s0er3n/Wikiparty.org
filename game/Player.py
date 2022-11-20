@@ -1,3 +1,9 @@
+import dataclasses
+
+
 class Player:
-    name: str
+    name: str = "unnamed player"
+
+    def __str__(self):
+        return self.name
 

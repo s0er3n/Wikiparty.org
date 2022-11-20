@@ -1,8 +1,10 @@
-import dataclasses
 import logging
+import uuid
 from enum import Enum, auto
 
 from game.Player import Player
+from game.PlayerData import PlayerRights, PlayerState, PlayerData
+from game.Response import Response, LobbyUpdate
 
 
 class State(Enum):
@@ -10,29 +12,6 @@ class State(Enum):
     fleeing = auto()
     finding = auto()
     over = auto()
-
-
-class PlayerRights(Enum):
-    host = auto()
-    normal = auto()
-
-
-class PlayerState(Enum):
-    hunting = auto()
-    fleeing = auto()
-    catched = auto()
-    watching = auto()
-
-
-@dataclasses.dataclass
-class PlayerData:
-    rights: PlayerRights
-
-    state: PlayerState = PlayerState.watching
-
-    moves: list[str] = dataclasses.field(
-        default_factory=list
-    )
 
 
 class Game:
@@ -44,22 +23,25 @@ class Game:
 
     players: dict[Player, PlayerData] | None
 
-    def __init__(self, host: Player, players: None | list[Player]):
+    id: str
+
+    def __init__(self):
         self.points = {}
-        self.players = {host: PlayerData(
-            rights=PlayerRights.host,
-        )}
+        self.players = {}
+        self.id = str(uuid.uuid4())
 
-        if players:
-            for player in players:
-                self.players[player] = PlayerData(
-                    rights=PlayerRights.normal,
-                )
+    def join(self, player: Player, host: bool) -> Response:
+        if host:
+            self.players[player] = PlayerData(
+                rights=PlayerRights.host,
+            )
+        else:
+            self.players[player] = PlayerData(
+                rights=PlayerRights.normal,
+            )
 
-    def join(self, player: Player):
-        self.players[player] = PlayerData(
-            rights=PlayerRights.normal,
-        )
+        return Response.from_lobby_update(lobby_update=LobbyUpdate(id=self.id,  players={str(player): data for player, data in self.players.items()}), recipients=self.players.keys())
+
 
     def leave(self):
         pass
