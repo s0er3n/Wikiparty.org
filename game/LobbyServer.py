@@ -31,10 +31,24 @@ class LobbyServer:
     def delete_lobby(self):
         pass
 
-    def join_lobby(self, player: Player, lobby: Lobby, host=False) -> Response | None:
+    def join_lobby(
+        self,
+        player: Player,
+        id: str | None = None,
+        host=False,
+        lobby: Lobby | None = None,
+    ) -> Response | None:
+        if id:
+            lobby = self.id_lobbies.get(id)
+
+        if not lobby:
+            logging.warning("lobby with that id not found")
+            return None
+
         if player in lobby.players:
             logging.warning("player already in lobby doing nothing")
-            return
+            return None
+
         self.player_lobbies[player] = lobby
         lobby.players.append(player)
 

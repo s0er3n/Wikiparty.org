@@ -1,22 +1,13 @@
-from dataclasses import asdict
-from enum import Enum
-
-from fastapi import FastAPI, WebSocket
-from starlette.websockets import WebSocketDisconnect
-
-from game.LobbyServer import LobbyServer
+from game.Response import Response, Error
 from game.Player import Player
-from game.Response import Response
+from game.LobbyServer import LobbyServer
+from starlette.websockets import WebSocketDisconnect
+from fastapi import FastAPI, WebSocket
+from dataclasses import asdict
+import logging
+
 
 app = FastAPI()
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    # TODO:
-    while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Message text was: {data}")
 
 
 class ConnectionManager:
@@ -40,9 +31,17 @@ class ConnectionManager:
     async def send_personal_message(self, message: dict, player: Player):
         await self.active_connections[player].send_json(message)
 
-    async def send_response(self, message: Response):
+    async def send_response(self, message: Response | None):
+        if not message:
+            logging.warning("no response")
+            return
+
         for player in message.recipients:
-            await self.active_connections[player].send_json(asdict(message.data))
+            try:
+                await self.active_connections[player].send_json(asdict(message.data))
+            except Exception as e:
+                print("couldnt send message ", e)
+
     async def send_group_message(self, message: dict, players: list[Player]):
         for player in players:
             await self.active_connections[player].send_json(message)
@@ -56,6 +55,8 @@ manager = ConnectionManager()
 
 
 lobbyServer = LobbyServer()
+
+
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
     player = await manager.connect(websocket, id=client_id)
@@ -64,12 +65,8 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             data = await websocket.receive_json()
 
             match data:
-                #FIXME: maybe unsafe?
-                case {
-                    "type": "game"| "lobby",
-                    "method": method,
-                    "args": args
-                }:
+                # FIXME: maybe unsafe?
+                case {"type": "game" | "lobby", "method": method, "args": args}:
                     try:
                         if method.startswith("_"):
                             raise Exception("not allowed")
@@ -77,15 +74,33 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                             target = lobbyServer.player_lobbies.get(player).game
                         else:
                             target = lobbyServer
-                        await manager.send_response(getattr(target, method)(player, **args))
+                        await manager.send_response(
+                            getattr(target, method)(player, **args)
+                        )
                     except Exception as e:
                         print(e)
-                        await manager.send_personal_message(f"message not allowed {data}", player)
+                        await manager.send_response(
+                            message=Response(
+                                method="Error",
+                                data=Error(
+                                    type="message not found", sendData=data, e=str(e)
+                                ),
+                                recipients=[player],
+                            )
+                        )
 
-                case _ :
-                    await manager.send_personal_message(f"message not found {data}", player)
-
-
+                case _:
+                    await manager.send_response(
+                        message=Response(
+                            method="Error",
+                            data=Error(
+                                type="message not found",
+                                sendData=data,
+                                e="not matching anything",
+                            ),
+                            recipients=[player],
+                        )
+                    )
 
             #     await manager.send_personal_message(
             #         asdict(lobbyServer.new_lobby(player)), player)

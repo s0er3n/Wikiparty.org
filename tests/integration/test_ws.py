@@ -1,4 +1,3 @@
-
 import pytest
 
 
@@ -9,16 +8,36 @@ from game.WSServer import app
 
 def test_websocket():
     client = TestClient(app)
-    with client.websocket_connect("/ws/123") as websocket:
 
+    with client.websocket_connect("/ws/1") as websocket:
 
-        new_lobby_msg = {
-                    "type": "lobby",
-                    "method": "new_lobby",
-                    "args": {}
-                }
+        start_game_msg = {"type": "lobby", "method": "new_lobby", "args": {}}
 
-        websocket.send_json(new_lobby_msg)
+        websocket.send_json(start_game_msg)
         # TODO: add join
         data = websocket.receive_json()
-        # assert data == {"msg": "Hello WebSocket"}
+        print(data)
+        assert data.get("players") == [
+            ["unnamed player", {"rights": "host", "state": "watching", "moves": []}]
+        ]
+
+    with client.websocket_connect("/ws/2") as websocket:
+        join_lobby_msg = {
+            "type": "lobby",
+            "method": "join_lobby",
+            "args": {"id": data["id"]},
+        }
+        websocket.send_json(join_lobby_msg)
+        data = websocket.receive_json()
+        print(data)
+        assert len(data.get("players")) == 2
+
+    with client.websocket_connect("/ws/1") as websocket:
+
+        start_game_msg = {"type": "game", "method": "start", "args": {}}
+
+        websocket.send_json(start_game_msg)
+        # TODO: add join
+        data = websocket.receive_json()
+
+        print(data)

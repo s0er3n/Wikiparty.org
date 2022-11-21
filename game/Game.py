@@ -4,7 +4,7 @@ from enum import Enum, auto
 
 from game.Player import Player
 from game.PlayerData import PlayerRights, PlayerState, PlayerData
-from game.Response import Response, LobbyUpdate
+from game.Response import Response, LobbyUpdate, Error
 
 
 class State(Enum):
@@ -21,7 +21,7 @@ class Game:
 
     points: dict[Player, int]
 
-    players: dict[Player, PlayerData] | None
+    players: dict[Player, PlayerData]
 
     id: str
 
@@ -40,8 +40,13 @@ class Game:
                 rights=PlayerRights.normal,
             )
 
-        return Response.from_lobby_update(lobby_update=LobbyUpdate(id=self.id,  players={str(player): data for player, data in self.players.items()}), recipients=self.players.keys())
-
+        return Response.from_lobby_update(
+            lobby_update=LobbyUpdate(
+                id=self.id,
+                players=[(str(player), data) for player, data in self.players.items()],
+            ),
+            recipients=self.players.keys(),
+        )
 
     def leave(self):
         pass
@@ -72,24 +77,32 @@ class Game:
                 break
 
         if not (fleeing and hunting):
-            logging.warning("cannot start game we need both a hunter and someone fleeing")
-            return
+            logging.warning(
+                "cannot start game we need both a hunter and someone fleeing"
+            )
+            return Response(
+                                method="Error",
+                                data=Error(
+                                    type="message not found", sendData={}, e="cannot start game we need both a hunter and someone fleeing ")
+                                ),
+                                recipients=[host]
+                            )
 
         self.points = {}
         self.set_starting_position()
         self.state = State.fleeing
 
-    def set_role(self, host: Player, player: Player,
-                 role: PlayerState):
+    def set_role(self, host: Player, player: Player, role: PlayerState):
         if self._check_host(host):
             return
         if not State.idle:
             logging.warning("someone tried to change the role while ingame/gameover")
             return
 
-        if not (role == PlayerState.hunting or
-                role == PlayerState.fleeing or
-                role == PlayerState.watching
+        if not (
+            role == PlayerState.hunting
+            or role == PlayerState.fleeing
+            or role == PlayerState.watching
         ):
             logging.warning("cannot give you that role")
             return
