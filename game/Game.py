@@ -40,13 +40,7 @@ class Game:
                 rights=PlayerRights.normal,
             )
 
-        return Response.from_lobby_update(
-            lobby_update=LobbyUpdate(
-                id=self.id,
-                players=[(str(player), data) for player, data in self.players.items()],
-            ),
-            recipients=self.players.keys(),
-        )
+        return self._make_lobby_update_response()
 
     def leave(self):
         pass
@@ -75,34 +69,39 @@ class Game:
             # if we have both someone fleeing and someone hunting we can start the game
             if fleeing and hunting:
                 break
+        self.set_starting_position()
 
         if not (fleeing and hunting):
             logging.warning(
                 "cannot start game we need both a hunter and someone fleeing"
             )
             return Response(
-                                method="Error",
-                                data=Error(
-                                    type="message not found", sendData={}, e="cannot start game we need both a hunter and someone fleeing ")
-                                ),
-                                recipients=[host]
-                            )
+                method="Error",
+                data=Error(
+                    type="message not found", sendData={},
+                    e="cannot start game we need both a hunter and someone fleeing"),
+                recipients=[host]
+            )
 
         self.points = {}
-        self.set_starting_position()
         self.state = State.fleeing
 
-    def set_role(self, host: Player, player: Player, role: PlayerState):
+    def set_role(self, host: Player, player_id: str, role: str):
+        player = next(
+            player for player in self.players if player.id == player_id)
+
+        role = PlayerState(role)
         if self._check_host(host):
             return
         if not State.idle:
-            logging.warning("someone tried to change the role while ingame/gameover")
+            logging.warning(
+                "someone tried to change the role while ingame/gameover")
             return
 
         if not (
-            role == PlayerState.hunting
-            or role == PlayerState.fleeing
-            or role == PlayerState.watching
+                role == PlayerState.hunting
+                or role == PlayerState.fleeing
+                or role == PlayerState.watching
         ):
             logging.warning("cannot give you that role")
             return
@@ -114,27 +113,57 @@ class Game:
         print("setting start position")
         print(self.players.values())
         for data in self.players.values():
-            data.moves = ["test"]
+            data.moves.clear()
+            data.moves.append("test")
 
-    def move(self, player: Player, target: str):
+    def _make_lobby_update_response(self) -> Response:
+        return Response.from_lobby_update(
+            lobby_update=LobbyUpdate(
+                id=self.id,
+                players=[(player, data)
+                         for player, data in self.players.items()],
+            ),
+            recipients=self.players.keys(),
+        )
+
+    def move(self, player: Player, target: str) -> Response:
         """when you click on a new link in wikipedia and move to the next page"""
         # TODO: send the new page to the query
         if self.state != State.fleeing and self.state != State.finding:
             logging.warning("not allowed to move")
-            return
+            return Response(
+                method="Error",
+                data=Error(
+                    type="message not found", sendData={},
+                    e="not allowed to move"),
+                recipients=[player]
+            )
 
         if self.state == State.fleeing:
             if self.players[player].state != PlayerState.fleeing:
-                logging.warning("cannot move if you are not the player fleeing")
-                return
+                logging.warning(
+                    "cannot move if you are not the player fleeing")
+                return Response(
+                    method="Error",
+                    data=Error(
+                        type="message not found", sendData={},
+                        e="cannot move if you are not the player fleeing"),
+                    recipients=[player])
 
         if self.players[player].state == PlayerState.watching:
             logging.warning("Watching People cannot not move")
-            return
+            return Response(
+                method="Error",
+                data=Error(
+                    type="message not found", sendData={},
+                    e="Watching People cannot not move"),
+                recipients=[player])
 
         self.players[player].moves.append(target)
 
         self._check_if_catched(move=target, moved_player=player)
+
+        return self._make_lobby_update_response()
 
     def _check_if_catched(self, move: str, moved_player: Player):
         for player, data in self.players.items():

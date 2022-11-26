@@ -22,13 +22,16 @@ class TestStuff:
             player=self.normal_player
         )
 
-        assert self.normal_player in self.server.player_lobbies.get(self.normal_player).players
+        assert self.normal_player in self.server.player_lobbies.get(
+            self.normal_player).players
 
     def test_start_game(self):
         self.lobby.game.start(host=self.host)
         assert self.lobby.game.state != State.fleeing
-        self.lobby.game.set_role(host=self.host, player=self.host, role=PlayerState.fleeing)
-        self.lobby.game.set_role(host=self.host, player=self.normal_player, role=PlayerState.hunting)
+        self.lobby.game.set_role(
+            host=self.host, player_id=self.host.id, role=PlayerState.fleeing)
+        self.lobby.game.set_role(
+            host=self.host, player_id=self.normal_player.id, role=PlayerState.hunting)
         self.lobby.game.start(host=self.host)
         assert self.lobby.game.state == State.fleeing
 
@@ -49,7 +52,6 @@ class TestStuff:
         self.lobby.game.state = State.fleeing
         self.lobby.game.move(self.normal_player, target="test2")
         assert "test2" not in self.lobby.game.players[self.normal_player].moves
-
 
     def test_winning_condition(self):
         self.lobby.game.state = State.finding

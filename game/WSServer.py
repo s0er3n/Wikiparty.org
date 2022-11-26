@@ -25,8 +25,8 @@ class ConnectionManager:
         self.active_connections[player] = websocket
         return player
 
-    def disconnect(self, Player: Player):
-        del self.active_connections[Player]
+    def disconnect(self, player: Player):
+        del self.active_connections[player]
 
     async def send_personal_message(self, message: dict, player: Player):
         await self.active_connections[player].send_json(message)
