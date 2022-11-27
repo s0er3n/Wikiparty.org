@@ -105,6 +105,12 @@ const App: Component = () => {
               sendMessage(startGameMsg)
             }}>start game</button>
           </Show>
+          <Show when={lobby().state === "fleeing" || lobby().state === "finding"} >
+              <For each={lobby()?.players ?? []}>
+              {(player: any, i: number) => <li>{player[0].id}{player[1].moves.at(-1)}{player[1].state}
+              </li>}
+              </For>
+          </Show>
           <Show when={lobby().state === "fleeing"} >
             fleeing
             <Show when={lobby().players.find((p: any) => {
@@ -113,22 +119,35 @@ const App: Component = () => {
               <button onclick={() => {
                 sendMessage(moveMsg)
               }}>move</button>
-             <> <div innerHTML={wiki()}/></>
+              <> <Wiki /> </>
             </Show>
 
           </Show>
-            <Show when={lobby().state === "finding"}>
-              <button onclick={() => {
-                sendMessage(moveMsg)
-              }}>move</button>
-             <> <div innerHTML={wiki()}/></>
-            </Show >
+          <Show when={lobby().state === "finding"}>
+            <button onclick={() => {
+              sendMessage(moveMsg)
+            }}>move</button>
+            <> <Wiki /> </>
+          </Show >
         </Show>
       </Show>
     </div>
   );
 };
 
+const Wiki: Component = () => {
+  return (
+    <div onclick={(e) => {
+      let targetValue = e.target.getAttribute("href")
+      if (targetValue?.includes("wiki")) {
+        e.preventDefault()
+        let move = moveMsg
+        move.args.target = targetValue.split("/").pop()
+        sendMessage(move)
+      }}
+    } innerHTML={wiki()} />
+  )
+}
 
 const JoinOrCreateLobby: Component = () => {
   return (<div>
