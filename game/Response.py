@@ -4,13 +4,18 @@ import dataclasses
 
 from game.PlayerData import PlayerData
 from game.Player import Player
+from game.GameState import State
 
 
 @dataclasses.dataclass
 class LobbyUpdate:
+    state: str
     id: str
     players: list[tuple[str, PlayerData]]
 
+@dataclasses.dataclass
+class Wiki:
+    data: any
 
 @dataclasses.dataclass
 class Response:
@@ -18,7 +23,7 @@ class Response:
 
     method: str
 
-    data: LobbyUpdate | Error
+    data: LobbyUpdate | Error | Wiki
 
     @staticmethod
     def from_lobby_update(

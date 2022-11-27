@@ -1,17 +1,16 @@
 import logging
 import uuid
-from enum import Enum, auto
+from threading import Thread
+from time import sleep
+import asyncio
+
+from game.Query import Query
 
 from game.Player import Player
 from game.PlayerData import PlayerRights, PlayerState, PlayerData
 from game.Response import Response, LobbyUpdate, Error
-
-
-class State(Enum):
-    idle = auto()
-    fleeing = auto()
-    finding = auto()
-    over = auto()
+from game.GameState import State
+from game.ConnectionManager import manager
 
 
 class Game:
@@ -83,8 +82,23 @@ class Game:
                 recipients=[host]
             )
 
+
         self.points = {}
         self.state = State.fleeing
+        self._fleeing_timer()
+        return self._make_lobby_update_response()
+
+    def _fleeing_timer(self):
+        async def update_state():
+            sleep(15)
+            self.state = State.finding
+            update_response = self._make_lobby_update_response()
+            await manager.send_response(update_response)
+
+        thread = Thread(target=asyncio.run, args=(update_state(),))
+        thread.start()
+
+        
 
     def set_role(self, host: Player, player_id: str, role: str):
         player = next(
@@ -108,6 +122,8 @@ class Game:
 
         self.players[player].state = role
 
+        return self._make_lobby_update_response()
+
     def set_starting_position(self):
         """gets a random wiki page to start"""
         print("setting start position")
@@ -120,6 +136,7 @@ class Game:
         return Response.from_lobby_update(
             lobby_update=LobbyUpdate(
                 id=self.id,
+                state=self.state.value,
                 players=[(player, data)
                          for player, data in self.players.items()],
             ),
@@ -129,6 +146,7 @@ class Game:
     def move(self, player: Player, target: str) -> Response:
         """when you click on a new link in wikipedia and move to the next page"""
         # TODO: send the new page to the query
+
         if self.state != State.fleeing and self.state != State.finding:
             logging.warning("not allowed to move")
             return Response(
@@ -159,6 +177,7 @@ class Game:
                     e="Watching People cannot not move"),
                 recipients=[player])
 
+        Query.execute(move=target, recipient=player)
         self.players[player].moves.append(target)
 
         self._check_if_catched(move=target, moved_player=player)
