@@ -20,6 +20,6 @@ class Query:
 
         thread = Thread(target=asyncio.run, args=(manager.send_response(
             Response(method="move", data=Wiki(
-                data=data["parse"]["text"]["*"]), recipients=[recipient])
+                data=data["parse"]), recipients=[recipient])
         ),))
         thread.start()

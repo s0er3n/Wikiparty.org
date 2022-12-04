@@ -132,6 +132,9 @@ class Game:
             data.moves.clear()
             data.moves.append("test")
 
+        for player in self.players:
+            Query.execute(move="test", recipient=player)
+
     def _make_lobby_update_response(self) -> Response:
         return Response.from_lobby_update(
             lobby_update=LobbyUpdate(
