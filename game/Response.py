@@ -13,9 +13,11 @@ class LobbyUpdate:
     id: str
     players: list[tuple[str, PlayerData]]
 
+
 @dataclasses.dataclass
 class Wiki:
     data: any
+
 
 @dataclasses.dataclass
 class Response:

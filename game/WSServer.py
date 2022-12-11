@@ -9,8 +9,6 @@ from game.ConnectionManager import manager
 app = FastAPI()
 
 
-
-
 lobbyServer = LobbyServer()
 
 

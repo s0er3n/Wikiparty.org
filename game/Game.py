@@ -82,7 +82,6 @@ class Game:
                 recipients=[host]
             )
 
-
         self.points = {}
         self.state = State.fleeing
         self._fleeing_timer()
@@ -97,8 +96,6 @@ class Game:
 
         thread = Thread(target=asyncio.run, args=(update_state(),))
         thread.start()
-
-        
 
     def set_role(self, host: Player, player_id: str, role: str):
         player = next(

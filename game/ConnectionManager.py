@@ -4,6 +4,7 @@ from dataclasses import asdict
 from fastapi import FastAPI, WebSocket
 from game.Player import Player
 
+
 class ConnectionManager:
     def __init__(self):
         self.active_connections: dict[Player, WebSocket] = {}
