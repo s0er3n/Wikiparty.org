@@ -125,6 +125,8 @@ class Game:
         else:
             self.articles_to_find.append(article)
 
+        return self._make_lobby_update_response()
+
     def move(self, player: Player, target: str) -> Response:
         """when you click on a new link in wikipedia and move to the next page"""
         # TODO: send the new page to the query

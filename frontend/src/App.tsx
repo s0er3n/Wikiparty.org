@@ -29,6 +29,32 @@ let setRoleMsg = {
 }
 
 
+
+let setArticleMsg = {
+  "type": "game", "method": "set_article", "args": {
+    "article": "test",
+    "start": false,
+  }
+}
+
+let [article, setArticle] = createSignal("")
+
+const Article: Component = () => {
+  return (
+    <div>
+      <input onchange={(e) => setArticle(e.target.value)} value={article()} />
+      <button onclick={
+        () => {
+          let msg: any = setArticleMsg
+          msg.args.article = article
+          sendMessage(setArticleMsg)
+        }
+
+      }>set article</button>
+    </div>)
+}
+
+
 let startGameMsg = { "type": "game", "method": "start", "args": {} }
 
 let moveMsg = {
@@ -105,6 +131,7 @@ const Lobby: Component = () => {
     <>
       <Show when={lobby().state === "idle" || lobby().state === "over"} >
         <LobbyCode />
+        <Article />
         <PlayerList />
         <button class='btn' onclick={() => {
           sendMessage(startGameMsg)
@@ -151,8 +178,10 @@ const JoinOrCreateLobby: Component = () => {
 const LobbyCode: Component = () => {
   // TODO: add on click copy to clipboard
   return (<div>
-
     <span class='font-bold'>lobby code:</span><input class='input' value={lobby().id}></input>
+    <span>{JSON.stringify(lobby())}</span>
+    <span>{lobby().start_article}</span>
+    <span>{lobby().articles_to_find}</span>
   </div>)
 }
 
