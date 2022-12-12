@@ -9,9 +9,8 @@ class PlayerRights(str, Enum):
 
 class PlayerState(str, Enum):
     hunting = "hunting"
-    fleeing = "fleeing"
-    catched = "catched"
     watching = "watching"
+    finnished = "finnished"
 
 
 @dataclasses.dataclass
@@ -20,6 +19,4 @@ class PlayerData:
 
     state: PlayerState = PlayerState.watching
 
-    moves: list[str] = dataclasses.field(
-        default_factory=list
-    )
+    moves: list[str] = dataclasses.field(default_factory=list)

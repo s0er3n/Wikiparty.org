@@ -1,10 +1,12 @@
-from game.Response import Response, Error
-from game.LobbyServer import LobbyServer
-from starlette.websockets import WebSocketDisconnect
-from fastapi import FastAPI, WebSocket
 import logging
 
+from fastapi import FastAPI, WebSocket
+from starlette.websockets import WebSocketDisconnect
+
 from game.ConnectionManager import manager
+from game.Game import Game
+from game.LobbyServer import LobbyServer
+from game.Response import Error, Response
 
 app = FastAPI()
 
@@ -20,14 +22,15 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             data = await websocket.receive_json()
 
             match data:
-                # FIXME: maybe unsafe?
+
                 case {"type": "game" | "lobby", "method": method, "args": args}:
                     try:
                         if method.startswith("_"):
                             raise Exception("not allowed")
                         if data.get("type") == "game":
-                            target = lobbyServer.player_lobbies.get(
-                                player).game
+                            lobby = lobbyServer.player_lobbies.get(player)
+                            if lobby and (game := lobby.game):
+                                target: Game | LobbyServer = game
                         else:
                             target = lobbyServer
                         await manager.send_response(
@@ -64,4 +67,4 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
 
     except WebSocketDisconnect:
         manager.disconnect(player)
-        await manager.broadcast(f"Client #{client_id} left the chat")
+        # await manager.broadcast(f"Client #{client_id} left the chat")

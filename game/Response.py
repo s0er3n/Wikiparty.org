@@ -1,22 +1,24 @@
 from __future__ import annotations
-from typing import Iterable
-import dataclasses
 
-from game.PlayerData import PlayerData
+import dataclasses
+from typing import Any, Iterable
+
 from game.Player import Player
-from game.GameState import State
+from game.PlayerData import PlayerData
 
 
 @dataclasses.dataclass
 class LobbyUpdate:
     state: str
     id: str
-    players: list[tuple[str, PlayerData]]
+    players: list[tuple[Player, PlayerData]]
+    articles_to_find: list[str]
+    start_article: str
 
 
 @dataclasses.dataclass
 class Wiki:
-    data: any
+    data: Any
 
 
 @dataclasses.dataclass

@@ -1,16 +1,15 @@
+import asyncio
 import logging
 import uuid
 from threading import Thread
 from time import sleep
-import asyncio
 
-from game.Query import Query
-
-from game.Player import Player
-from game.PlayerData import PlayerRights, PlayerState, PlayerData
-from game.Response import Response, LobbyUpdate, Error
-from game.GameState import State
 from game.ConnectionManager import manager
+from game.GameState import State
+from game.Player import Player
+from game.PlayerData import PlayerData, PlayerRights, PlayerState
+from game.Query import Query
+from game.Response import Error, LobbyUpdate, Response
 
 
 class Game:
@@ -22,12 +21,17 @@ class Game:
 
     players: dict[Player, PlayerData]
 
+    articles_to_find: list[str]
+
+    start_article: str = ""
+
     id: str
 
     def __init__(self):
         self.points = {}
         self.players = {}
         self.id = str(uuid.uuid4())
+        self.articles_to_find = []
 
     def join(self, player: Player, host: bool) -> Response:
         if host:
@@ -56,64 +60,34 @@ class Game:
             logging.warning("not allowed to start the game")
             return
 
-        fleeing = 0
-        hunting = 0
-
-        for data in self.players.values():
-            if data.state == PlayerState.fleeing:
-                fleeing += 1
-
-            elif data.state == PlayerState.hunting:
-                hunting += 1
-            # if we have both someone fleeing and someone hunting we can start the game
-            if fleeing and hunting:
-                break
-        self.set_starting_position()
-
-        if not (fleeing and hunting):
-            logging.warning(
-                "cannot start game we need both a hunter and someone fleeing"
-            )
-            return Response(
-                method="Error",
-                data=Error(
-                    type="message not found", sendData={},
-                    e="cannot start game we need both a hunter and someone fleeing"),
-                recipients=[host]
-            )
-
         self.points = {}
-        self.state = State.fleeing
-        self._fleeing_timer()
+        self.state = State.ingame
+        self._round_timer()
+        self.set_starting_position()
         return self._make_lobby_update_response()
 
-    def _fleeing_timer(self):
+    def _round_timer(self):
         async def update_state():
             sleep(15)
-            self.state = State.finding
-            update_response = self._make_lobby_update_response()
-            await manager.send_response(update_response)
+            if self.state == State.ingame:
+                self.state = State.over
+                update_response = self._make_lobby_update_response()
+                await manager.send_response(update_response)
 
         thread = Thread(target=asyncio.run, args=(update_state(),))
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
-        player = next(
-            player for player in self.players if player.id == player_id)
+        player = next(player for player in self.players if player.id == player_id)
 
         role = PlayerState(role)
         if self._check_host(host):
             return
         if not State.idle:
-            logging.warning(
-                "someone tried to change the role while ingame/gameover")
+            logging.warning("someone tried to change the role while ingame/gameover")
             return
 
-        if not (
-                role == PlayerState.hunting
-                or role == PlayerState.fleeing
-                or role == PlayerState.watching
-        ):
+        if not (role == PlayerState.hunting or role == PlayerState.watching):
             logging.warning("cannot give you that role")
             return
 
@@ -127,7 +101,7 @@ class Game:
         print(self.players.values())
         for data in self.players.values():
             data.moves.clear()
-            data.moves.append("test")
+            data.moves.append(self.start_article)
 
         for player in self.players:
             Query.execute(move="test", recipient=player)
@@ -135,67 +109,65 @@ class Game:
     def _make_lobby_update_response(self) -> Response:
         return Response.from_lobby_update(
             lobby_update=LobbyUpdate(
+                articles_to_find=self.articles_to_find,
+                start_article=self.start_article,
                 id=self.id,
                 state=self.state.value,
-                players=[(player, data)
-                         for player, data in self.players.items()],
+                players=[(player, data) for player, data in self.players.items()],
             ),
             recipients=self.players.keys(),
         )
+
+    def set_article(self, player: Player, article: str, start=False):
+
+        if start:
+            self.start_article = article
+        else:
+            self.articles_to_find.append(article)
 
     def move(self, player: Player, target: str) -> Response:
         """when you click on a new link in wikipedia and move to the next page"""
         # TODO: send the new page to the query
 
-        if self.state != State.fleeing and self.state != State.finding:
+        if self.state != State.ingame:
             logging.warning("not allowed to move")
             return Response(
                 method="Error",
                 data=Error(
-                    type="message not found", sendData={},
-                    e="not allowed to move"),
-                recipients=[player]
+                    type="message not found", sendData={}, e="not allowed to move"
+                ),
+                recipients=[player],
             )
 
-        if self.state == State.fleeing:
-            if self.players[player].state != PlayerState.fleeing:
-                logging.warning(
-                    "cannot move if you are not the player fleeing")
-                return Response(
-                    method="Error",
-                    data=Error(
-                        type="message not found", sendData={},
-                        e="cannot move if you are not the player fleeing"),
-                    recipients=[player])
-
-        if self.players[player].state == PlayerState.watching:
+        if (
+            self.players[player].state == PlayerState.watching
+            or self.players[player].state == PlayerState.finnished
+        ):
             logging.warning("Watching People cannot not move")
             return Response(
                 method="Error",
                 data=Error(
-                    type="message not found", sendData={},
-                    e="Watching People cannot not move"),
-                recipients=[player])
+                    type="message not found",
+                    sendData={},
+                    e="Watching People cannot not move",
+                ),
+                recipients=[player],
+            )
 
         Query.execute(move=target, recipient=player)
         self.players[player].moves.append(target)
 
-        self._check_if_catched(move=target, moved_player=player)
+        # self._check_if_catched(move=target, moved_player=player)
+
+        # TODO: update found
 
         return self._make_lobby_update_response()
 
-    def _check_if_catched(self, move: str, moved_player: Player):
-        for player, data in self.players.items():
-            print(data.moves)
-            if player != moved_player and data.moves[-1] == move:
-                logging.warning("player found")
-                data.state = PlayerState.catched
-                self._check_if_game_over()
-
     def _check_if_game_over(self):
-        for data in self.players.values():
-            if data.state == PlayerState.fleeing:
-                logging.info("someone is still fleeing")
-                return
-
-        self.state = State.over
+        # for data in self.players.values():
+        #     if data.state == PlayerState.fleeing:
+        #         logging.info("someone is still fleeing")
+        #         return
+        #
+        # self.state = State.over
+        pass

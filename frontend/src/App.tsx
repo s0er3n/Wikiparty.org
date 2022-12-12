@@ -89,7 +89,7 @@ const App: Component = () => {
           fallback={<button class='w-96' onclick={() => { startWS() }}>start ws connection</button>}
         >
           <Show when={lobby()} fallback={<JoinOrCreateLobby />}>
-          <Lobby />
+            <Lobby />
           </Show>
         </Show>
       </div>
@@ -111,16 +111,9 @@ const Lobby: Component = () => {
         }}>start game</button>
       </Show>
       <Show when={lobby().state === "fleeing" || lobby().state === "finding"} >
-        <InGameHeader/>
+        <InGameHeader />
       </Show>
-      <Show when={lobby().state === "fleeing"} >
-        <Show when={lobby().players.find((p: any) => {
-          return p[0].id == id && p[1].state == "fleeing"
-        })} fallback={<div>the hunted person has 15 seconds to flee</div>}>
-          <> <Wiki /> </>
-        </Show>
-      </Show>
-      <Show when={lobby().state === "finding"}>
+      <Show when={lobby().state === "ingame"}>
         <> <Wiki /> </>
       </Show ></>)
 }
@@ -168,13 +161,6 @@ const PlayerList: Component = () => {
     <div class='h-full'>
       <ul>
         <For each={lobby()?.players ?? []}>{(player: any, i: number) => <li>{player[0].name}{JSON.stringify(player[1].moves)}{player[1].state}
-          <button class='btn ' onclick={() => {
-            let msg = setRoleMsg
-            msg.args.role = "fleeing"
-            msg.args.player_id = player[0].id
-            sendMessage(msg)
-
-          }}>set role fleeing</button>
           <button class='btn' onclick={() => {
             let msg = setRoleMsg
             msg.args.role = "hunting"
@@ -189,15 +175,15 @@ const PlayerList: Component = () => {
 }
 
 const InGameHeader: Component = () => {
- return (
-        <div class='fixed top-0 bg-white'>
-          <For each={lobby()?.players.filter(p => p[0].id != id) ?? []}>
-            {(player: any, i: number) => <span class='text-xl font-bold'>
-              Player: {player[0].id} Position:{player[1].moves.at(-1)}
-            </span>}
-          </For>
-        </div>
-        )
+  return (
+    <div class='fixed top-0 bg-white'>
+      <For each={lobby()?.players.filter(p => p[0].id != id) ?? []}>
+        {(player: any, i: number) => <span class='text-xl font-bold'>
+          Player: {player[0].id} Position:{player[1].moves.at(-1)}
+        </span>}
+      </For>
+    </div>
+  )
 }
 
 export default App;

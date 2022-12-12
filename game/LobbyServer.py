@@ -1,9 +1,8 @@
 import logging
-import uuid
 
-from game.Player import Player
 from game.Lobby import Lobby
-from game.Response import Response
+from game.Player import Player
+from game.Response import LobbyUpdate, Response
 
 
 class LobbyServer:
@@ -24,7 +23,8 @@ class LobbyServer:
         response = self.join_lobby(lobby=lobby, player=player, host=True)
 
         if response:
-            self.id_lobbies[response.data.id] = lobby
+            if isinstance(response.data, LobbyUpdate):
+                self.id_lobbies[response.data.id] = lobby
 
         return response
 
@@ -52,12 +52,15 @@ class LobbyServer:
         self.player_lobbies[player] = lobby
         lobby.players.append(player)
 
-        return lobby.game.join(player, host=host)
+        if lobby.game:
+            return lobby.game.join(player, host=host)
+        return None
 
     def leave_lobby(self, player: Player):
         lobby = self.player_lobbies.get(player)
-        if player not in lobby.players:
+        if lobby and player not in lobby.players:
             logging.warning("player not in lobby doing nothing")
             return
-        del self.player_lobbies[player]
-        lobby.players.remove(player)
+        if lobby:
+            del self.player_lobbies[player]
+            lobby.players.remove(player)
