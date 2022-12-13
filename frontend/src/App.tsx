@@ -1,25 +1,21 @@
 import { For, Component, createEffect, Show } from 'solid-js';
 import { createSignal } from "solid-js"
+import Header from "./Header"
+import JoinOrCreateLobby from './JoinOrCreateLobby';
+import SetArticle from './SetArticle';
 
 
+let oldMoves: string[] = []
 let [connected, setConnection] = createSignal<boolean>(false)
-let [idToJoin, setIdToJoin] = createSignal<string>("")
 let ws;
 
-function sendMessage(msg: any) {
+export function sendMessage(msg: any) {
 
   ws.send(JSON.stringify(msg))
 
 }
 
 
-let startLobbyMsg = { "type": "lobby", "method": "new_lobby", "args": {} }
-
-let joinLobbyMsg = {
-  "type": "lobby",
-  "method": "join_lobby",
-  "args": { "id": idToJoin() },
-}
 
 let setRoleMsg = {
   "type": "game", "method": "set_role", "args": {
@@ -37,22 +33,7 @@ let setArticleMsg = {
   }
 }
 
-let [article, setArticle] = createSignal("")
 
-const Article: Component = () => {
-  return (
-    <div>
-      <input onchange={(e) => setArticle(e.target.value)} value={article()} />
-      <button onclick={
-        () => {
-          let msg: any = setArticleMsg
-          msg.args.article = article
-          sendMessage(setArticleMsg)
-        }
-
-      }>set article</button>
-    </div>)
-}
 
 
 let startGameMsg = { "type": "game", "method": "start", "args": {} }
@@ -63,13 +44,6 @@ let moveMsg = {
 }
 // let [players, setPlayers = createSignal([])
 
-createEffect(() => {
-  joinLobbyMsg = {
-    "type": "lobby",
-    "method": "join_lobby",
-    "args": { "id": idToJoin() },
-  }
-})
 
 let [wiki, setWiki] = createSignal()
 
@@ -106,9 +80,24 @@ let [lobby, setLobby] = createSignal<any>(undefined)
 
 startWS()
 
+history.pushState(null, null, location.href);
+window.onpopstate = function(e: any) {
+  e.preventDefault()
+
+  if (oldMoves) {
+    let undoMoveMsg = moveMsg
+    undoMoveMsg.args.target = oldMoves.pop()
+    sendMessage(undoMoveMsg)
+    console.log(e)
+  }
+};
 const App: Component = () => {
+
   return (
-    <div class='w-full h-full  flex items-center justify-center '>
+
+    <div >
+      <Header lobby={lobby()} />
+
       <div class=''>
         <Show
           when={connected()}
@@ -129,16 +118,16 @@ const Lobby: Component = () => {
 
   return (
     <>
-      <Show when={lobby().state === "idle" || lobby().state === "over"} >
-        <LobbyCode />
-        <Article />
-        <PlayerList />
-        <button class='btn' onclick={() => {
-          sendMessage(startGameMsg)
-        }}>start game</button>
+      <Show when={lobby().state === "idle" && !lobby().start_article || !lobby().articles_to_find.length} >
+        <SetArticle lobby={lobby()} />
       </Show>
-      <Show when={lobby().state === "fleeing" || lobby().state === "finding"} >
-        <InGameHeader />
+      <Show when={lobby().state === "idle" && lobby().start_article && lobby().articles_to_find.length} >
+        <PlayerList />
+        <button class='btn' onclick={
+          () => {
+            sendMessage(startGameMsg)
+          }
+        }>start game</button>
       </Show>
       <Show when={lobby().state === "ingame"}>
         <> <Wiki /> </>
@@ -155,6 +144,7 @@ const Wiki: Component = () => {
           let move = moveMsg
           move.args.target = targetValue.split("/").pop()
           sendMessage(move)
+          oldMoves.push(move.args.target)
         }
       }
       } innerHTML={wiki()?.text?.["*"].replace("[edit]", "") ?? ""} />
@@ -162,24 +152,11 @@ const Wiki: Component = () => {
   )
 }
 
-const JoinOrCreateLobby: Component = () => {
-  return (<div>
-    <button class='btn' onclick={() => {
-      sendMessage(startLobbyMsg)
-    }}>create lobby</button>
-
-    id: <input onchange={(e: any) => { setIdToJoin(e.target.value) }} />
-    <button class='btn' onclick={() => {
-      sendMessage(joinLobbyMsg)
-    }}>join</button>
-  </div>)
-}
 
 const LobbyCode: Component = () => {
   // TODO: add on click copy to clipboard
   return (<div>
     <span class='font-bold'>lobby code:</span><input class='input' value={lobby().id}></input>
-    <span>{JSON.stringify(lobby())}</span>
     <span>{lobby().start_article}</span>
     <span>{lobby().articles_to_find}</span>
   </div>)

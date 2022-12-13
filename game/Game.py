@@ -21,7 +21,7 @@ class Game:
 
     players: dict[Player, PlayerData]
 
-    articles_to_find: list[str]
+    articles_to_find: set[str]
 
     start_article: str = ""
 
@@ -31,7 +31,7 @@ class Game:
         self.points = {}
         self.players = {}
         self.id = str(uuid.uuid4())
-        self.articles_to_find = []
+        self.articles_to_find = set()
 
     def join(self, player: Player, host: bool) -> Response:
         if host:
@@ -56,6 +56,9 @@ class Game:
         if self._check_host(host):
             return
 
+        if not self.start_article:
+            return
+
         if self.players[host].rights != PlayerRights.host:
             logging.warning("not allowed to start the game")
             return
@@ -64,6 +67,9 @@ class Game:
         self.state = State.ingame
         self._round_timer()
         self.set_starting_position()
+        for player_data in self.players.values():
+            player_data.state = PlayerState.hunting
+
         return self._make_lobby_update_response()
 
     def _round_timer(self):
@@ -104,12 +110,12 @@ class Game:
             data.moves.append(self.start_article)
 
         for player in self.players:
-            Query.execute(move="test", recipient=player)
+            Query.execute(move=self.start_article, recipient=player)
 
     def _make_lobby_update_response(self) -> Response:
         return Response.from_lobby_update(
             lobby_update=LobbyUpdate(
-                articles_to_find=self.articles_to_find,
+                articles_to_find=list(self.articles_to_find),
                 start_article=self.start_article,
                 id=self.id,
                 state=self.state.value,
@@ -123,7 +129,7 @@ class Game:
         if start:
             self.start_article = article
         else:
-            self.articles_to_find.append(article)
+            self.articles_to_find.add(article)
 
         return self._make_lobby_update_response()
 
