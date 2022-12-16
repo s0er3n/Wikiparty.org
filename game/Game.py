@@ -37,8 +37,9 @@ class Game:
         self.play_time = 60
 
     def set_time(self, player: Player, time: int):
-        self.play_time = time
-        return self._make_lobby_update_response()
+        if self._check_host(player):
+            self.play_time = time
+            return self._make_lobby_update_response()
 
     def join(self, player: Player, host: bool) -> Response:
         if host:
@@ -56,7 +57,7 @@ class Game:
         pass
 
     def _check_host(self, host: Player):
-        logging.warning("not allowed to start the game")
+        logging.warning("no admin rights")
         return self.players[host].rights != PlayerRights.host
 
     def start(self, host: Player):
