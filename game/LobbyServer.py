@@ -45,9 +45,9 @@ class LobbyServer:
             logging.warning("lobby with that id not found")
             return None
 
-        if player in lobby.players:
-            logging.warning("player already in lobby doing nothing")
-            return None
+        # if player in lobby.players:
+        #     logging.warning("player already in lobby doing nothing")
+        #     return None
 
         self.player_lobbies[player] = lobby
         lobby.players.append(player)

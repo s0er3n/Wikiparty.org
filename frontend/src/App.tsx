@@ -1,5 +1,6 @@
 import { For, Component, createEffect, Show } from 'solid-js';
 import { createSignal } from "solid-js"
+import { v4 as uuidv4 } from 'uuid';
 import Header from "./Header"
 import JoinOrCreateLobby from './JoinOrCreateLobby';
 import SetArticle from './SetArticle';
@@ -49,13 +50,32 @@ let moveMsg = {
 
 
 let [wiki, setWiki] = createSignal()
+let id = localStorage.getItem("id")
 
-let id = Math.floor(Math.random() * 100)
+let setUserNameMsg = {
+  "type": "player",
+  "method": "set_user_name",
+  "args": { "name": "Gast" },
+}
+
+if (!id) {
+  id = uuidv4() as string
+  localStorage.setItem("id", id)
+}
+
+
 function startWS() {
   ws = new WebSocket(`ws://localhost:8000/ws/${id}`)
 
   ws.onopen = (_) => {
     setConnection(true)
+    let username = localStorage.getItem("username")
+    if (username) {
+      let msg = setUserNameMsg
+      setUserNameMsg.args.name = username
+      sendMessage(msg)
+      setHasUserName(true)
+    }
   }
   ws.onmessage = (e) => {
     let data = JSON.parse(e.data)
@@ -72,10 +92,6 @@ function startWS() {
     }
   }
 
-  ws.onclose = () => {
-    setConnection(false)
-    ws = new WebSocket(`ws://localhost:8000/ws/${id}`)
-  }
 
 }
 
