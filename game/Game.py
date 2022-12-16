@@ -27,11 +27,18 @@ class Game:
 
     id: str
 
+    play_time: int
+
     def __init__(self):
         self.points = {}
         self.players = {}
         self.id = str(uuid.uuid4())
         self.articles_to_find = set()
+        self.play_time = 60
+
+    def set_time(self, player: Player, time: int):
+        self.play_time = time
+        return self._make_lobby_update_response()
 
     def join(self, player: Player, host: bool) -> Response:
         if host:
@@ -74,7 +81,7 @@ class Game:
 
     def _round_timer(self):
         async def update_state():
-            sleep(15)
+            sleep(self.play_time)
             if self.state == State.ingame:
                 self.state = State.over
                 update_response = self._make_lobby_update_response()
@@ -84,13 +91,15 @@ class Game:
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
-        player = next(player for player in self.players if player.id == player_id)
+        player = next(
+            player for player in self.players if player.id == player_id)
 
         role = PlayerState(role)
         if self._check_host(host):
             return
         if not State.idle:
-            logging.warning("someone tried to change the role while ingame/gameover")
+            logging.warning(
+                "someone tried to change the role while ingame/gameover")
             return
 
         if not (role == PlayerState.hunting or role == PlayerState.watching):
@@ -119,6 +128,7 @@ class Game:
                 start_article=self.start_article,
                 id=self.id,
                 state=self.state.value,
+                time=self.play_time,
                 players=[
                     (PlayerCopy(id=player.id, name=player.name), data)
                     for player, data in self.players.items()

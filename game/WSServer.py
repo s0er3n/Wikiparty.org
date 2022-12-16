@@ -31,7 +31,8 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                     try:
                         if method.startswith("_"):
                             raise Exception("not allowed")
-                        elif data.get("type") == "player":
+
+                        if data.get("type") == "player":
                             target: Game | LobbyServer | Player = player
                         elif data.get("type") == "game":
                             lobby = lobbyServer.player_lobbies.get(player)

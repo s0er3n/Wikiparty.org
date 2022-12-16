@@ -14,6 +14,7 @@ class LobbyUpdate:
     players: list[tuple[PlayerCopy, PlayerData]]
     articles_to_find: list[str]
     start_article: str
+    time: int
 
 
 @dataclasses.dataclass
