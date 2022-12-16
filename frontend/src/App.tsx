@@ -3,6 +3,7 @@ import { createSignal } from "solid-js"
 import Header from "./Header"
 import JoinOrCreateLobby from './JoinOrCreateLobby';
 import SetArticle from './SetArticle';
+import SetTime from './SetTime';
 import SetUserName from './SetUserName';
 
 
@@ -130,6 +131,7 @@ const Lobby: Component = () => {
       </Show>
       <Show when={lobby().state === "idle" && lobby().start_article && lobby().articles_to_find.length} >
         <PlayerList />
+        <SetTime time={lobby().time} />
         <button class='btn' onclick={
           () => {
             sendMessage(startGameMsg)
