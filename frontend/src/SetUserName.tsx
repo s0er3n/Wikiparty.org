@@ -9,7 +9,7 @@ let setUserNameMsg = {
   "args": { "name": userName() },
 }
 
-const JoinOrCreateLobby: Component = (props: any) => {
+const SetUserNameComponent: Component = (props: any) => {
   return (<div class="w-full flex flex-row items-center justify-center justify-items-center">
     <div class="w-full flex flex-row items-center justify-center justify-items-center">
       <div class="input-group w-fit">
@@ -32,4 +32,4 @@ const JoinOrCreateLobby: Component = (props: any) => {
   )
 }
 
-export default JoinOrCreateLobby
+export default SetUserNameComponent
