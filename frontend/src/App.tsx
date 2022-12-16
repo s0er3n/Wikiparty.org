@@ -3,10 +3,12 @@ import { createSignal } from "solid-js"
 import Header from "./Header"
 import JoinOrCreateLobby from './JoinOrCreateLobby';
 import SetArticle from './SetArticle';
+import SetUserName from './SetUserName';
 
 
 let oldMoves: string[] = []
 let [connected, setConnection] = createSignal<boolean>(false)
+let [hasUserName, setHasUserName] = createSignal<boolean>(false)
 let ws;
 
 export function sendMessage(msg: any) {
@@ -99,12 +101,17 @@ const App: Component = () => {
       <Header lobby={lobby()} />
 
       <div class=''>
+
         <Show
           when={connected()}
           fallback={<button class='w-96' onclick={() => { startWS() }}>start ws connection</button>}
         >
-          <Show when={lobby()} fallback={<JoinOrCreateLobby />}>
+          <Show when={!hasUserName() && !lobby()}><SetUserName setHasUserName={setHasUserName} /></Show>
+          <Show when={lobby()}>
             <Lobby />
+          </Show>
+          <Show when={!lobby() && hasUserName()}>
+            <JoinOrCreateLobby />
           </Show>
         </Show>
       </div>
