@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from typing import Any, Iterable
 
-from game.Player import Player
+from game.Player import Player, PlayerCopy
 from game.PlayerData import PlayerData
 
 
@@ -11,7 +11,7 @@ from game.PlayerData import PlayerData
 class LobbyUpdate:
     state: str
     id: str
-    players: list[tuple[Player, PlayerData]]
+    players: list[tuple[PlayerCopy, PlayerData]]
     articles_to_find: list[str]
     start_article: str
 

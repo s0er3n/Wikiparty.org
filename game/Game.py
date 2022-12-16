@@ -6,7 +6,7 @@ from time import sleep
 
 from game.ConnectionManager import manager
 from game.GameState import State
-from game.Player import Player
+from game.Player import Player, PlayerCopy
 from game.PlayerData import PlayerData, PlayerRights, PlayerState
 from game.Query import Query
 from game.Response import Error, LobbyUpdate, Response
@@ -119,7 +119,10 @@ class Game:
                 start_article=self.start_article,
                 id=self.id,
                 state=self.state.value,
-                players=[(player, data) for player, data in self.players.items()],
+                players=[
+                    (PlayerCopy(id=player.id, name=player.name), data)
+                    for player, data in self.players.items()
+                ],
             ),
             recipients=self.players.keys(),
         )

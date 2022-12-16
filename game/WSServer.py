@@ -4,7 +4,7 @@ from fastapi import FastAPI, WebSocket
 from starlette.websockets import WebSocketDisconnect
 
 from game.ConnectionManager import manager
-from game.Game import Game
+from game.Game import Game, Player
 from game.LobbyServer import LobbyServer
 from game.Response import Error, Response
 
@@ -23,16 +23,20 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
 
             match data:
 
-                case {"type": "game" | "lobby" | "player", "method": method, "args": args}:
+                case {
+                    "type": "game" | "lobby" | "player",
+                    "method": method,
+                    "args": args,
+                }:
                     try:
                         if method.startswith("_"):
                             raise Exception("not allowed")
-                        if data.get("type") == "player":
-                            target = player
-                        if data.get("type") == "game":
+                        elif data.get("type") == "player":
+                            target: Game | LobbyServer | Player = player
+                        elif data.get("type") == "game":
                             lobby = lobbyServer.player_lobbies.get(player)
                             if lobby and (game := lobby.game):
-                                target: Game | LobbyServer = game
+                                target = game
                         else:
                             target = lobbyServer
                         await manager.send_response(
