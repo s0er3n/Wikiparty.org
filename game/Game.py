@@ -92,15 +92,13 @@ class Game:
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
-        player = next(
-            player for player in self.players if player.id == player_id)
+        player = next(player for player in self.players if player.id == player_id)
 
         role = PlayerState(role)
         if self._check_host(host):
             return
         if not State.idle:
-            logging.warning(
-                "someone tried to change the role while ingame/gameover")
+            logging.warning("someone tried to change the role while ingame/gameover")
             return
 
         if not (role == PlayerState.hunting or role == PlayerState.watching):
@@ -115,6 +113,7 @@ class Game:
         """gets a random wiki page to start"""
         print("setting start position")
         print(self.players.values())
+
         for data in self.players.values():
             data.moves.clear()
             data.moves.append(self.start_article)
@@ -176,8 +175,15 @@ class Game:
                 recipients=[player],
             )
 
-        Query.execute(move=target, recipient=player)
+        # TODO: check if in `self.articles_to_find`
+        # TODO: check if anyone else has found it already
+        # TODO: => calculate points
+        # TODO: check if all found => end game early
+        # TODO: self.articles_to_find.issubset(set(moves))
         self.players[player].moves.append(target)
+        if self._check_if_game_over(player):
+            self.state = State.over
+        Query.execute(move=target, recipient=player)
 
         # self._check_if_catched(move=target, moved_player=player)
 
@@ -185,11 +191,6 @@ class Game:
 
         return self._make_lobby_update_response()
 
-    def _check_if_game_over(self):
-        # for data in self.players.values():
-        #     if data.state == PlayerState.fleeing:
-        #         logging.info("someone is still fleeing")
-        #         return
-        #
-        # self.state = State.over
-        pass
+    def _check_if_game_over(self, player: Player):
+        if player_data := self.players.get(player):
+            return self.articles_to_find.issubset(set(player_data.moves))
