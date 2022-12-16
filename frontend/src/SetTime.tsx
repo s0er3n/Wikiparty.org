@@ -5,7 +5,7 @@ import { sendMessage } from "./App"
 let setTimeMsg = {
   "type": "game",
   "method": "set_time",
-  "args": { "seconds": 0 },
+  "args": { "time": 0 },
 }
 type Props = {
   time: number
@@ -13,7 +13,7 @@ type Props = {
 
 const setTime = (e: any) => {
   let msg = setTimeMsg
-  msg.args.seconds = e.target.value
+  msg.args.time = parseInt(e.target.value)
   sendMessage(msg)
 }
 const SetUserNameComponent: Component<Props> = (props) => {
