@@ -23,7 +23,7 @@ const JoinOrCreateLobby: Component = () => {
   return (<div class="w-full flex flex-row items-center justify-center justify-items-center">
     <div class="w-full flex flex-row items-center justify-center justify-items-center">
       <div class="input-group w-fit">
-        <input type="text" placeholder="type in the code…" class="input input-bordered" />
+        <input onchange={(e) => setIdToJoin(e.target.value)} type="text" placeholder="type in the code…" class="input input-bordered" />
         <button class="btn " onclick={() => {
           sendMessage(joinLobbyMsg)
         }} >
