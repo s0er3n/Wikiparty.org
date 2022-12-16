@@ -23,10 +23,12 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
 
             match data:
 
-                case {"type": "game" | "lobby", "method": method, "args": args}:
+                case {"type": "game" | "lobby" | "player", "method": method, "args": args}:
                     try:
                         if method.startswith("_"):
                             raise Exception("not allowed")
+                        if data.get("type") == "player":
+                            target = player
                         if data.get("type") == "game":
                             lobby = lobbyServer.player_lobbies.get(player)
                             if lobby and (game := lobby.game):
