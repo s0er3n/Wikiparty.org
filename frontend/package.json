@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "daisyui": "^2.42.1",
-    "solid-js": "^1.5.1"
+    "solid-js": "^1.5.1",
+    "uuid": "^9.0.0"
   }
 }
