@@ -10,6 +10,7 @@ from game.Player import Player, PlayerCopy
 from game.PlayerData import PlayerData, PlayerRights, PlayerState
 from game.Query import Query
 from game.Response import Error, LobbyUpdate, Response
+from collections import defaultdict
 
 
 class Game:
@@ -23,6 +24,8 @@ class Game:
 
     articles_to_find: set[str]
 
+    found_articles: set[str]
+
     start_article: str = ""
 
     id: str
@@ -30,10 +33,11 @@ class Game:
     play_time: int
 
     def __init__(self):
-        self.points = {}
+        self.points = defaultdict(int)
         self.players = {}
         self.id = str(uuid.uuid4())
         self.articles_to_find = set()
+        self.found_articles = set()
         self.play_time = 60
 
     def set_time(self, player: Player, time: int):
@@ -71,7 +75,6 @@ class Game:
             logging.warning("not allowed to start the game")
             return
 
-        self.points = {}
         self.state = State.ingame
         self._round_timer()
         self.set_starting_position()
@@ -92,13 +95,15 @@ class Game:
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
-        player = next(player for player in self.players if player.id == player_id)
+        player = next(
+            player for player in self.players if player.id == player_id)
 
         role = PlayerState(role)
         if self._check_host(host):
             return
         if not State.idle:
-            logging.warning("someone tried to change the role while ingame/gameover")
+            logging.warning(
+                "someone tried to change the role while ingame/gameover")
             return
 
         if not (role == PlayerState.hunting or role == PlayerState.watching):
@@ -175,13 +180,21 @@ class Game:
                 recipients=[player],
             )
 
-        # TODO: check if in `self.articles_to_find`
-        # TODO: check if anyone else has found it already
-        # TODO: => calculate points
         # TODO: check if all found => end game early
         # TODO: self.articles_to_find.issubset(set(moves))
+
+        if target in self.articles_to_find:
+            if target not in self.players[player].moves:
+                logging.warning("article found")
+                self.points[player] += 10
+                if target not in self.found_articles:
+                    logging.warning("fist time this article was found")
+                    self.points[player] += 5
+                    self.found_articles.add(target)
+                logging.warning(
+                    f'player {player.name} has{self.points[player]} points')
         self.players[player].moves.append(target)
-        if self._check_if_game_over(player):
+        if self._check_if_player_found_all(player):
             self.state = State.over
         Query.execute(move=target, recipient=player)
 
@@ -191,6 +204,6 @@ class Game:
 
         return self._make_lobby_update_response()
 
-    def _check_if_game_over(self, player: Player):
+    def _check_if_player_found_all(self, player: Player):
         if player_data := self.players.get(player):
             return self.articles_to_find.issubset(set(player_data.moves))
