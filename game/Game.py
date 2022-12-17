@@ -135,7 +135,8 @@ class Game:
                 state=self.state.value,
                 time=self.play_time,
                 players=[
-                    (PlayerCopy(id=player.id, name=player.name), data)
+                    (PlayerCopy(id=player.id, name=player.name,
+                     points=self.points[player]), data)
                     for player, data in self.players.items()
                 ],
             ),
