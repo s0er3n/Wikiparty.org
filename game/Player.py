@@ -26,3 +26,4 @@ class Player:
 class PlayerCopy:
     id: str
     name: str
+    points: int

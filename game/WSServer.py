@@ -29,9 +29,10 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                     "method": method,
                     "args": args,
                 }:
-                    try:
-                        if method.startswith("_"):
-                            raise Exception("not allowed")
+                    # try:
+                    if method.startswith("_"):
+                        raise Exception("not allowed")
+
 
                         if data.get("type") == "player":
                             target: SearchQuery | Game | LobbyServer | Player = player
@@ -57,6 +58,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                                 recipients=[player],
                             )
                         )
+
 
                 case _:
                     await manager.send_response(
