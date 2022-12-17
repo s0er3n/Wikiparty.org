@@ -7,6 +7,7 @@ from game.ConnectionManager import manager
 from game.Game import Game, Player
 from game.LobbyServer import LobbyServer
 from game.Response import Error, Response
+from game.SearchQuery import SearchQuery
 
 app = FastAPI()
 
@@ -24,7 +25,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             match data:
 
                 case {
-                    "type": "game" | "lobby" | "player",
+                    "type": "game" | "lobby" | "player" | "search",
                     "method": method,
                     "args": args,
                 }:
@@ -33,11 +34,13 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                             raise Exception("not allowed")
 
                         if data.get("type") == "player":
-                            target: Game | LobbyServer | Player = player
+                            target: SearchQuery | Game | LobbyServer | Player = player
                         elif data.get("type") == "game":
                             lobby = lobbyServer.player_lobbies.get(player)
                             if lobby and (game := lobby.game):
                                 target = game
+                        elif data.get("type") == "search":
+                            target = SearchQuery()
                         else:
                             target = lobbyServer
                         await manager.send_response(

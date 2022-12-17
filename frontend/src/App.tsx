@@ -63,6 +63,7 @@ if (!id) {
   localStorage.setItem("id", id)
 }
 
+const [search, setSearch] = createSignal([])
 
 function startWS() {
   ws = new WebSocket(`ws://localhost:8000/ws/${id}`)
@@ -83,9 +84,12 @@ function startWS() {
     if (data.id) {
       console.log(data)
       setLobby(data)
-    } else if (data.data) {
+    } else if (data.data.text) {
       setWiki(data.data)
       console.log(data)
+    } else if (typeof data.data === "object") {
+      console.log(data.data)
+      setSearch(data.data)
     }
     else {
       console.log(e)
@@ -137,13 +141,20 @@ const App: Component = () => {
   );
 };
 
+const SearchResults: Component = () => {
+  return (<div>
+
+  </div>)
+
+}
+
 const Lobby: Component = () => {
 
 
   return (
     <>
       <Show when={lobby().state === "idle" && !lobby().start_article || !lobby().articles_to_find.length} >
-        <SetArticle lobby={lobby()} />
+        <SetArticle lobby={lobby()} search={search()} />
       </Show>
       <Show when={lobby().state === "idle" && lobby().start_article && lobby().articles_to_find.length} >
         <PlayerList />
