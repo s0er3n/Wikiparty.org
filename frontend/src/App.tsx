@@ -148,15 +148,22 @@ const SearchResults: Component = () => {
 
 }
 
+const [goToLobby, setGoToLobby] = createSignal(false)
 const Lobby: Component = () => {
 
 
   return (
     <>
-      <Show when={lobby().state === "idle" && !lobby().start_article || !lobby().articles_to_find.length} >
+      <Show when={lobby().state === "idle" && !lobby().start_article} >
         <SetArticle lobby={lobby()} search={search()} />
       </Show>
-      <Show when={lobby().state === "idle" && lobby().start_article && lobby().articles_to_find.length} >
+      <Show when={lobby().start_article && !goToLobby()} >
+        <SetArticle lobby={lobby()} search={search()} />
+        <button class='btn' onclick={() => {
+          setGoToLobby(true)
+        }}>go to lobby</button>
+      </Show>
+      <Show when={lobby().state === "idle" && lobby().start_article && goToLobby()} >
         <PlayerList />
         <SetTime time={lobby().time} />
         <button class='btn' onclick={
