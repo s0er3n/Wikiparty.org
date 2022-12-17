@@ -184,6 +184,21 @@ class Game:
         # TODO: check if all found => end game early
         # TODO: self.articles_to_find.issubset(set(moves))
 
+        self._add_points_current_move(target, player)
+
+        self.players[player].moves.append(target)
+
+        if self._check_if_player_found_all(player):
+            self.state = State.over
+        Query.execute(move=target, recipient=player)
+
+        # self._check_if_catched(move=target, moved_player=player)
+
+        # TODO: update found
+
+        return self._make_lobby_update_response()
+
+    def _add_points_current_move(self, target, player):
         if target in self.articles_to_find:
             if target not in self.players[player].moves:
                 logging.warning("article found")
@@ -194,16 +209,6 @@ class Game:
                     self.found_articles.add(target)
                 logging.warning(
                     f'player {player.name} has{self.points[player]} points')
-        self.players[player].moves.append(target)
-        if self._check_if_player_found_all(player):
-            self.state = State.over
-        Query.execute(move=target, recipient=player)
-
-        # self._check_if_catched(move=target, moved_player=player)
-
-        # TODO: update found
-
-        return self._make_lobby_update_response()
 
     def _check_if_player_found_all(self, player: Player):
         if player_data := self.players.get(player):
