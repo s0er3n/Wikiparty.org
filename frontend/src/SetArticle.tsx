@@ -1,4 +1,4 @@
-import { Component, createSignal, Show } from "solid-js"
+import { Component, createSignal, For, Show } from "solid-js"
 import { sendMessage } from "./App"
 
 let [article, setArticle] = createSignal("")
@@ -9,33 +9,39 @@ let setArticleMsg = {
   }
 }
 
+let searchMsg = {
+  "type": "search", "method": "execute", "args": {
+    "query": ""
+  }
+}
+
+
 const SetArticle: Component = (props: any) => {
   return (
-    <div class="input-group">
-      <input class='input input-bordered' onchange={(e) => setArticle(e.target.value)} value={article()} />
-      <Show when={props.lobby.start_article !== ""}>
-        <button class='btn' onclick={
-          () => {
-            let msg: any = setArticleMsg
-            msg.args.article = article()
-            msg.args.start = false
-            sendMessage(setArticleMsg)
-            setArticle("")
-          }
-        }>set article to find</button>
-      </Show>
+    <div class="">
+      <input class='input input-bordered' onchange={(e) => {
+        let search = searchMsg;
+        search.args.query = e.target.value
+        sendMessage(search)
 
-      <Show when={props.lobby.start_article === ""}>
-        <button class='btn' onclick={
-          () => {
-            let msg: any = setArticleMsg
-            msg.args.article = article()
-            msg.args.start = true
-            sendMessage(setArticleMsg)
-            setArticle("")
-          }
+        setArticle(e.target.value)
+      }} value={article()} />
 
-        }>set start article</button>
+      <Show when={article() !== ""}>
+        <ul>
+          <For each={props?.search?.at(3) ?? []}>
+            {(result, i) => <li><button onclick={() => {
+
+              let setArticleMsg = {
+                "type": "game", "method": "set_article", "args": {
+                  "article": result.split("/").pop(),
+                  "start": props.lobby.start_article === "",
+                }
+              }
+              sendMessage(setArticleMsg)
+              setArticle("")
+            }} class='btn'>select</button>{result}</li>}</For>
+        </ul>
       </Show>
     </div >)
 }

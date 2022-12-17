@@ -42,6 +42,9 @@ class Game:
             return self._make_lobby_update_response()
 
     def join(self, player: Player, host: bool) -> Response:
+        if player in self.players.keys():
+            return self._make_lobby_update_response()
+
         if host:
             self.players[player] = PlayerData(
                 rights=PlayerRights.host,

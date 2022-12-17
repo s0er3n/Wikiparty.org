@@ -9,7 +9,7 @@ let setUserNameMsg = {
   "args": { "name": userName() },
 }
 
-const SetUserNameComponent: Component = (props: any) => {
+const SetUserNameComponent: Component<any> = (props) => {
   return (<div class="w-full flex flex-row items-center justify-center justify-items-center">
     <div class="w-full flex flex-row items-center justify-center justify-items-center">
       <div class="input-group w-fit">
@@ -19,6 +19,7 @@ const SetUserNameComponent: Component = (props: any) => {
             let msg = setUserNameMsg
             setUserNameMsg.args.name = userName()
             sendMessage(msg)
+            localStorage.setItem("username", userName())
             props.setHasUserName(true)
           } else {
             alert("user name should be longer than 3 chars")

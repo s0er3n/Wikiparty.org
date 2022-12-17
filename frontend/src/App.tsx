@@ -1,5 +1,6 @@
 import { For, Component, createEffect, Show } from 'solid-js';
 import { createSignal } from "solid-js"
+import { v4 as uuidv4 } from 'uuid';
 import Header from "./Header"
 import JoinOrCreateLobby from './JoinOrCreateLobby';
 import SetArticle from './SetArticle';
@@ -49,13 +50,33 @@ let moveMsg = {
 
 
 let [wiki, setWiki] = createSignal()
+let id = localStorage.getItem("id")
 
-let id = Math.floor(Math.random() * 100)
+let setUserNameMsg = {
+  "type": "player",
+  "method": "set_user_name",
+  "args": { "name": "Gast" },
+}
+
+if (!id) {
+  id = uuidv4() as string
+  localStorage.setItem("id", id)
+}
+
+const [search, setSearch] = createSignal([])
+
 function startWS() {
   ws = new WebSocket(`ws://localhost:8000/ws/${id}`)
 
   ws.onopen = (_) => {
     setConnection(true)
+    let username = localStorage.getItem("username")
+    if (username) {
+      let msg = setUserNameMsg
+      setUserNameMsg.args.name = username
+      sendMessage(msg)
+      setHasUserName(true)
+    }
   }
   ws.onmessage = (e) => {
     let data = JSON.parse(e.data)
@@ -63,19 +84,18 @@ function startWS() {
     if (data.id) {
       console.log(data)
       setLobby(data)
-    } else if (data.data) {
+    } else if (data.data.text) {
       setWiki(data.data)
       console.log(data)
+    } else if (typeof data.data === "object") {
+      console.log(data.data)
+      setSearch(data.data)
     }
     else {
       console.log(e)
     }
   }
 
-  ws.onclose = () => {
-    setConnection(false)
-    ws = new WebSocket(`ws://localhost:8000/ws/${id}`)
-  }
 
 }
 
@@ -121,13 +141,20 @@ const App: Component = () => {
   );
 };
 
+const SearchResults: Component = () => {
+  return (<div>
+
+  </div>)
+
+}
+
 const Lobby: Component = () => {
 
 
   return (
     <>
       <Show when={lobby().state === "idle" && !lobby().start_article || !lobby().articles_to_find.length} >
-        <SetArticle lobby={lobby()} />
+        <SetArticle lobby={lobby()} search={search()} />
       </Show>
       <Show when={lobby().state === "idle" && lobby().start_article && lobby().articles_to_find.length} >
         <PlayerList />
