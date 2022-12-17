@@ -29,6 +29,8 @@ class Game:
 
     play_time: int
 
+    round: int = 0
+
     def __init__(self):
         self.points = {}
         self.players = {}
@@ -75,6 +77,8 @@ class Game:
             return
 
         self.points = {}
+
+        self.round += 1
         self.state = State.ingame
         self._round_timer()
         self.set_starting_position()
@@ -84,14 +88,14 @@ class Game:
         return self._make_lobby_update_response()
 
     def _round_timer(self):
-        async def update_state():
+        async def update_state(round: int):
             sleep(self.play_time)
-            if self.state == State.ingame:
+            if self.state == State.ingame and round == self.round:
                 self.state = State.over
                 update_response = self._make_lobby_update_response()
                 await manager.send_response(update_response)
 
-        thread = Thread(target=asyncio.run, args=(update_state(),))
+        thread = Thread(target=asyncio.run, args=(update_state(round=self.round),))
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
