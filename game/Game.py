@@ -22,11 +22,11 @@ class Game:
 
     players: dict[Player, PlayerData]
 
-    articles_to_find: set[str]
+    articles_to_find: set[tuple[str, str]]
 
     found_articles: set[str]
 
-    start_article: str = ""
+    start_article: tuple[str, str] = ("", "")
 
     id: str
 
@@ -95,7 +95,11 @@ class Game:
 
         self.state = State.idle
         self.articles_to_find = set()
-        self.start_article = ""
+
+        for player_data in self.players.values():
+            player_data.moves = []
+
+        self.start_article = ("", "")
 
         return self._make_lobby_update_response()
 
@@ -135,16 +139,16 @@ class Game:
 
         for data in self.players.values():
             data.moves.clear()
-            data.moves.append(self.start_article)
+            data.moves.append(self.start_article[0])
 
         for player in self.players:
-            Query.execute(move=self.start_article, recipient=player)
+            Query.execute(move=self.start_article[0], recipient=player)
 
     def _make_lobby_update_response(self) -> Response:
         return Response.from_lobby_update(
             lobby_update=LobbyUpdate(
-                articles_to_find=list(self.articles_to_find),
-                start_article=self.start_article,
+                articles_to_find=list(article[1] for article in self.articles_to_find),
+                start_article=self.start_article[1],
                 id=self.id,
                 state=self.state.value,
                 time=self.play_time,
@@ -161,12 +165,12 @@ class Game:
             recipients=self.players.keys(),
         )
 
-    def set_article(self, player: Player, article: str, start=False):
+    def set_article(self, player: Player, article: str, better_name, start=False):
 
         if start:
-            self.start_article = article
+            self.start_article = (article, better_name)
         else:
-            self.articles_to_find.add(article)
+            self.articles_to_find.add((article, better_name))
 
         return self._make_lobby_update_response()
 
@@ -229,4 +233,6 @@ class Game:
 
     def _check_if_player_found_all(self, player: Player):
         if player_data := self.players.get(player):
-            return self.articles_to_find.issubset(set(player_data.moves))
+            return set(article[0] for article in self.articles_to_find).issubset(
+                set(player_data.moves)
+            )

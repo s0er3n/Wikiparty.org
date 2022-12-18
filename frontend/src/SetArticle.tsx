@@ -27,12 +27,13 @@ const SetArticle: Component<{ lobby: Accessor<any>, search: Accessor<Array<Array
               let setArticleMsg = {
                 "type": "game", "method": "set_article", "args": {
                   "article": result.split("/").pop(),
+                  "better_name": props.search()?.at(1)?.at(i()),
                   "start": props.lobby().start_article === "",
                 }
               }
               sendMessage(setArticleMsg)
               setArticle("")
-            }} class='btn'>select</button>{result}</li>}</For>
+            }} class='btn'>select</button>{props.search()?.at(1)?.at(i())}</li>}</For>
         </ul>
       </Show>
     </div >)
