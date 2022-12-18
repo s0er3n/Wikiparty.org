@@ -12,9 +12,10 @@ from game.Response import Response, Wiki
 # from collections import defaultdict
 
 
-def skip_if_redirect(data):
+def _skip_if_redirect(data):
     soup = BeautifulSoup(data["parse"]["text"]['*'], 'html.parser')
-    if len(soup.find_all('ul', {'class': 'redirectText'})) == 1:
+    length = len(soup.find_all('ul', {'class': 'redirectText'}))
+    if length == 1:
         href = soup.find('ul', {'class': 'redirectText'}
                          ).find('a', href=True)['href']
         redirect = href.split('/')[2]
@@ -23,12 +24,10 @@ def skip_if_redirect(data):
             f"https://en.wikipedia.org/w/api.php?action=parse&page={redirect}&format=json"
         )
         return r.json()
-    if len(soup.find_all('ul', {'class': 'redirectText'})) == 0:
-        return data
-    if len(soup.find_all('ul', {'class': 'redirectText'})) >= 1:
+    if length > 1:
         logging.warning(
-            "found multiple redirects on redirect page")
-        return data
+            "found multiple redirects on redirect page, returning redirect page")
+    return data
     logging.error("wtf happend")
 
 
@@ -47,7 +46,7 @@ class Query:
             )
             data = r.json()
 
-            data = skip_if_redirect(data)
+            data = _skip_if_redirect(data)
 
             if len(cls.queries) > 500:
                 cls.queries.clear()
