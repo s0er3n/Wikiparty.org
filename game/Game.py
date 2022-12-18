@@ -80,8 +80,6 @@ class Game:
             logging.warning("not allowed to start the game")
             return
 
-
-
         self.round += 1
         self.state = State.ingame
         self._round_timer()
@@ -99,7 +97,8 @@ class Game:
                 update_response = self._make_lobby_update_response()
                 await manager.send_response(update_response)
 
-        thread = Thread(target=asyncio.run, args=(update_state(round=self.round),))
+        thread = Thread(target=asyncio.run, args=(
+            update_state(round=self.round),))
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
@@ -163,7 +162,7 @@ class Game:
     def move(self, player: Player, target: str) -> Response:
         """when you click on a new link in wikipedia and move to the next page"""
         # TODO: send the new page to the query
-
+        logging.info("move to "+target)
         if self.state != State.ingame:
             logging.warning("not allowed to move")
             return Response(
@@ -188,9 +187,6 @@ class Game:
                 ),
                 recipients=[player],
             )
-
-        # TODO: check if all found => end game early
-        # TODO: self.articles_to_find.issubset(set(moves))
 
         self._add_points_current_move(target, player)
 
