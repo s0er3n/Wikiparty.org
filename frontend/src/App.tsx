@@ -1,6 +1,7 @@
 import { For, Component, createEffect, Show } from 'solid-js';
 import { createSignal } from "solid-js"
 import { v4 as uuidv4 } from 'uuid';
+import GameOver from './GameOver';
 import Header from "./Header"
 import JoinOrCreateLobby from './JoinOrCreateLobby';
 import SetArticle from './SetArticle';
@@ -8,14 +9,17 @@ import SetTime from './SetTime';
 import SetUserName from './SetUserName';
 
 
-let oldMoves: string[] = []
 let [connected, setConnection] = createSignal<boolean>(false)
 let [hasUserName, setHasUserName] = createSignal<boolean>(false)
-let ws;
+let ws: WebSocket | null = null;
 
 export function sendMessage(msg: any) {
-
-  ws.send(JSON.stringify(msg))
+  if (ws) {
+    ws.send(JSON.stringify(msg))
+  }
+  else {
+    console.warn("websocket not connected")
+  }
 
 }
 
@@ -30,26 +34,15 @@ let setRoleMsg = {
 
 
 
-let setArticleMsg = {
-  "type": "game", "method": "set_article", "args": {
-    "article": "test",
-    "start": false,
-  }
-}
-
 
 
 
 let startGameMsg = { "type": "game", "method": "start", "args": {} }
 
-let moveMsg = {
-  "type": "game", "method": "move",
-  "args": { "target": "Exam" }
-}
 // let [players, setPlayers = createSignal([])
 
 
-let [wiki, setWiki] = createSignal()
+let [wiki, setWiki] = createSignal<{ title: string, text: { "*": string } }>()
 let id = localStorage.getItem("id")
 
 let setUserNameMsg = {
@@ -103,23 +96,12 @@ let [lobby, setLobby] = createSignal<any>(undefined)
 
 startWS()
 
-history.pushState(null, null, location.href);
-window.onpopstate = function(e: any) {
-  e.preventDefault()
-
-  if (oldMoves) {
-    let undoMoveMsg = moveMsg
-    undoMoveMsg.args.target = oldMoves.pop()
-    sendMessage(undoMoveMsg)
-    console.log(e)
-  }
-};
 const App: Component = () => {
 
   return (
 
     <div >
-      <Header lobby={lobby()} />
+      <Header lobby={lobby} />
 
       <div class=''>
 
@@ -127,7 +109,9 @@ const App: Component = () => {
           when={connected()}
           fallback={<button class='w-96' onclick={() => { startWS() }}>start ws connection</button>}
         >
-          <Show when={!hasUserName() && !lobby()}><SetUserName setHasUserName={setHasUserName} /></Show>
+          <Show when={!hasUserName() && !lobby()}>
+            <SetUserName setHasUserName={setHasUserName} />
+          </Show>
           <Show when={lobby()}>
             <Lobby />
           </Show>
@@ -141,12 +125,6 @@ const App: Component = () => {
   );
 };
 
-const SearchResults: Component = () => {
-  return (<div>
-
-  </div>)
-
-}
 
 const [goToLobby, setGoToLobby] = createSignal(false)
 const Lobby: Component = () => {
@@ -155,13 +133,16 @@ const Lobby: Component = () => {
   return (
     <>
       <Show when={lobby().state === "idle" && !lobby().start_article} >
-        <SetArticle lobby={lobby()} search={search()} />
+        <SetArticle lobby={lobby} search={search} />
       </Show>
       <Show when={lobby().start_article && !goToLobby()} >
-        <SetArticle lobby={lobby()} search={search()} />
-        <button class='btn' onclick={() => {
-          setGoToLobby(true)
-        }}>go to lobby</button>
+        <SetArticle lobby={lobby} search={search} />
+
+        <Show when={lobby().articles_to_find.length} >
+          <button class='btn' onclick={() => {
+            setGoToLobby(true)
+          }}>go to lobby</button>
+        </Show>
       </Show>
       <Show when={lobby().state === "idle" && lobby().start_article && goToLobby()} >
         <PlayerList />
@@ -174,7 +155,12 @@ const Lobby: Component = () => {
       </Show>
       <Show when={lobby().state === "ingame"}>
         <> <Wiki /> </>
-      </Show ></>)
+      </Show >
+
+      <Show when={lobby().state === "over"}>
+        <GameOver players={lobby().players} />
+      </Show >
+    </>)
 }
 
 const Wiki: Component = () => {
@@ -183,11 +169,12 @@ const Wiki: Component = () => {
       <article class='prose ' onclick={(e) => {
         let targetValue = e.target.getAttribute("href")
         if (targetValue?.includes("wiki")) {
+          let moveMsg = {
+            "type": "game", "method": "move",
+            "args": { "target": targetValue.split("/").pop() }
+          }
           e.preventDefault()
-          let move = moveMsg
-          move.args.target = targetValue.split("/").pop()
-          sendMessage(move)
-          oldMoves.push(move.args.target)
+          sendMessage(moveMsg)
         }
       }
       } innerHTML={wiki()?.text?.["*"].replace("[edit]", "") ?? ""} />
@@ -196,41 +183,14 @@ const Wiki: Component = () => {
 }
 
 
-const LobbyCode: Component = () => {
-  // TODO: add on click copy to clipboard
-  return (<div>
-    <span class='font-bold'>lobby code:</span><input class='input' value={lobby().id}></input>
-    <span>{lobby().start_article}</span>
-    <span>{lobby().articles_to_find}</span>
-  </div>)
-}
-
 const PlayerList: Component = () => {
   return (
     <div class='h-full'>
       <ul>
-        <For each={lobby()?.players ?? []}>{(player: any, i: number) => <li>{player[0].name}{JSON.stringify(player[1].moves)}{player[1].state}
-          <button class='btn' onclick={() => {
-            let msg = setRoleMsg
-            msg.args.role = "hunting"
-            msg.args.player_id = player[0].id
-            sendMessage(msg)
-          }}>set role hunting</button>
+        <For each={lobby()?.players ?? []}>{(player: any, i) => <li>{player[0].name}{JSON.stringify(player[1].moves)}{player[1].state}
         </li>}
         </For>
       </ul>
-    </div>
-  )
-}
-
-const InGameHeader: Component = () => {
-  return (
-    <div class='fixed top-0 bg-white'>
-      <For each={lobby()?.players.filter(p => p[0].id != id) ?? []}>
-        {(player: any, i: number) => <span class='text-xl font-bold'>
-          Player: {player[0].id} Position:{player[1].moves.at(-1)}
-        </span>}
-      </For>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import uuid
+from collections import defaultdict
 from threading import Thread
 from time import sleep
 
@@ -10,7 +11,6 @@ from game.Player import Player, PlayerCopy
 from game.PlayerData import PlayerData, PlayerRights, PlayerState
 from game.Query import Query
 from game.Response import Error, LobbyUpdate, Response
-from collections import defaultdict
 
 
 class Game:
@@ -67,10 +67,10 @@ class Game:
 
     def _check_host(self, host: Player):
         logging.warning("no admin rights")
-        return self.players[host].rights != PlayerRights.host
+        return self.players[host].rights == PlayerRights.host
 
     def start(self, host: Player):
-        if self._check_host(host):
+        if not self._check_host(host):
             return
 
         if not self.start_article:
@@ -80,14 +80,22 @@ class Game:
             logging.warning("not allowed to start the game")
             return
 
-
-
         self.round += 1
         self.state = State.ingame
         self._round_timer()
         self.set_starting_position()
         for player_data in self.players.values():
             player_data.state = PlayerState.hunting
+
+        return self._make_lobby_update_response()
+
+    def go_to_lobby(self, host: Player):
+        if not self._check_host(host):
+            return
+
+        self.state = State.idle
+        self.articles_to_find = set()
+        self.start_article = ""
 
         return self._make_lobby_update_response()
 
@@ -103,15 +111,13 @@ class Game:
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
-        player = next(
-            player for player in self.players if player.id == player_id)
+        player = next(player for player in self.players if player.id == player_id)
 
         role = PlayerState(role)
-        if self._check_host(host):
+        if not self._check_host(host):
             return
         if not State.idle:
-            logging.warning(
-                "someone tried to change the role while ingame/gameover")
+            logging.warning("someone tried to change the role while ingame/gameover")
             return
 
         if not (role == PlayerState.hunting or role == PlayerState.watching):
@@ -143,8 +149,12 @@ class Game:
                 state=self.state.value,
                 time=self.play_time,
                 players=[
-                    (PlayerCopy(id=player.id, name=player.name,
-                     points=self.points[player]), data)
+                    (
+                        PlayerCopy(
+                            id=player.id, name=player.name, points=self.points[player]
+                        ),
+                        data,
+                    )
                     for player, data in self.players.items()
                 ],
             ),
@@ -215,8 +225,7 @@ class Game:
                     logging.warning("fist time this article was found")
                     self.points[player] += 5
                     self.found_articles.add(target)
-                logging.warning(
-                    f'player {player.name} has{self.points[player]} points')
+                logging.warning(f"player {player.name} has{self.points[player]} points")
 
     def _check_if_player_found_all(self, player: Player):
         if player_data := self.players.get(player):
