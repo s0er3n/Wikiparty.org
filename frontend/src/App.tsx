@@ -76,6 +76,9 @@ function startWS() {
 
     if (data.id) {
       console.log(data)
+      if (data?.state == "over") {
+        setGoToLobby(false)
+      }
       setLobby(data)
     } else if (data.data.text) {
       setWiki(data.data)
@@ -135,10 +138,10 @@ const Lobby: Component = () => {
       <Show when={lobby().state === "idle" && !lobby().start_article} >
         <SetArticle lobby={lobby} search={search} />
       </Show>
-      <Show when={lobby().start_article && !goToLobby()} >
+      <Show when={lobby().state === "idle" && lobby().start_article && !goToLobby()} >
         <SetArticle lobby={lobby} search={search} />
 
-        <Show when={lobby().articles_to_find.length} >
+        <Show when={lobby().state === "idle" && lobby().articles_to_find.length} >
           <button class='btn' onclick={() => {
             setGoToLobby(true)
           }}>go to lobby</button>
@@ -154,6 +157,7 @@ const Lobby: Component = () => {
         }>start game</button>
       </Show>
       <Show when={lobby().state === "ingame"}>
+        <>{lobby().articles_to_find.join(" | ")}</>
         <> <Wiki /> </>
       </Show >
 
