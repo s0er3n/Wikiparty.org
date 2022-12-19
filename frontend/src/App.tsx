@@ -50,7 +50,7 @@ if (!id) {
 const [search, setSearch] = createSignal([]);
 
 function startWS() {
-  ws = new WebSocket(`ws://localhost:8000/ws/${id}`);
+  ws = new WebSocket(`${import.meta.env.VITE_backend_url}/ws/${id}`);
 
   ws.onopen = (_) => {
     setConnection(true);
