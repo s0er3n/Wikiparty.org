@@ -116,13 +116,15 @@ class Game:
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
-        player = next(player for player in self.players if player.id == player_id)
+        player = next(
+            player for player in self.players if player.id == player_id)
 
         role = PlayerState(role)
         if not self._check_host(host):
             return
         if not State.idle:
-            logging.warning("someone tried to change the role while ingame/gameover")
+            logging.warning(
+                "someone tried to change the role while ingame/gameover")
             return
 
         if not (role == PlayerState.hunting or role == PlayerState.watching):
@@ -148,7 +150,8 @@ class Game:
     def _make_lobby_update_response(self) -> Response:
         return Response.from_lobby_update(
             lobby_update=LobbyUpdate(
-                articles_to_find=list(article[1] for article in self.articles_to_find),
+                articles_to_find=list(article[1]
+                                      for article in self.articles_to_find),
                 start_article=self.start_article[1],
                 id=self.id,
                 state=self.state.value,
@@ -219,7 +222,8 @@ class Game:
         return self._make_lobby_update_response()
 
     def _add_points_current_move(self, target, player):
-        if target in self.articles_to_find:
+        articles_to_find = [article[0] for article in self.articles_to_find]
+        if target in articles_to_find:
             if target not in self.players[player].moves:
                 logging.warning("article found")
                 self.points[player] += 10
@@ -227,7 +231,8 @@ class Game:
                     logging.warning("fist time this article was found")
                     self.points[player] += 5
                     self.found_articles.add(target)
-                logging.warning(f"player {player.name} has{self.points[player]} points")
+                logging.warning(
+                    f"player {player.name} has{self.points[player]} points")
 
     def _check_if_player_found_all(self, player: Player):
         if player_data := self.players.get(player):

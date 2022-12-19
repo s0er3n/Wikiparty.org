@@ -9,7 +9,12 @@ const PlayerList: Component<Props> = (props) => {
     <div class='h-full'>
       <div >
         <ul>
-          <For each={props.players ?? []}>{(player, i) => <li><div class="flex flex-row"><div>{player[0].name}</div><div>{player[0].points}</div> <div>{player[1].moves.join(" -> ")}</div></div></li>}
+          <For each={props.players ?? []}>
+            {(player, i) => <li><div class="flex flex-row">
+              <div>{player[0].name}</div>
+              <div>{player[0].points}</div>
+              <div>{player[1].moves.join(" -> ")}
+              </div></div></li>}
           </For>
         </ul>
       </div>
