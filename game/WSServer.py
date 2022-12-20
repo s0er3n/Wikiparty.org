@@ -15,6 +15,11 @@ app = FastAPI()
 lobbyServer = LobbyServer()
 
 
+@app.get("/")
+def index():
+    return "hallo"
+
+
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
     player = await manager.connect(websocket, id=client_id)
