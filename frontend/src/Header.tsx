@@ -9,10 +9,10 @@ const Header: Component<{ lobby: Accessor<{ id: string }> }> = (props) => {
       <Show when={props.lobby()}>
         <div class="flex-none space-x-2 ">
           <input
+            class="hidden md:block input input-bordered"
             onclick={async () => {
               await navigator.clipboard.writeText(props.lobby().id);
             }}
-            class="input input-bordered"
             value={props.lobby().id}
             readonly
           ></input>

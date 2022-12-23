@@ -88,7 +88,14 @@ let [lobby, setLobby] = createSignal<any>(undefined);
 
 startWS();
 
+export const isHost = () => {
+  // TODO: this is assuming the host is always the first player
+  // check for player rights
+  return lobby().players[0][0].id == id;
+};
 const App: Component = () => {
+  // derived state if player is host
+
   return (
     <div>
       <Header lobby={lobby} />
@@ -112,6 +119,7 @@ const App: Component = () => {
           </Show>
           <Show when={lobby()}>
             <Lobby />
+            is host: {JSON.stringify(isHost())}
           </Show>
           <Show when={!lobby() && hasUserName()}>
             <JoinOrCreateLobby />
@@ -128,41 +136,68 @@ const Lobby: Component = () => {
 
   return (
     <>
-      <Show when={lobby().state === "idle" && !lobby().start_article}>
-        Search for a page to start:
+      <Show
+        when={lobby().state === "idle" && !lobby().start_article && isHost()}
+      >
+        <div class="flex justify-center font-bold">
+          Search for a page to start:
+        </div>
         <SetArticle lobby={lobby} search={search} />
       </Show>
       <Show
-        when={lobby().state === "idle" && lobby().start_article && !goToLobby()}
+        when={
+          lobby().state === "idle" &&
+          lobby().start_article &&
+          !goToLobby() &&
+          isHost()
+        }
       >
-        Search for a page or pages to find:
+        <div class="flex justify-center font-bold">
+          Search for a page or pages to find:
+        </div>
         <SetArticle lobby={lobby} search={search} />
         <Show
-          when={lobby().state === "idle" && lobby().articles_to_find.length}
+          when={
+            lobby().state === "idle" &&
+            lobby().articles_to_find.length &&
+            isHost()
+          }
         >
-          <button
-            class="btn"
-            onclick={() => {
-              setGoToLobby(true);
-            }}
-          >
-            go to lobby
-          </button>
+          <div class="flex justify-center">
+            <button
+              class="btn m-2"
+              onclick={() => {
+                setGoToLobby(true);
+              }}
+            >
+              go to lobby
+            </button>
+          </div>
+          k
         </Show>
       </Show>
       <Show
-        when={lobby().state === "idle" && lobby().start_article && goToLobby()}
+        when={
+          (lobby().state === "idle" && lobby().start_article && goToLobby()) ||
+          (!isHost() && lobby().state === "idle")
+        }
       >
-        <PlayerList />
-        <SetTime time={lobby().time} />
-        <button
-          class="btn"
-          onclick={() => {
-            sendMessage(startGameMsg);
-          }}
-        >
-          start game
-        </button>
+        <div class="flex justify-center">
+          <div>
+            <PlayerList />
+            <SetTime time={lobby().time} />
+            <Show when={isHost()}>
+              <button
+                class="btn"
+                onclick={() => {
+                  sendMessage(startGameMsg);
+                }}
+              >
+                start game
+              </button>
+            </Show>
+          </div>
+        </div>
       </Show>
       <Show when={lobby().state === "ingame"}>
         <>
@@ -189,28 +224,27 @@ const Lobby: Component = () => {
 
 const Wiki: Component = () => {
   return (
-    <div class="">
-      {wiki()?.title ?? ""}
-      <div
-        class="flex items-center justify-center justify-items-center "
-        style={"all: revert"}
-      >
-        <div
-          class="prose"
-          onclick={(e) => {
-            let targetValue = e.target.getAttribute("href");
-            if (targetValue?.includes("wiki")) {
-              let moveMsg = {
-                type: "game",
-                method: "move",
-                args: { target: targetValue.split("/").pop() },
-              };
-              e.preventDefault();
-              sendMessage(moveMsg);
-            }
-          }}
-          innerHTML={wiki()?.text?.["*"].replace("[edit]", "") ?? ""}
-        />
+    <div class="flex justify-center mt-24">
+      <div>
+        <div class="text-xl font-bold">{wiki()?.title ?? ""}</div>
+        <div class="flex justify-center mt-24" style={"all: revert"}>
+          <div
+            class="prose prose-lg"
+            onclick={(e) => {
+              let targetValue = e.target.getAttribute("href");
+              if (targetValue?.includes("wiki")) {
+                let moveMsg = {
+                  type: "game",
+                  method: "move",
+                  args: { target: targetValue.split("/").pop() },
+                };
+                e.preventDefault();
+                sendMessage(moveMsg);
+              }
+            }}
+            innerHTML={wiki()?.text?.["*"].replace("[edit]", "") ?? ""}
+          />
+        </div>
       </div>
     </div>
   );
@@ -218,19 +252,16 @@ const Wiki: Component = () => {
 
 const PlayerList: Component = () => {
   return (
-    <div class="h-full">
-      <ul>
-        <For each={lobby()?.players ?? []}>
-          {(player: any, i) => (
-            <li>
-              {player[0].name}
-              {JSON.stringify(player[1].moves)}
-              {player[1].state}
-            </li>
-          )}
-        </For>
-      </ul>
-    </div>
+    <ul>
+      <For each={lobby()?.players ?? []}>
+        {(player: any, i) => (
+          <li>
+            <span class="font-bold">{player[0].name}</span>
+            <span class="ml-2">{JSON.stringify(player[0].points ?? 0)}</span>
+          </li>
+        )}
+      </For>
+    </ul>
   );
 };
 
