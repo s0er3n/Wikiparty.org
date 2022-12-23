@@ -216,6 +216,11 @@ class SearchGame(Game):
                 _recipients=[player],
             )
 
+        if not self._check_if_move_allowed(player=player, target=target):
+            return Error(
+                e="not allowed to move",
+                _recipients=[player],
+            )
         pretty_name = Query.execute(move=target, recipient=player)
 
         article = Article(pretty_name=pretty_name, url_name=target)
@@ -226,6 +231,10 @@ class SearchGame(Game):
             self.state = State.over
 
         return self._make_lobby_update_response()
+
+    def _check_if_move_allowed(self, target: str, player: Player):
+        current_location: str = self.players[player].moves[-1].url_name
+        return target in Query.queries[current_location]["links"]
 
     def _add_points_current_move(self, target: Article, player: Player):
         if target not in self.articles_to_find:

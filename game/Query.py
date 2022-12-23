@@ -40,19 +40,23 @@ class Query:
     queries: dict[str, Any] = dict()
 
     @classmethod
+    def _add_move_to_queries(cls, move: str):
+        r = requests.get(
+            f"https://en.wikipedia.org/w/api.php?action=parse&page={move}&format=json"
+        )
+        data = r.json()
+
+        data = _skip_if_redirect(data)
+
+        if len(cls.queries) > 500:
+            cls.queries.clear()
+        cls.queries[move] = data["parse"]
+
+    @classmethod
     def execute(cls, move: str, recipient: Player):
         # self.next_query[move].apend(recipient)
         if not cls.queries.get(move):
-            r = requests.get(
-                f"https://en.wikipedia.org/w/api.php?action=parse&page={move}&format=json"
-            )
-            data = r.json()
-
-            data = _skip_if_redirect(data)
-
-            if len(cls.queries) > 500:
-                cls.queries.clear()
-            cls.queries[move] = data["parse"]
+            cls._add_move_to_queries(move)
 
         thread = Thread(
             target=asyncio.run,
