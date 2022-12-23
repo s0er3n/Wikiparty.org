@@ -4,9 +4,9 @@ from fastapi import FastAPI, WebSocket
 from starlette.websockets import WebSocketDisconnect
 
 from game.ConnectionManager import manager
-from game.Game import Game, Player
 from game.LobbyServer import LobbyServer
 from game.Response import Error, Response
+from game.SearchGame import Player, SearchGame
 from game.SearchQuery import SearchQuery
 
 app = FastAPI()
@@ -39,9 +39,11 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                             raise Exception("not allowed")
 
                         if data.get("type") == "player":
-                            target: SearchQuery | Game | LobbyServer | Player = player
+                            target: SearchQuery | SearchGame | LobbyServer | Player = (
+                                player
+                            )
                         elif data.get("type") == "game":
-                            lobby = lobbyServer.player_lobbies.get(player)
+                            lobby = lobbyServer.players_lobbies.get(player)
                             if lobby and (game := lobby.game):
                                 target = game
                         elif data.get("type") == "search":
@@ -82,4 +84,3 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
 
     except WebSocketDisconnect:
         manager.disconnect(player)
-        # await manager.broadcast(f"Client #{client_id} left the chat")

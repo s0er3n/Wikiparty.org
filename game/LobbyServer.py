@@ -1,35 +1,29 @@
 import logging
+import uuid
 
 from game.Lobby import Lobby
 from game.Player import Player
-from game.Response import LobbyUpdate, Response
+from game.Response import Response
 
 
 class LobbyServer:
     """handles all lobbies"""
 
-    player_lobbies: dict[Player, Lobby] = {}
+    players_lobbies: dict[Player, Lobby] = {}
 
     id_lobbies: dict[str, Lobby] = {}
 
     def new_lobby(self, player: Player) -> Response | None:
-        if player in self.player_lobbies:
-            self.leave_lobby(player)
 
-        lobby = Lobby(host=player)
+        id = str(uuid.uuid4())
+        lobby = Lobby(host=player, id=id)
 
-        self.player_lobbies[player] = lobby
+        self.id_lobbies[id] = lobby
 
-        response = self.join_lobby(lobby=lobby, player=player, host=True)
-
-        if response:
-            if isinstance(response.data, LobbyUpdate):
-                self.id_lobbies[response.data.id] = lobby
-
-        return response
+        return self.join_lobby(lobby=lobby, player=player, host=True)
 
     def delete_lobby(self):
-        pass
+        raise Exception(NotImplemented)
 
     def join_lobby(
         self,
@@ -38,6 +32,11 @@ class LobbyServer:
         host=False,
         lobby: Lobby | None = None,
     ) -> Response | None:
+
+        if player in self.players_lobbies.keys():
+            self.leave_lobby(player)
+            self.players_lobbies[player].leave(player)
+
         if id:
             lobby = self.id_lobbies.get(id)
 
@@ -49,18 +48,19 @@ class LobbyServer:
         #     logging.warning("player already in lobby doing nothing")
         #     return None
 
-        self.player_lobbies[player] = lobby
-        lobby.players.append(player)
+        self.players_lobbies[player] = lobby
+
+        lobby.join(player)
 
         if lobby.game:
             return lobby.game.join(player, host=host)
         return None
 
     def leave_lobby(self, player: Player):
-        lobby = self.player_lobbies.get(player)
+        lobby = self.players_lobbies.get(player)
         if lobby and player not in lobby.players:
             logging.warning("player not in lobby doing nothing")
             return
         if lobby:
-            del self.player_lobbies[player]
-            lobby.players.remove(player)
+            lobby.leave(player)
+            del self.players_lobbies[player]
