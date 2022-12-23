@@ -158,7 +158,6 @@ class SearchGame(Game):
         for data in self.players.values():
             data.moves.clear()
             data.moves.append(self.start_article)
-
         for player in self.players:
             Query.execute(move=self.start_article.url_name, recipient=player)
 
@@ -216,14 +215,16 @@ class SearchGame(Game):
                 _recipients=[player],
             )
 
-        if not self._check_if_move_allowed(player=player, target=target):
+        pretty_name = Query.execute(move=target, recipient=player)
+
+        article = Article(pretty_name=pretty_name, url_name=target)
+
+        if not self._is_move_allowed(player=player, target=article):
             return Error(
                 e="not allowed to move",
                 _recipients=[player],
             )
-        pretty_name = Query.execute(move=target, recipient=player)
 
-        article = Article(pretty_name=pretty_name, url_name=target)
         self._add_points_current_move(article, player)
 
         self.players[player].moves.append(article)
@@ -232,9 +233,11 @@ class SearchGame(Game):
 
         return self._make_lobby_update_response()
 
-    def _check_if_move_allowed(self, target: str, player: Player):
-        current_location: str = self.players[player].moves[-1].url_name
-        return target in Query.queries[current_location]["links"]
+    def _is_move_allowed(self, target: Article, player: Player):
+        current_location = self.players[player].moves[-1].url_name
+        # links is a list of pretty names and the key of queries is the url name
+        # WARNING pretty confusing WARNING
+        return target.pretty_name in Query.queries[current_location]["links"]
 
     def _add_points_current_move(self, target: Article, player: Player):
         if target not in self.articles_to_find:

@@ -56,7 +56,11 @@ class Query:
     def execute(cls, move: str, recipient: Player):
         # self.next_query[move].apend(recipient)
         if not cls.queries.get(move):
-            cls._add_move_to_queries(move)
+            try:
+                cls._add_move_to_queries(move)
+            except:
+                logging.error("could not query wikipedia")
+                return
 
         thread = Thread(
             target=asyncio.run,
