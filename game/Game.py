@@ -221,9 +221,9 @@ class Game:
 
         return self._make_lobby_update_response()
 
-    def _check_if_move_allowed(self, target, player):
-        current_location = self.players[player].moves[-1]
-        if target in Query.queries[current_location]["links"]:
+    def _check_if_move_allowed(self, target: Article, player: Player):
+        current_location: Article = self.players[player].moves[-1]
+        if target in Query.queries[current_location.pretty_name]["links"]:
             return True
         else:
             return False
