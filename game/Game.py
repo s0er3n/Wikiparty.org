@@ -221,6 +221,13 @@ class Game:
 
         return self._make_lobby_update_response()
 
+    def _check_if_move_allowed(self, target, player):
+        current_location = self.players[player].moves[-1]
+        if target in Query.queries[current_location]["links"]:
+            return True
+        else:
+            return False
+
     def _add_points_current_move(self, target, player):
         articles_to_find = [article[0] for article in self.articles_to_find]
         if target in articles_to_find:
