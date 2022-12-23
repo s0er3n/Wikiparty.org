@@ -11,8 +11,10 @@ class Lobby:
         self.game = SearchGame(id=id)
 
     def leave(self, player):
-        self.game.leave(player)
-        self.players.remove(player)
+        if isinstance(self.game, SearchGame):
+            self.game.leave(player)
+        if player in self.players:
+            self.players.remove(player)
 
     def join(self, player):
         self.players.append(player)

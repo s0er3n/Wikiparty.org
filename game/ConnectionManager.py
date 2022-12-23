@@ -30,9 +30,10 @@ class ConnectionManager:
             logging.warning("no response")
             return
 
-        for player in message.recipients:
+        for player in message._recipients:
             try:
-                await self.active_connections[player].send_json(asdict(message.data))
+                message._recipients = []
+                await self.active_connections[player].send_json(asdict(message))
             except Exception as e:
                 print("couldnt send message ", e)
 

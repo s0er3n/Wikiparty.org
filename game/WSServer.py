@@ -1,4 +1,6 @@
 import logging
+import os
+import sys
 
 from fastapi import FastAPI, WebSocket
 from starlette.websockets import WebSocketDisconnect
@@ -34,47 +36,26 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                     "method": method,
                     "args": args,
                 }:
-                    try:
-                        if method.startswith("_"):
-                            raise Exception("not allowed")
+                    if method.startswith("_"):
+                        raise Exception("not allowed")
 
-                        if data.get("type") == "player":
-                            target: SearchQuery | SearchGame | LobbyServer | Player = (
-                                player
-                            )
-                        elif data.get("type") == "game":
-                            lobby = lobbyServer.players_lobbies.get(player)
-                            if lobby and (game := lobby.game):
-                                target = game
-                        elif data.get("type") == "search":
-                            target = SearchQuery()
-                        else:
-                            target = lobbyServer
-                        await manager.send_response(
-                            getattr(target, method)(player, **args)
-                        )
-                    except Exception as e:
-                        print(e)
-                        await manager.send_response(
-                            message=Response(
-                                method="Error",
-                                data=Error(
-                                    type="message not found", sendData=data, e=str(e)
-                                ),
-                                recipients=[player],
-                            )
-                        )
+                    if data.get("type") == "player":
+                        target: SearchQuery | SearchGame | LobbyServer | Player = player
+                    elif data.get("type") == "game":
+                        lobby = lobbyServer.players_lobbies.get(player)
+                        if lobby and (game := lobby.game):
+                            target = game
+                    elif data.get("type") == "search":
+                        target = SearchQuery()
+                    else:
+                        target = lobbyServer
+                    await manager.send_response(getattr(target, method)(player, **args))
 
                 case _:
                     await manager.send_response(
-                        message=Response(
-                            method="Error",
-                            data=Error(
-                                type="message not found",
-                                sendData=data,
-                                e="not matching anything",
-                            ),
-                            recipients=[player],
+                        message=Error(
+                            _recipients=[player],
+                            e="not matching anything",
                         )
                     )
 

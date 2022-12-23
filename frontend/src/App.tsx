@@ -20,15 +20,6 @@ export function sendMessage(msg: any) {
   }
 }
 
-let setRoleMsg = {
-  type: "game",
-  method: "set_role",
-  args: {
-    player_id: "ADD ID HERE",
-    role: "hunting",
-  },
-};
-
 let startGameMsg = { type: "game", method: "start", args: {} };
 
 // let [players, setPlayers = createSignal([])
@@ -71,7 +62,7 @@ function startWS() {
         setGoToLobby(false);
       }
       setLobby(data);
-    } else if (data.data.text) {
+    } else if (data?.data?.text) {
       setWiki(data.data);
       window.scrollTo(0, 0);
       console.log(data);

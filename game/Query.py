@@ -2,9 +2,11 @@ import asyncio
 import logging
 from threading import Thread
 from typing import Any
-from bs4 import BeautifulSoup
-import requests
 
+import requests
+from bs4 import BeautifulSoup
+
+from game.Article import Article
 from game.ConnectionManager import manager
 from game.Player import Player
 from game.Response import Response, Wiki
@@ -13,20 +15,20 @@ from game.Response import Response, Wiki
 
 
 def _skip_if_redirect(data):
-    soup = BeautifulSoup(data["parse"]["text"]['*'], 'html.parser')
-    length = len(soup.find_all('ul', {'class': 'redirectText'}))
+    soup = BeautifulSoup(data["parse"]["text"]["*"], "html.parser")
+    length = len(soup.find_all("ul", {"class": "redirectText"}))
     if length == 1:
-        href = soup.find('ul', {'class': 'redirectText'}
-                         ).find('a', href=True)['href']
-        redirect = href.split('/')[2]
-        logging.info(f'redirected to {redirect}')
+        href = soup.find("ul", {"class": "redirectText"}).find("a", href=True)["href"]
+        redirect = href.split("/")[2]
+        logging.info(f"redirected to {redirect}")
         r = requests.get(
             f"https://en.wikipedia.org/w/api.php?action=parse&page={redirect}&format=json"
         )
         return r.json()
     if length > 1:
         logging.warning(
-            "found multiple redirects on redirect page, returning redirect page")
+            "found multiple redirects on redirect page, returning redirect page"
+        )
     return data
     logging.error("wtf happend")
 
@@ -56,12 +58,13 @@ class Query:
             target=asyncio.run,
             args=(
                 manager.send_response(
-                    Response(
-                        method="move",
-                        data=Wiki(data=cls.queries.get(move)),
-                        recipients=[recipient],
+                    Wiki(
+                        data=cls.queries.get(move),
+                        _recipients=[recipient],
                     )
                 ),
             ),
         )
         thread.start()
+
+        return cls.queries.get(move).get("title")

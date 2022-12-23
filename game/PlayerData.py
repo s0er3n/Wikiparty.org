@@ -1,6 +1,8 @@
 import dataclasses
 from enum import Enum
 
+from game.Article import Article
+
 
 class PlayerRights(str, Enum):
     host = "host"
@@ -19,4 +21,4 @@ class PlayerData:
 
     state: PlayerState = PlayerState.watching
 
-    moves: list[str] = dataclasses.field(default_factory=list)
+    moves: list[Article] = dataclasses.field(default_factory=list)

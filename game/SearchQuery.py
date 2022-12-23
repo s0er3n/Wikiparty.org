@@ -20,14 +20,6 @@ class SearchQuery:
 
         thread = Thread(
             target=asyncio.run,
-            args=(
-                manager.send_response(
-                    Response(
-                        method="search",
-                        data=Wiki(data=data),
-                        recipients=[player],
-                    )
-                ),
-            ),
+            args=(manager.send_response(Wiki(data=data, _recipients=[player])),),
         )
         thread.start()

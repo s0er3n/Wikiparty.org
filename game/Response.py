@@ -7,8 +7,22 @@ from game.Player import Player, PlayerCopy
 from game.PlayerData import PlayerData
 
 
-@dataclasses.dataclass
-class LobbyUpdate:
+@dataclasses.dataclass(kw_only=True)
+class Response:
+    _recipients: list[Player]
+
+    method: str
+
+
+@dataclasses.dataclass(kw_only=True)
+class Error(Response):
+    e: str
+    method: str = "Error"
+
+
+@dataclasses.dataclass(kw_only=True)
+class LobbyUpdate(Response):
+    method: str = "LobbyUpdate"
     state: str
     id: str
     players: list[tuple[PlayerCopy, PlayerData]]
@@ -17,28 +31,7 @@ class LobbyUpdate:
     time: int
 
 
-@dataclasses.dataclass
-class Wiki:
+@dataclasses.dataclass(kw_only=True)
+class Wiki(Response):
     data: Any
-
-
-@dataclasses.dataclass
-class Response:
-    recipients: Iterable[Player]
-
-    method: str
-
-    data: LobbyUpdate | Error | Wiki
-
-    @staticmethod
-    def from_lobby_update(
-        lobby_update: LobbyUpdate, recipients: Iterable[Player]
-    ) -> Response:
-        return Response(method="lobby_update", data=lobby_update, recipients=recipients)
-
-
-@dataclasses.dataclass
-class Error:
-    type: str
-    sendData: dict
-    e: str
+    method: str = "Wiki"

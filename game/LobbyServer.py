@@ -34,8 +34,8 @@ class LobbyServer:
     ) -> Response | None:
 
         if player in self.players_lobbies.keys():
-            self.leave_lobby(player)
             self.players_lobbies[player].leave(player)
+            self.leave_lobby(player)
 
         if id:
             lobby = self.id_lobbies.get(id)
