@@ -16,7 +16,11 @@ const PlayerList: Component<Props> = (props) => {
                 <div class="flex flex-row">
                   <div class="font-bold">{player[0].name}</div>
                   <div class="ml-2 ">{player[0].points}</div>
-                  <div class="ml-2 ">{player[1].moves.join(" -> ")}</div>
+                  <div class="ml-2 ">
+                    {player[1].moves
+                      .map((move: any) => move.pretty_name)
+                      .join(" -> ")}
+                  </div>
                 </div>
               </li>
             )}

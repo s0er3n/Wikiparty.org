@@ -64,7 +64,6 @@ function startWS() {
       setLobby(data);
     } else if (data?.data?.text) {
       setWiki(data.data);
-      window.scrollTo(0, 0);
       console.log(data);
     } else if (typeof data.data === "object") {
       console.log(data.data);
@@ -200,7 +199,9 @@ const Lobby: Component = () => {
           Find these Articles:{" "}
           {lobby()
             .articles_to_find.filter((article) => {
-              return !player()[1].moves.includes(article);
+              return !player()[1]
+                .moves.map((move) => move.pretty_name)
+                .includes(article);
             })
             .join(" | ")}
         </div>
@@ -246,6 +247,7 @@ const Wiki: Component = () => {
                 };
 
                 setWiki(wiki);
+                window.scrollTo(0, 0);
                 sendMessage(moveMsg);
               }
             }}
