@@ -224,11 +224,6 @@ const Wiki: Component = () => {
             onclick={async (e) => {
               let targetValue = e.target.getAttribute("href");
               if (targetValue?.includes("wiki")) {
-                let moveMsg = {
-                  type: "game",
-                  method: "move",
-                  args: { target: targetValue.split("/").pop() },
-                };
                 e.preventDefault();
                 let response = await fetch(
                   `https://wikipediaquery-production.up.railway.app/article/${targetValue
@@ -237,8 +232,20 @@ const Wiki: Component = () => {
                 );
 
                 response = await response.json();
+                let moveMsg = {
+                  type: "game",
+                  method: "move",
+                  args: {
+                    url_name: targetValue.split("/").pop(),
+                    pretty_name: response.title,
+                  },
+                };
+                let wiki = {
+                  text: { "*": response.content_html },
+                  title: response.title,
+                };
 
-                console.log(response);
+                setWiki(wiki);
                 sendMessage(moveMsg);
               }
             }}

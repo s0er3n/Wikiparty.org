@@ -193,11 +193,10 @@ class SearchGame(Game):
 
         return self._make_lobby_update_response()
 
-    def move(self, player: Player, target: str) -> Response:
+    def move(self, player: Player, url_name: str, pretty_name: str) -> Response:
         """when you click on a new link in wikipedia and move to the next page"""
 
-        # TODO: send the new page to the query
-        logging.info("move to " + target)
+        logging.info("move to " + url_name)
         if self.state != State.ingame:
             logging.warning("not allowed to move")
             return Error(
@@ -215,15 +214,16 @@ class SearchGame(Game):
                 _recipients=[player],
             )
 
-        pretty_name = Query.execute(move=target, recipient=player)
+        # no need to query the name bc its done by the rust api now
+        # pretty_name = Query.execute(move=url_name, recipient=player)
 
-        article = Article(pretty_name=pretty_name, url_name=target)
+        article = Article(pretty_name=pretty_name, url_name=url_name)
 
-        if not self._is_move_allowed(player=player, target=article):
-            return Error(
-                e="not allowed to move",
-                _recipients=[player],
-            )
+        # if not self._is_move_allowed(player=player, url_name=article):
+        #     return Error(
+        #         e="not allowed to move",
+        #         _recipients=[player],
+        #     )
 
         self._add_points_current_move(article, player)
 
