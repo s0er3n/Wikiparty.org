@@ -67,7 +67,9 @@ function startWS() {
       console.log(data);
     } else if (typeof data.data === "object") {
       console.log(data.data);
-      setSearch(data.data);
+      if (!data.data.error) {
+        setSearch(data.data);
+      }
     } else {
       console.log(e);
     }
@@ -109,7 +111,6 @@ const App: Component = () => {
           </Show>
           <Show when={lobby()}>
             <Lobby />
-            is host: {JSON.stringify(isHost())}
           </Show>
           <Show when={!lobby() && hasUserName()}>
             <JoinOrCreateLobby />
@@ -163,7 +164,6 @@ const Lobby: Component = () => {
               go to lobby
             </button>
           </div>
-          k
         </Show>
       </Show>
       <Show
@@ -174,7 +174,14 @@ const Lobby: Component = () => {
       >
         <div class="flex justify-center">
           <div>
-            <PlayerList />
+            <div>Articles:</div>
+            <div>start: {lobby().start_article}</div>
+            <div>find: {lobby().articles_to_find.join(" | ")}</div>
+            <div>
+              for every article you find you get 10 points and 5 extra points if
+              you are the first person to find the article
+            </div>
+            <div>max time: </div>
             <SetTime time={lobby().time} />
             <Show when={isHost()}>
               <button
@@ -185,6 +192,7 @@ const Lobby: Component = () => {
               >
                 start game
               </button>
+              <PlayerList />
             </Show>
           </div>
         </div>
@@ -194,15 +202,32 @@ const Lobby: Component = () => {
           <Wiki />
         </>
         <div class="font-bold sticky bottom-0 bg-gray-500 z-50">
-          <div>Your Name: {player()[0].name}</div>
-          <div> Your Points: {player()[0].points}</div>
+          <div class="flex">
+            <For each={lobby()?.players ?? []}>
+              {(player: any, i) => {
+                return (
+                  <div class="ml-2">
+                    <div>
+                      {player[0].name} : {player[0].points}
+                    </div>
+                  </div>
+                );
+              }}
+            </For>
+          </div>
           Find these Articles:{" "}
           {lobby()
             .articles_to_find.filter((article) => {
               return !player()[1]
                 .moves.map((move) => move.pretty_name)
-                .includes(article);
+                ?.includes(article);
             })
+            .map(
+              (article) =>
+                article +
+                " " +
+                (lobby().articles_found?.includes(article) ? "10" : "15")
+            )
             .join(" | ")}
         </div>
       </Show>

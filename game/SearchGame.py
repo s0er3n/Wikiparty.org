@@ -166,6 +166,7 @@ class SearchGame(Game):
             articles_to_find=list(
                 article.pretty_name for article in self.articles_to_find
             ),
+            articles_found=list(article.pretty_name for article in self.found_articles),
             start_article=self.start_article.pretty_name,
             id=self.id,
             state=self.state.value,
@@ -204,15 +205,15 @@ class SearchGame(Game):
                 _recipients=[player],
             )
 
-        if (
-            self.players[player].state == PlayerState.watching
-            or self.players[player].state == PlayerState.finnished
-        ):
-            logging.warning("Watching People cannot not move")
-            return Error(
-                e="Watching People cannot not move",
-                _recipients=[player],
-            )
+        # if (
+        #     self.players[player].state == PlayerState.watching
+        #     or self.players[player].state == PlayerState.finnished
+        # ):
+        #     logging.warning("Watching People cannot not move")
+        #     return Error(
+        #         e="Watching People cannot not move",
+        #         _recipients=[player],
+        #     )
 
         # no need to query the name bc its done by the rust api now
         # pretty_name = Query.execute(move=url_name, recipient=player)

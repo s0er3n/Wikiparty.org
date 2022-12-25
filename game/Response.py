@@ -27,6 +27,7 @@ class LobbyUpdate(Response):
     id: str
     players: list[tuple[PlayerCopy, PlayerData]]
     articles_to_find: list[str]
+    articles_found: list[str]
     start_article: str
     time: int
 

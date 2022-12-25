@@ -7,29 +7,35 @@ const SetArticle: Component<{
   lobby: Accessor<any>;
   search: Accessor<Array<Array<string>> | undefined>;
 }> = (props) => {
+  let timeout: any = null;
   return (
     <div class="flex flex-row justify-center ">
       <div>
         <input
           class="input input-bordered"
-          onchange={(e: any) => {
-            const searchMsg = {
-              type: "search",
-              method: "execute",
-              args: {
-                query: e.target.value,
-              },
-            };
-            sendMessage(searchMsg);
+          onkeyup={(e: any) => {
+            if (timeout != null) {
+              clearTimeout(timeout);
+            }
+            timeout = setTimeout(() => {
+              const searchMsg = {
+                type: "search",
+                method: "execute",
+                args: {
+                  query: e.target.value,
+                },
+              };
+              sendMessage(searchMsg);
 
-            setArticle(e.target.value);
+              setArticle(e.target.value);
+            }, 200);
           }}
           value={article()}
         />
 
         <Show when={article() !== ""}>
           <ul>
-            <For each={props?.search()?.at(3) ?? []}>
+            <For each={props.search ? props?.search()?.at(3) ?? [] : []}>
               {(result, i) => (
                 <li class="mt-2">
                   <button
