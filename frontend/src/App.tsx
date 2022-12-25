@@ -221,7 +221,7 @@ const Wiki: Component = () => {
         <div class="flex justify-center mt-24" style={"all: revert"}>
           <div
             class="prose prose-lg"
-            onclick={(e) => {
+            onclick={async (e) => {
               let targetValue = e.target.getAttribute("href");
               if (targetValue?.includes("wiki")) {
                 let moveMsg = {
@@ -230,6 +230,15 @@ const Wiki: Component = () => {
                   args: { target: targetValue.split("/").pop() },
                 };
                 e.preventDefault();
+                let response = await fetch(
+                  `https://wikipediaquery-production.up.railway.app/article/${targetValue
+                    .split("/")
+                    .pop()}`
+                );
+
+                response = await response.json();
+
+                console.log(response);
                 sendMessage(moveMsg);
               }
             }}
