@@ -52,19 +52,39 @@ function startWS() {
       sendMessage(msg);
       setHasUserName(true);
     }
+    // joining lobby if you were in a lobby before
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    if (urlSearchParams.get("code")) {
+      let joinLobbyMsg = {
+        type: "lobby",
+        method: "join_lobby",
+        args: { id: urlSearchParams.get("code") },
+      };
+      sendMessage(joinLobbyMsg);
+    }
+  };
+
+  ws.onclose = (e) => {
+    setLobby(undefined);
+    setConnection(false);
   };
   ws.onmessage = (e) => {
     let data = JSON.parse(e.data);
 
-    if (data.id) {
+    if (data.method === "LobbyUpdate") {
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set("code", data.id);
+      window.history.pushState(null, "", "?" + urlParams.toString());
+
       console.log(data);
       if (data?.state == "over") {
         setGoToLobby(false);
       }
       setLobby(data);
-    } else if (data?.data?.text) {
+    } else if (data.method === "Wiki" && !Array.isArray(data.data)) {
       setWiki(data.data);
       console.log(data);
+      // search -> maybe add a method on backend
     } else if (typeof data.data === "object") {
       console.log(data.data);
       if (!data.data.error) {
