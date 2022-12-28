@@ -16,6 +16,12 @@ from game.Response import Response, Wiki
 # from collections import defaultdict
 
 
+def _select_and_reduce_links(all_links):
+    for link in all_links:
+        if link["href"].startswith("/wiki/") and not link["href"].startswith("/wiki/Help") and not link["href"].startswith("/wiki/File"):
+            yield link["href"][6::]
+
+
 def _skip_if_redirect(data):
     soup = BeautifulSoup(data["parse"]["text"]["*"], "html.parser")
     length = len(soup.find_all("ul", {"class": "redirectText"}))
@@ -58,12 +64,19 @@ class Query:
         # data = _skip_if_redirect(data)
 
         all_links = soup.find_all("a", href=True)
-        reduced_links = list(map(lambda a: a["href"], all_links))
 
-        links = list(filter(lambda c: (c.startswith("/wiki/") and "/wiki/Help" not in c and "/wiki/File" not in c),
-                            reduced_links))
+        # for link in all_links:
+        #     if link["href"].startswith("/wiki/") and not link["href"].startswith("/wiki/Help") and not link["href"].startswith("/wiki/File"):
+        #         yield link["href"][6::]
 
-        short_links = list(map(lambda a: a[6::], links))
+        short_links = list(_select_and_reduce_links(all_links))
+
+        # reduced_links = list(map(lambda a: a["href"], all_links))
+        #
+        # links = list(filter(lambda c: (c.startswith("/wiki/") and "/wiki/Help" not in c and "/wiki/File" not in c),
+        #                     reduced_links))
+        #
+        # short_links = list(map(lambda a: a[6::], links))
 
         if len(cls.queries) > 500:
             cls.queries.clear()
