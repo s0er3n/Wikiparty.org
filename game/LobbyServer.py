@@ -20,7 +20,7 @@ class LobbyServer:
 
         self.id_lobbies[id] = lobby
 
-        return self.join_lobby(lobby=lobby, player=player, host=True)
+        return self.join_lobby(lobby=lobby, player=player)
 
     def delete_lobby(self):
         raise Exception(NotImplemented)
@@ -29,7 +29,6 @@ class LobbyServer:
         self,
         player: Player,
         id: str | None = None,
-        host=False,
         lobby: Lobby | None = None,
     ) -> Response | None:
 
@@ -53,7 +52,7 @@ class LobbyServer:
         lobby.join(player)
 
         if lobby.game:
-            return lobby.game.join(player, host=host)
+            return lobby.game.join(player)
         return None
 
     def leave_lobby(self, player: Player):

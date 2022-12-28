@@ -29,13 +29,15 @@ class SearchGame(Game):
 
     start_article: Article
 
+    host: Player
+
     # TODO: why is here the id shouldnt it be in lobby server
     id: str
 
     play_time: int
     round: int = 0
 
-    def __init__(self, id):
+    def __init__(self, id, host):
         self.points = defaultdict(int)
         self.players = {}
         self.id = id
@@ -43,17 +45,18 @@ class SearchGame(Game):
         self.found_articles = set()
         self.start_article = Article("", "")
         self.play_time = 60 * 10
+        self.host = host
 
     def set_time(self, player: Player, time: int):
         if self._check_host(player):
             self.play_time = time
             return self._make_lobby_update_response()
 
-    def join(self, player: Player, host: bool) -> Response:
+    def join(self, player: Player) -> Response:
         if player in self.players.keys():
             return self._make_lobby_update_response()
 
-        if host:
+        if player == self.host:
             self.players[player] = PlayerData(
                 rights=PlayerRights.host,
             )
@@ -128,20 +131,17 @@ class SearchGame(Game):
             update_response = self._make_lobby_update_response()
             await manager.send_response(update_response)
 
-        thread = Thread(target=asyncio.run, args=(
-            update_state(round=self.round),))
+        thread = Thread(target=asyncio.run, args=(update_state(round=self.round),))
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
-        player = next(
-            player for player in self.players if player.id == player_id)
+        player = next(player for player in self.players if player.id == player_id)
 
         role = PlayerState(role)
         if not self._check_host(host):
             return
         if not State.idle:
-            logging.warning(
-                "someone tried to change the role while ingame/gameover")
+            logging.warning("someone tried to change the role while ingame/gameover")
             return
 
         if not (role == PlayerState.hunting or role == PlayerState.watching):
@@ -168,8 +168,7 @@ class SearchGame(Game):
             articles_to_find=list(
                 article.pretty_name for article in self.articles_to_find
             ),
-            articles_found=list(
-                article.pretty_name for article in self.found_articles),
+            articles_found=list(article.pretty_name for article in self.found_articles),
             start_article=self.start_article.pretty_name,
             id=self.id,
             state=self.state.value,
@@ -189,8 +188,7 @@ class SearchGame(Game):
     def set_article(self, player: Player, article: str, better_name, start=False):
 
         if start:
-            self.start_article = Article(
-                url_name=article, pretty_name=better_name)
+            self.start_article = Article(url_name=article, pretty_name=better_name)
         else:
             self.articles_to_find.add(
                 Article(url_name=article, pretty_name=better_name)
@@ -251,8 +249,7 @@ class SearchGame(Game):
             logging.info("move not in articles to find")
             return
         if target in self.players[player].moves:
-            logging.info(
-                "article already found by player not counting it again")
+            logging.info("article already found by player not counting it again")
             return
 
         if target in self.found_articles:
