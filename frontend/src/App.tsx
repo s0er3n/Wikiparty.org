@@ -9,7 +9,6 @@ import SetTime from "./SetTime";
 import SetUserName from "./SetUserName";
 import "./wiki.css";
 
-
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
 let ws: WebSocket | null = null;
@@ -270,22 +269,31 @@ const Wiki: Component = () => {
           <div
             onclick={async (e) => {
               let targetValue = e.target.getAttribute("href");
-              if (targetValue?.includes("wiki")) {
+              if (
+                targetValue?.includes("wiki") &&
+                !targetValue?.includes("wiki/Help") &&
+                !targetValue?.includes("wiki/File")
+              ) {
                 e.preventDefault();
+              } else if (
+                targetValue?.includes("http") ||
+                targetValue?.includes("wiki")
+              ) {
+                e.preventDefault();
+                return;
               }
 
               let moveMsg = {
                 type: "game",
                 method: "move",
                 args: {
-                  url_name: targetValue.split("/").pop(),
+                  url_name: targetValue.split("wiki/").pop(),
                   // pretty_name: response.title,
                 },
-              }
+              };
               window.scrollTo(0, 0);
               sendMessage(moveMsg);
-            }
-            }
+            }}
             innerHTML={wiki()?.content_html ?? ""}
           />
         </div>
