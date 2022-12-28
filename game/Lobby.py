@@ -5,10 +5,12 @@ from game.SearchGame import SearchGame
 class Lobby:
     players: list[Player]
     game: SearchGame | None
+    host: Player
 
-    def __init__(self, host, id):
+    def __init__(self, host: Player, id: str):
+        self.host = host
         self.players = []
-        self.game = SearchGame(id=id)
+        self.game = SearchGame(host=host, id=id)
 
     def leave(self, player):
         if isinstance(self.game, SearchGame):
