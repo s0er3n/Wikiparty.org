@@ -7,6 +7,7 @@ import JoinOrCreateLobby from "./JoinOrCreateLobby";
 import SetArticle from "./SetArticle";
 import SetTime from "./SetTime";
 import SetUserName from "./SetUserName";
+import "./wiki.css"
 
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
