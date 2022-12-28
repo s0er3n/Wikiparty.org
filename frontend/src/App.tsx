@@ -270,6 +270,9 @@ const Wiki: Component = () => {
           <div
             onclick={async (e) => {
               let targetValue = e.target.getAttribute("href");
+              if (targetValue?.includes("wiki")) {
+                e.preventDefault();
+              }
 
               let moveMsg = {
                 type: "game",
