@@ -222,15 +222,17 @@ class SearchGame(Game):
         # no need to query the name bc its done by the rust api now
         # pretty_name = Query.execute(move=url_name, recipient=player)
 
+        if not self._is_move_allowed(url_name=url_name, player=player):
+            logging.warning("move not allowed")
+            return Error(
+                e="cheater detected",
+                _recipients=[player],
+            )
+        logging.warning("after anticheat")
+
         pretty_name = Query.execute(move=url_name, recipient=player)
 
         article = Article(pretty_name=pretty_name, url_name=url_name)
-
-        # if not self._is_move_allowed(player=player, url_name=article):
-        #     return Error(
-        #         e="not allowed to move",
-        #         _recipients=[player],
-        #     )
 
         self._add_points_current_move(article, player)
 
@@ -240,11 +242,11 @@ class SearchGame(Game):
 
         return self._make_lobby_update_response()
 
-    def _is_move_allowed(self, target: Article, player: Player):
+    def _is_move_allowed(self, url_name: str, player: Player):
         current_location = self.players[player].moves[-1].url_name
         # links is a list of pretty names and the key of queries is the url name
         # WARNING pretty confusing WARNING
-        return target.pretty_name in Query.queries[current_location]["links"]
+        return url_name in Query.queries[current_location]["links"]
 
     def _add_points_current_move(self, target: Article, player: Player):
         if target not in self.articles_to_find:
@@ -267,4 +269,4 @@ class SearchGame(Game):
 
     def _check_if_player_found_all(self, player: Player):
         if player_data := self.players.get(player):
-            return self.articles_to_find.issubset(player_data.moves)
+            return
