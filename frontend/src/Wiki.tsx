@@ -16,6 +16,17 @@ const Wiki: Component<{ wiki: any }> = (props) => {
                 !targetValue?.includes("wiki/File")
               ) {
                 e.preventDefault();
+
+                let moveMsg = {
+                  type: "game",
+                  method: "move",
+                  args: {
+                    url_name: targetValue?.split("wiki/").pop(),
+                  },
+                };
+                window.scrollTo(0, 0);
+                sendMessage(moveMsg);
+
               } else if (
                 targetValue?.includes("http") ||
                 targetValue?.includes("wiki")
@@ -24,16 +35,6 @@ const Wiki: Component<{ wiki: any }> = (props) => {
                 return;
               }
 
-              let moveMsg = {
-                type: "game",
-                method: "move",
-                args: {
-                  url_name: targetValue?.split("wiki/").pop(),
-                  // pretty_name: response.title,
-                },
-              };
-              window.scrollTo(0, 0);
-              sendMessage(moveMsg);
             }}
             innerHTML={props.wiki()?.content_html ?? ""}
           />
