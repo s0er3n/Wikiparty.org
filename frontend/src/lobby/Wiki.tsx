@@ -1,5 +1,5 @@
 import { Component } from "solid-js";
-import { sendMessage } from "./App";
+import { sendMessage } from "./../App";
 
 const Wiki: Component<{ wiki: any }> = (props) => {
   return (

@@ -1,6 +1,6 @@
 import { Component, createEffect, createSignal } from "solid-js";
 
-import { sendMessage } from "./App";
+import { sendMessage } from "./../App";
 
 let setTimeMsg = {
   type: "game",

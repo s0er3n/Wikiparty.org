@@ -1,5 +1,5 @@
 import { Accessor, Component, createSignal, For, Show } from "solid-js";
-import { sendMessage } from "./App";
+import { sendMessage } from "./../App";
 
 let [article, setArticle] = createSignal("");
 

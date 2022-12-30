@@ -1,13 +1,10 @@
 import { For, Component, createEffect, Show } from "solid-js";
 import { createSignal } from "solid-js";
 import { v4 as uuidv4 } from "uuid";
-import GameOver from "./GameOver";
-import Header from "./Header";
+import Header from "./lobby/Header";
 import JoinOrCreateLobby from "./JoinOrCreateLobby";
-import SetArticle from "./SetArticle";
-import SetTime from "./SetTime";
 import SetUserName from "./SetUserName";
-import Lobby from "./Lobby";
+import Lobby from "./lobby/Lobby";
 import "./wiki.css";
 
 let [connected, setConnection] = createSignal<boolean>(false);

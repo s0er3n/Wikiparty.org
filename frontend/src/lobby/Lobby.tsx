@@ -1,7 +1,7 @@
 import { Accessor, For, Component, createEffect, Show, splitProps, Setter } from "solid-js";
 import SetArticle from "./SetArticle";
 import SetTime from "./SetTime";
-import { sendMessage } from "./App";
+import { sendMessage } from "./../App";
 import GameOver from "./GameOver";
 import Wiki from "./Wiki";
 
@@ -19,7 +19,7 @@ const Lobby: Component<{
   lobby: Accessor<{ players: any, state: string, start_article: Array<string>, goToLobby: any, articles_to_find: Array<string>, time: any }>
 }> = (props) => {
 
-  const [local, others] = splitProps(props, ["setGoToLobby", "lobby", "search", "id", "goToLobby", "wiki", "ws"])
+  const [local, others] = splitProps(props, ["setGoToLobby", "lobby", "search", "id", "goToLobby", "wiki"])
   const player = () => local.lobby().players.find((player) => player[0].id === local.id);
 
   const PlayerList: Component = () => {

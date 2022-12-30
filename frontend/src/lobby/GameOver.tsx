@@ -1,5 +1,5 @@
 import { Component, For, Show } from "solid-js";
-import { sendMessage } from "./App";
+import { sendMessage } from "./../App";
 import { isHost } from "./Lobby";
 
 type Props = {
