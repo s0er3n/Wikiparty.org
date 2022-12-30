@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import Header from "./lobby/Header";
 import JoinOrCreateLobby from "./JoinOrCreateLobby";
 import SetUserName from "./SetUserName";
-import Lobby from "./lobby/Lobby";
+import Lobby, { setGoToLobby } from "./lobby/Lobby";
 import "./wiki.css";
 
 let [connected, setConnection] = createSignal<boolean>(false);
@@ -18,7 +18,6 @@ export function sendMessage(msg: any) {
     console.warn("websocket not connected");
   }
 }
-
 
 // let [players, setPlayers = createSignal([])
 
@@ -111,7 +110,7 @@ const App: Component = () => {
     <div>
       <Header lobby={lobby} id={id} />
 
-      <div class="sticky mt-32 sticky bottom-0">
+      <div class="sticky mt-32 sticky bottom-0 z-20 gray-200">
         <Show
           when={connected()}
           fallback={
@@ -129,7 +128,7 @@ const App: Component = () => {
             <SetUserName setHasUserName={setHasUserName} />
           </Show>
           <Show when={lobby()}>
-            <Lobby wiki={wiki} id={id} lobby={lobby} setGoToLobby={setGoToLobby} goToLobby={goToLobby} search={search} />
+            <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
           </Show>
           <Show when={!lobby() && hasUserName()}>
             <JoinOrCreateLobby />
@@ -139,8 +138,5 @@ const App: Component = () => {
     </div>
   );
 };
-
-const [goToLobby, setGoToLobby] = createSignal(false);
-
 
 export default App;

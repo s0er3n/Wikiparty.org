@@ -1,4 +1,13 @@
-import { Accessor, For, Component, createEffect, Show, splitProps, Setter } from "solid-js";
+import {
+  Accessor,
+  For,
+  Component,
+  createEffect,
+  Show,
+  splitProps,
+  Setter,
+  createSignal,
+} from "solid-js";
 import SetArticle from "./SetArticle";
 import SetTime from "./SetTime";
 import { sendMessage } from "./../App";
@@ -7,40 +16,61 @@ import Wiki from "./Wiki";
 
 let startGameMsg = { type: "game", method: "start", args: {} };
 
+export const [goToLobby, setGoToLobby] = createSignal(false);
+
 export const isHost = (local: any) => {
   // TODO: this is assuming the host is always the first player
   // check for player rights
   return local.lobby().players[0][0].id == local.id;
 };
 
+const PlayerList: Component<{ players: any }> = (props) => {
+  return (
+    <ul>
+      <For each={props.players ?? []}>
+        {(player: any, i) => (
+          <li>
+            <span class="font-bold">{player[0].name}</span>
+            <span class="ml-2">{JSON.stringify(player[0].points ?? 0)}</span>
+          </li>
+        )}
+      </For>
+    </ul>
+  );
+};
 
 const Lobby: Component<{
-  goToLobby: Accessor<any>, setGoToLobby: Setter<boolean>, search: any, id: string | null, wiki: any,
-  lobby: Accessor<{ players: any, state: string, start_article: Array<string>, goToLobby: any, articles_to_find: Array<string>, time: any }>
+  setGoToLobby: Setter<boolean>;
+  search: any;
+  id: string | null;
+  wiki: any;
+  lobby: Accessor<{
+    players: any;
+    state: string;
+    start_article: Array<string>;
+    goToLobby: any;
+    articles_to_find: Array<string>;
+    time: any;
+  }>;
 }> = (props) => {
-
-  const [local, others] = splitProps(props, ["setGoToLobby", "lobby", "search", "id", "goToLobby", "wiki"])
-  const player = () => local.lobby().players.find((player) => player[0].id === local.id);
-
-  const PlayerList: Component = () => {
-    return (
-      <ul>
-        <For each={local.lobby()?.players ?? []}>
-          {(player: any, i) => (
-            <li>
-              <span class="font-bold">{player[0].name}</span>
-              <span class="ml-2">{JSON.stringify(player[0].points ?? 0)}</span>
-            </li>
-          )}
-        </For>
-      </ul>
-    );
-  };
+  const [local, others] = splitProps(props, [
+    "setGoToLobby",
+    "lobby",
+    "search",
+    "id",
+    "wiki",
+  ]);
+  const player = () =>
+    local.lobby().players.find((player) => player[0].id === local.id);
 
   return (
     <>
       <Show
-        when={local.lobby().state === "idle" && !local.lobby().start_article && isHost(local)}
+        when={
+          local.lobby().state === "idle" &&
+          !local.lobby().start_article &&
+          isHost(local)
+        }
       >
         <div class="flex justify-center font-bold">
           Search for a page to start:
@@ -51,7 +81,7 @@ const Lobby: Component<{
         when={
           local.lobby().state === "idle" &&
           local.lobby().start_article &&
-          !local.goToLobby() &&
+          !goToLobby() &&
           isHost(local)
         }
       >
@@ -70,7 +100,7 @@ const Lobby: Component<{
             <button
               class="btn m-2"
               onclick={() => {
-                local.setGoToLobby(true);
+                setGoToLobby(true);
               }}
             >
               go to lobby
@@ -80,7 +110,9 @@ const Lobby: Component<{
       </Show>
       <Show
         when={
-          (local.lobby().state === "idle" && local.lobby().start_article && local.goToLobby()) ||
+          (local.lobby().state === "idle" &&
+            local.lobby().start_article &&
+            goToLobby()) ||
           (!isHost(local) && local.lobby().state === "idle")
         }
       >
@@ -104,7 +136,7 @@ const Lobby: Component<{
               >
                 start game
               </button>
-              <PlayerList local={local} />
+              <PlayerList players={local.lobby()?.players} />
             </Show>
           </div>
         </div>
@@ -114,7 +146,7 @@ const Lobby: Component<{
       </Show>
 
       <Show when={local.lobby().state === "over"}>
-        <GameOver players={local.lobby().players} />
+        <GameOver local={local} players={local.lobby().players} />
       </Show>
     </>
   );

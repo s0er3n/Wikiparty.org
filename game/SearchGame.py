@@ -23,6 +23,8 @@ class SearchGame(Game):
 
     players: dict[Player, PlayerData]
 
+    old_data: dict[Player, PlayerData]
+
     articles_to_find: set[Article]
 
     found_articles: set[Article]
@@ -40,6 +42,7 @@ class SearchGame(Game):
     def __init__(self, id, host):
         self.points = defaultdict(int)
         self.players = {}
+        self.old_data = {}
         self.id = id
         self.articles_to_find = set()
         self.found_articles = set()
@@ -53,7 +56,13 @@ class SearchGame(Game):
             return self._make_lobby_update_response()
 
     def join(self, player: Player) -> Response:
-        if player in self.players.keys():
+        if player in self.old_data.keys():
+            # sending the starting postion to the player that joined
+            self.players[player] = self.old_data.pop(player)
+            if self.state == State.ingame:
+                Query.execute(
+                    move=self.players[player].moves[-1].url_name, recipient=player
+                )
             return self._make_lobby_update_response()
 
         if player == self.host:
@@ -65,16 +74,11 @@ class SearchGame(Game):
                 rights=PlayerRights.normal,
             )
 
-        # sending the starting postion to the player that joined
-        if self.state == State.ingame:
-            self.players[player].moves = [self.start_article]
-            Query.execute(move=self.start_article.url_name, recipient=player)
-
         return self._make_lobby_update_response()
 
     def leave(self, player: Player) -> Response:
         if player in self.players.keys():
-            self.players.pop(player)
+            self.old_data[player] = self.players.pop(player)
             return self._make_lobby_update_response()
 
         # TODO: improve errors
@@ -131,20 +135,17 @@ class SearchGame(Game):
             update_response = self._make_lobby_update_response()
             await manager.send_response(update_response)
 
-        thread = Thread(target=asyncio.run, args=(
-            update_state(round=self.round),))
+        thread = Thread(target=asyncio.run, args=(update_state(round=self.round),))
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
-        player = next(
-            player for player in self.players if player.id == player_id)
+        player = next(player for player in self.players if player.id == player_id)
 
         role = PlayerState(role)
         if not self._check_host(host):
             return
         if not State.idle:
-            logging.warning(
-                "someone tried to change the role while ingame/gameover")
+            logging.warning("someone tried to change the role while ingame/gameover")
             return
 
         if not (role == PlayerState.hunting or role == PlayerState.watching):
@@ -163,6 +164,11 @@ class SearchGame(Game):
         for data in self.players.values():
             data.moves.clear()
             data.moves.append(self.start_article)
+
+        for data in self.old_data.values():
+            data.moves.clear()
+            data.moves.append(self.start_article)
+
         for player in self.players:
             Query.execute(move=self.start_article.url_name, recipient=player)
 
@@ -171,8 +177,7 @@ class SearchGame(Game):
             articles_to_find=list(
                 article.pretty_name for article in self.articles_to_find
             ),
-            articles_found=list(
-                article.pretty_name for article in self.found_articles),
+            articles_found=list(article.pretty_name for article in self.found_articles),
             start_article=self.start_article.pretty_name,
             id=self.id,
             state=self.state.value,
@@ -192,8 +197,7 @@ class SearchGame(Game):
     def set_article(self, player: Player, article: str, better_name, start=False):
 
         if start:
-            self.start_article = Article(
-                url_name=article, pretty_name=better_name)
+            self.start_article = Article(url_name=article, pretty_name=better_name)
         else:
             self.articles_to_find.add(
                 Article(url_name=article, pretty_name=better_name)
@@ -206,7 +210,7 @@ class SearchGame(Game):
 
         logging.info("move to " + url_name)
         if self.state != State.ingame:
-            logging.warning("not allowed to move because ingame")
+            logging.warning("not allowed to move because not ingame")
             return Error(
                 e="not allowed to move",
                 _recipients=[player],
@@ -255,8 +259,7 @@ class SearchGame(Game):
             logging.info("move not in articles to find")
             return
         if target in self.players[player].moves:
-            logging.info(
-                "article already found by player not counting it again")
+            logging.info("article already found by player not counting it again")
             return
 
         if target in self.found_articles:
@@ -271,4 +274,4 @@ class SearchGame(Game):
 
     def _check_if_player_found_all(self, player: Player):
         if player_data := self.players.get(player):
-            return
+            return set(player_data.moves).issuperset(self.articles_to_find)

@@ -28,7 +28,7 @@ const PlayerList: Component<Props> = (props) => {
           </For>
         </ul>
 
-        <Show when={isHost()}>
+        <Show when={isHost(props.local)}>
           <button
             class="btn mt-3"
             onclick={() => {
