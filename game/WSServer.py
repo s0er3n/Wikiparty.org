@@ -26,7 +26,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     try:
         while True:
             data = await websocket.receive_json()
-            logging.info("data received by backend: "+data)
+            logging.info(data)
 
             match data:
 
