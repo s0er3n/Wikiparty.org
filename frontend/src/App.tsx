@@ -7,6 +7,7 @@ import JoinOrCreateLobby from "./JoinOrCreateLobby";
 import SetArticle from "./SetArticle";
 import SetTime from "./SetTime";
 import SetUserName from "./SetUserName";
+import Lobby from "./Lobby";
 import "./wiki.css";
 
 let [connected, setConnection] = createSignal<boolean>(false);
@@ -21,7 +22,6 @@ export function sendMessage(msg: any) {
   }
 }
 
-let startGameMsg = { type: "game", method: "start", args: {} };
 
 // let [players, setPlayers = createSignal([])
 
@@ -101,17 +101,18 @@ let [lobby, setLobby] = createSignal<any>(undefined);
 
 startWS();
 
-export const isHost = () => {
-  // TODO: this is assuming the host is always the first player
-  // check for player rights
-  return lobby().players[0][0].id == id;
-};
+// export const isHost = () => {
+//   // TODO: this is assuming the host is always the first player
+//   // check for player rights
+//   return lobby().players[0][0].id == id;
+// };
+
 const App: Component = () => {
   // derived state if player is host
 
   return (
     <div>
-      <Header lobby={lobby} />
+      <Header lobby={lobby} id={id} />
 
       <div class="sticky mt-32 sticky bottom-0">
         <Show
@@ -131,7 +132,7 @@ const App: Component = () => {
             <SetUserName setHasUserName={setHasUserName} />
           </Show>
           <Show when={lobby()}>
-            <Lobby />
+            <Lobby ws={ws} wiki={wiki} id={id} lobby={lobby} setGoToLobby={setGoToLobby} goToLobby={goToLobby} search={search} />
           </Show>
           <Show when={!lobby() && hasUserName()}>
             <JoinOrCreateLobby />
@@ -143,122 +144,91 @@ const App: Component = () => {
 };
 
 const [goToLobby, setGoToLobby] = createSignal(false);
-const Lobby: Component = () => {
-  const player = () => lobby().players.find((player) => player[0].id === id);
-
-  return (
-    <>
-      <Show
-        when={lobby().state === "idle" && !lobby().start_article && isHost()}
-      >
-        <div class="flex justify-center font-bold">
-          Search for a page to start:
-        </div>
-        <SetArticle lobby={lobby} search={search} />
-      </Show>
-      <Show
-        when={
-          lobby().state === "idle" &&
-          lobby().start_article &&
-          !goToLobby() &&
-          isHost()
-        }
-      >
-        <div class="flex justify-center font-bold">
-          Search for a page or pages to find:
-        </div>
-        <SetArticle lobby={lobby} search={search} />
-        <Show
-          when={
-            lobby().state === "idle" &&
-            lobby().articles_to_find.length &&
-            isHost()
-          }
-        >
-          <div class="flex justify-center">
-            <button
-              class="btn m-2"
-              onclick={() => {
-                setGoToLobby(true);
-              }}
-            >
-              go to lobby
-            </button>
-          </div>
-        </Show>
-      </Show>
-      <Show
-        when={
-          (lobby().state === "idle" && lobby().start_article && goToLobby()) ||
-          (!isHost() && lobby().state === "idle")
-        }
-      >
-        <div class="flex justify-center">
-          <div>
-            <div>Articles:</div>
-            <div>start: {lobby().start_article}</div>
-            <div>find: {lobby().articles_to_find.join(" | ")}</div>
-            <div>
-              for every article you find you get 10 points and 5 extra points if
-              you are the first person to find the article
-            </div>
-            <div>max time: </div>
-            <SetTime time={lobby().time} />
-            <Show when={isHost()}>
-              <button
-                class="btn"
-                onclick={() => {
-                  sendMessage(startGameMsg);
-                }}
-              >
-                start game
-              </button>
-              <PlayerList />
-            </Show>
-          </div>
-        </div>
-      </Show>
-      <Show when={lobby().state === "ingame"}>
-        <>
-          <Wiki />
-        </>
-        <div class="font-bold sticky bottom-0 bg-gray-500 z-50">
-          <div class="flex">
-            <For each={lobby()?.players ?? []}>
-              {(player: any, i) => {
-                return (
-                  <div class="ml-2">
-                    <div>
-                      {player[0].name} : {player[0].points}
-                    </div>
-                  </div>
-                );
-              }}
-            </For>
-          </div>
-          Find these Articles:{" "}
-          {lobby()
-            .articles_to_find.filter((article) => {
-              return !player()[1]
-                .moves.map((move) => move.pretty_name)
-                ?.includes(article);
-            })
-            .map(
-              (article) =>
-                article +
-                " " +
-                (lobby().articles_found?.includes(article) ? "10" : "15")
-            )
-            .join(" | ")}
-        </div>
-      </Show>
-
-      <Show when={lobby().state === "over"}>
-        <GameOver players={lobby().players} />
-      </Show>
-    </>
-  );
-};
+// const Lobby: Component = () => {
+//   const player = () => lobby().players.find((player) => player[0].id === id);
+//
+//   return (
+//     <>
+//       <Show
+//         when={lobby().state === "idle" && !lobby().start_article && isHost()}
+//       >
+//         <div class="flex justify-center font-bold">
+//           Search for a page to start:
+//         </div>
+//         <SetArticle lobby={lobby} search={search} />
+//       </Show>
+//       <Show
+//         when={
+//           lobby().state === "idle" &&
+//           lobby().start_article &&
+//           !goToLobby() &&
+//           isHost()
+//         }
+//       >
+//         <div class="flex justify-center font-bold">
+//           Search for a page or pages to find:
+//         </div>
+//         <SetArticle lobby={lobby} search={search} />
+//         <Show
+//           when={
+//             lobby().state === "idle" &&
+//             lobby().articles_to_find.length &&
+//             isHost()
+//           }
+//         >
+//           <div class="flex justify-center">
+//             <button
+//               class="btn m-2"
+//               onclick={() => {
+//                 setGoToLobby(true);
+//               }}
+//             >
+//               go to lobby
+//             </button>
+//           </div>
+//         </Show>
+//       </Show>
+//       <Show
+//         when={
+//           (lobby().state === "idle" && lobby().start_article && goToLobby()) ||
+//           (!isHost() && lobby().state === "idle")
+//         }
+//       >
+//         <div class="flex justify-center">
+//           <div>
+//             <div>Articles:</div>
+//             <div>start: {lobby().start_article}</div>
+//             <div>find: {lobby().articles_to_find.join(" | ")}</div>
+//             <div>
+//               for every article you find you get 10 points and 5 extra points if
+//               you are the first person to find the article
+//             </div>
+//             <div>max time: </div>
+//             <SetTime time={lobby().time} />
+//             <Show when={isHost()}>
+//               <button
+//                 class="btn"
+//                 onclick={() => {
+//                   sendMessage(startGameMsg);
+//                 }}
+//               >
+//                 start game
+//               </button>
+//               <PlayerList />
+//             </Show>
+//           </div>
+//         </div>
+//       </Show>
+//       <Show when={lobby().state === "ingame"}>
+//         <Wiki />
+//       </Show>
+//
+//       <Show when={lobby().state === "over"}>
+//         <GameOver players={lobby().players} />
+//       </Show>
+//     </>
+//   );
+// };
 
 const Wiki: Component = () => {
   return (
@@ -302,19 +272,5 @@ const Wiki: Component = () => {
   );
 };
 
-export const PlayerList: Component = () => {
-  return (
-    <ul>
-      <For each={lobby()?.players ?? []}>
-        {(player: any, i) => (
-          <li>
-            <span class="font-bold">{player[0].name}</span>
-            <span class="ml-2">{JSON.stringify(player[0].points ?? 0)}</span>
-          </li>
-        )}
-      </For>
-    </ul>
-  );
-};
 
 export default App;
