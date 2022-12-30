@@ -15,7 +15,7 @@ export const isHost = (local: any) => {
 
 
 const Lobby: Component<{
-  goToLobby: Accessor<any>, setGoToLobby: Setter<boolean>, search: any, id: string | null, wiki: any, ws: WebSocket | null,
+  goToLobby: Accessor<any>, setGoToLobby: Setter<boolean>, search: any, id: string | null, wiki: any,
   lobby: Accessor<{ players: any, state: string, start_article: Array<string>, goToLobby: any, articles_to_find: Array<string>, time: any }>
 }> = (props) => {
 

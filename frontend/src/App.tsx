@@ -132,7 +132,7 @@ const App: Component = () => {
             <SetUserName setHasUserName={setHasUserName} />
           </Show>
           <Show when={lobby()}>
-            <Lobby ws={ws} wiki={wiki} id={id} lobby={lobby} setGoToLobby={setGoToLobby} goToLobby={goToLobby} search={search} />
+            <Lobby wiki={wiki} id={id} lobby={lobby} setGoToLobby={setGoToLobby} goToLobby={goToLobby} search={search} />
           </Show>
           <Show when={!lobby() && hasUserName()}>
             <JoinOrCreateLobby />

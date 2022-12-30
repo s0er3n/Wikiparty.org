@@ -1,4 +1,4 @@
-import { Accessor, For, Component, createEffect, Show, splitProps, Setter } from "solid-js";
+import { Component } from "solid-js";
 import { sendMessage } from "./App";
 
 const Wiki: Component<{ wiki: any }> = (props) => {
