@@ -1,5 +1,6 @@
 import { Component, For, Show } from "solid-js";
-import { sendMessage, isHost } from "./App";
+import { sendMessage } from "./../App";
+import { isHost } from "./Lobby";
 
 type Props = {
   players: any[];

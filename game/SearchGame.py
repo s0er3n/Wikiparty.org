@@ -131,17 +131,20 @@ class SearchGame(Game):
             update_response = self._make_lobby_update_response()
             await manager.send_response(update_response)
 
-        thread = Thread(target=asyncio.run, args=(update_state(round=self.round),))
+        thread = Thread(target=asyncio.run, args=(
+            update_state(round=self.round),))
         thread.start()
 
     def set_role(self, host: Player, player_id: str, role: str):
-        player = next(player for player in self.players if player.id == player_id)
+        player = next(
+            player for player in self.players if player.id == player_id)
 
         role = PlayerState(role)
         if not self._check_host(host):
             return
         if not State.idle:
-            logging.warning("someone tried to change the role while ingame/gameover")
+            logging.warning(
+                "someone tried to change the role while ingame/gameover")
             return
 
         if not (role == PlayerState.hunting or role == PlayerState.watching):
@@ -168,7 +171,8 @@ class SearchGame(Game):
             articles_to_find=list(
                 article.pretty_name for article in self.articles_to_find
             ),
-            articles_found=list(article.pretty_name for article in self.found_articles),
+            articles_found=list(
+                article.pretty_name for article in self.found_articles),
             start_article=self.start_article.pretty_name,
             id=self.id,
             state=self.state.value,
@@ -188,7 +192,8 @@ class SearchGame(Game):
     def set_article(self, player: Player, article: str, better_name, start=False):
 
         if start:
-            self.start_article = Article(url_name=article, pretty_name=better_name)
+            self.start_article = Article(
+                url_name=article, pretty_name=better_name)
         else:
             self.articles_to_find.add(
                 Article(url_name=article, pretty_name=better_name)
@@ -199,9 +204,9 @@ class SearchGame(Game):
     def move(self, player: Player, url_name: str) -> Response:
         """when you click on a new link in wikipedia and move to the next page"""
 
-        logging.warning("move to " + url_name)
+        logging.info("move to " + url_name)
         if self.state != State.ingame:
-            logging.warning("not allowed to move")
+            logging.warning("not allowed to move because ingame")
             return Error(
                 e="not allowed to move",
                 _recipients=[player],
@@ -221,12 +226,11 @@ class SearchGame(Game):
         # pretty_name = Query.execute(move=url_name, recipient=player)
 
         if not self._is_move_allowed(url_name=url_name, player=player):
-            logging.warning("move not allowed")
+            logging.warning("cheate detected")
             return Error(
                 e="cheater detected",
                 _recipients=[player],
             )
-        logging.warning("after anticheat")
 
         pretty_name = Query.execute(move=url_name, recipient=player)
 
@@ -251,7 +255,8 @@ class SearchGame(Game):
             logging.info("move not in articles to find")
             return
         if target in self.players[player].moves:
-            logging.info("article already found by player not counting it again")
+            logging.info(
+                "article already found by player not counting it again")
             return
 
         if target in self.found_articles:
