@@ -1,10 +1,20 @@
 import { Accessor, Component, Show, For } from "solid-js";
 
-const Header: Component<{ id: string | null, lobby: Accessor<{ state: string, id: string, players: any, articles_to_find: Array<String>, articles_found: any }> }> = (props) => {
-  const player = () => props.lobby().players.find((player) => player[0].id === props.id);
+const Header: Component<{
+  id: string | null;
+  lobby: Accessor<{
+    state: string;
+    id: string;
+    players: any;
+    articles_to_find: Array<String>;
+    articles_found: any;
+  }>;
+}> = (props) => {
+  const player = () =>
+    props.lobby().players.find((player) => player[0].id === props.id);
   return (
-    <div class="sticky top-0">
-      <div class="navbar bg-base-100 bg-slate-500 z-50">
+    <div class="sticky top-0 bg-base-100 bg-slate-500 z-50">
+      <div class="navbar ">
         <div class="flex-1">
           <a class="btn btn-ghost normal-case text-xl">Better WikiGame</a>
         </div>
@@ -30,7 +40,7 @@ const Header: Component<{ id: string | null, lobby: Accessor<{ state: string, id
         </Show>
       </div>
       <Show when={props.lobby()?.state === "ingame"}>
-        <div class="font-bold bg-gray-500 z-50">
+        <div class="font-bold">
           <div class="flex">
             <For each={props.lobby()?.players ?? []}>
               {(player: any, i) => {
@@ -45,7 +55,8 @@ const Header: Component<{ id: string | null, lobby: Accessor<{ state: string, id
             </For>
           </div>
           Find these Articles:{" "}
-          {props.lobby()
+          {props
+            .lobby()
             .articles_to_find?.filter((article) => {
               return !player()[1]
                 .moves.map((move) => move.pretty_name)

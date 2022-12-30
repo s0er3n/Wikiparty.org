@@ -19,7 +19,6 @@ export function sendMessage(msg: any) {
   }
 }
 
-
 // let [players, setPlayers = createSignal([])
 
 let [wiki, setWiki] = createSignal<{ title: string; text: { "*": string } }>();
@@ -111,7 +110,7 @@ const App: Component = () => {
     <div>
       <Header lobby={lobby} id={id} />
 
-      <div class="sticky mt-32 sticky bottom-0">
+      <div class="sticky mt-32 sticky bottom-0 z-20 gray-200">
         <Show
           when={connected()}
           fallback={
@@ -129,7 +128,14 @@ const App: Component = () => {
             <SetUserName setHasUserName={setHasUserName} />
           </Show>
           <Show when={lobby()}>
-            <Lobby wiki={wiki} id={id} lobby={lobby} setGoToLobby={setGoToLobby} goToLobby={goToLobby} search={search} />
+            <Lobby
+              wiki={wiki}
+              id={id}
+              lobby={lobby}
+              setGoToLobby={setGoToLobby}
+              goToLobby={goToLobby}
+              search={search}
+            />
           </Show>
           <Show when={!lobby() && hasUserName()}>
             <JoinOrCreateLobby />
@@ -141,6 +147,5 @@ const App: Component = () => {
 };
 
 const [goToLobby, setGoToLobby] = createSignal(false);
-
 
 export default App;
