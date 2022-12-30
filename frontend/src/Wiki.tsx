@@ -16,10 +16,10 @@ const Wiki: Component<{ wiki: any }> = (props) => {
                 !targetValue?.includes("wiki/File")
               ) {
                 e.preventDefault();
-              } else
-              // targetValue?.includes("http") ||
-              // targetValue?.includes("wiki")
-              {
+              } else if (
+                targetValue?.includes("http") ||
+                targetValue?.includes("wiki")
+              ) {
                 e.preventDefault();
                 return;
               }
