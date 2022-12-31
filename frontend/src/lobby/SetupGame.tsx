@@ -2,29 +2,37 @@ import { Accessor, Component, createSignal, For, Show } from "solid-js";
 import { isHost, goToLobby, setGoToLobby } from "./Lobby";
 import SetArticle from "./SetArticle";
 
-const SetupGame: Component<{ id: any; lobby: any; search: Accessor<Array<Array<string>> | undefined>; }> = (props) => {
-  console.log(props.lobby().players)
+const SetArticleHeadline: Component<{ lobby: any }> = (props) => {
   return (
-    <>
+    <div class="flex justify-center font-bold">
       <Show
         when={
-          !props.lobby().start_article
+          props.lobby().start_article
+        }
+        fallback={
+          <div>
+            Search for a page to start:
+          </div>
         }
       >
-        <div class="flex justify-center font-bold">
-          Search for a page to start:
+        <div >
+          Search for a page or pages to find:
         </div>
-        <SetArticle lobby={props.lobby} search={props.search} />
       </Show>
+    </div>
+  )
+}
+
+const SetupGame: Component<{ id: any; lobby: any; search: Accessor<Array<Array<string>> | undefined>; }> = (props) => {
+  return (
+    <>
+      <SetArticleHeadline lobby={props.lobby} />
+      <SetArticle lobby={props.lobby} search={props.search} />
       <Show
         when={
           props.lobby().start_article
         }
       >
-        <div class="flex justify-center font-bold">
-          Search for a page or pages to find:
-        </div>
-        <SetArticle lobby={props.lobby} search={props.search} />
         <Show
           when={
             props.lobby().state === "idle" &&

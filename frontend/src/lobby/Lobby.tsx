@@ -1,8 +1,6 @@
 import {
   Accessor,
-  For,
   Component,
-  createEffect,
   Show,
   splitProps,
   Setter,
@@ -46,9 +44,6 @@ const Lobby: Component<{
     "id",
     "wiki",
   ]);
-  const player = () =>
-    local.lobby().players.find((player) => player[0].id === local.id);
-
 
   return (
     <>
