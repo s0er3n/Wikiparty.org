@@ -13,6 +13,8 @@ import SetTime from "./SetTime";
 import { sendMessage } from "./../App";
 import GameOver from "./GameOver";
 import Wiki from "./Wiki";
+import PlayerList from "./PlayerList";
+
 
 let startGameMsg = { type: "game", method: "start", args: {} };
 
@@ -22,21 +24,6 @@ export const isHost = (local: any) => {
   // TODO: this is assuming the host is always the first player
   // check for player rights
   return local.lobby().players[0][0].id == local.id;
-};
-
-const PlayerList: Component<{ players: any }> = (props) => {
-  return (
-    <ul>
-      <For each={props.players ?? []}>
-        {(player: any, i) => (
-          <li>
-            <span class="font-bold">{player[0].name}</span>
-            <span class="ml-2">{JSON.stringify(player[0].points ?? 0)}</span>
-          </li>
-        )}
-      </For>
-    </ul>
-  );
 };
 
 const Lobby: Component<{
