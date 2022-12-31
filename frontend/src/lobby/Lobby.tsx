@@ -8,22 +8,21 @@ import {
   Setter,
   createSignal,
 } from "solid-js";
-import SetArticle from "./SetArticle";
 import SetTime from "./SetTime";
 import { sendMessage } from "./../App";
 import GameOver from "./GameOver";
 import Wiki from "./Wiki";
 import PlayerList from "./PlayerList";
-
+import SetupGame from "./SetupGame";
 
 let startGameMsg = { type: "game", method: "start", args: {} };
 
 export const [goToLobby, setGoToLobby] = createSignal(false);
 
-export const isHost = (local: any) => {
+export const isHost = (props: any) => {
   // TODO: this is assuming the host is always the first player
   // check for player rights
-  return local.lobby().players[0][0].id == local.id;
+  return props.lobby().players[0][0].id == props.id;
 };
 
 const Lobby: Component<{
@@ -50,50 +49,17 @@ const Lobby: Component<{
   const player = () =>
     local.lobby().players.find((player) => player[0].id === local.id);
 
+
   return (
     <>
       <Show
         when={
-          local.lobby().state === "idle" &&
-          !local.lobby().start_article &&
-          isHost(local)
-        }
-      >
-        <div class="flex justify-center font-bold">
-          Search for a page to start:
-        </div>
-        <SetArticle lobby={local.lobby} search={local.search} />
-      </Show>
-      <Show
-        when={
-          local.lobby().state === "idle" &&
-          local.lobby().start_article &&
+          props.lobby().state === "idle" &&
           !goToLobby() &&
-          isHost(local)
+          isHost(props)
         }
       >
-        <div class="flex justify-center font-bold">
-          Search for a page or pages to find:
-        </div>
-        <SetArticle lobby={local.lobby} search={local.search} />
-        <Show
-          when={
-            local.lobby().state === "idle" &&
-            local.lobby().articles_to_find.length &&
-            isHost(local)
-          }
-        >
-          <div class="flex justify-center">
-            <button
-              class="btn m-2"
-              onclick={() => {
-                setGoToLobby(true);
-              }}
-            >
-              go to lobby
-            </button>
-          </div>
-        </Show>
+        <SetupGame id={local.id} lobby={local.lobby} search={local.search} />
       </Show>
       <Show
         when={
