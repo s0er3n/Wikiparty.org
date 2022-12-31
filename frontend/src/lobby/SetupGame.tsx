@@ -8,9 +8,7 @@ const SetupGame: Component<{ id: any; lobby: any; search: Accessor<Array<Array<s
     <>
       <Show
         when={
-          props.lobby().state === "idle" &&
-          !props.lobby().start_article &&
-          isHost(props)
+          !props.lobby().start_article
         }
       >
         <div class="flex justify-center font-bold">
@@ -20,10 +18,7 @@ const SetupGame: Component<{ id: any; lobby: any; search: Accessor<Array<Array<s
       </Show>
       <Show
         when={
-          props.lobby().state === "idle" &&
-          props.lobby().start_article &&
-          !goToLobby() &&
-          isHost(props)
+          props.lobby().start_article
         }
       >
         <div class="flex justify-center font-bold">
