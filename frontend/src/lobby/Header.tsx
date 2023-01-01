@@ -1,15 +1,5 @@
 import { Accessor, Component, Show, For } from "solid-js";
-
-const Article: Component<{ title: string; points: number }> = (props) => {
-  return (
-    <div
-      class={`badge ${props.points ? "badge-info" : "badge-warning"
-        } gap-2 h-fit p-2 text-xs w-fit whitespace-nowrap`}
-    >
-      {props.title} {props.points}
-    </div>
-  );
-};
+import Article from "../Article";
 
 const Header: Component<{
   id: string | null;
@@ -43,7 +33,9 @@ const Header: Component<{
     <div class="sticky top-0 bg-base-100 bg-slate-500 z-50">
       <div class="navbar ">
         <div class="flex-1">
-          <a class="btn btn-ghost normal-case text-xl">Better WikiGame</a>
+          <a href="/" class="btn btn-ghost normal-case text-xl">
+            Better WikiGame
+          </a>
         </div>
         <Show when={props.lobby()}>
           <div class="flex-none space-x-2 ">

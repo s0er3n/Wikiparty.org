@@ -5,6 +5,7 @@ import {
   splitProps,
   Setter,
   createSignal,
+  For,
 } from "solid-js";
 import SetTime from "./SetTime";
 import { sendMessage } from "./../App";
@@ -12,6 +13,7 @@ import GameOver from "./GameOver";
 import Wiki from "./Wiki";
 import PlayerList from "./PlayerList";
 import SetupGame from "./SetupGame";
+import Article from "../Article";
 
 let startGameMsg = { type: "game", method: "start", args: {} };
 
@@ -48,11 +50,7 @@ const Lobby: Component<{
   return (
     <>
       <Show
-        when={
-          props.lobby().state === "idle" &&
-          !goToLobby() &&
-          isHost(props)
-        }
+        when={props.lobby().state === "idle" && !goToLobby() && isHost(props)}
       >
         <SetupGame id={local.id} lobby={local.lobby} search={local.search} />
       </Show>
@@ -67,11 +65,22 @@ const Lobby: Component<{
         <div class="flex justify-center">
           <div>
             <div>Articles:</div>
-            <div>start: {local.lobby().start_article}</div>
-            <div>find: {local.lobby().articles_to_find.join(" | ")}</div>
             <div>
-              for every article you find you get 10 points and 5 extra points if
-              you are the first person to find the article
+              start: <Article title={local.lobby().start_article} />
+            </div>
+            <div>
+              find:{" "}
+              <For each={local.lobby().articles_to_find}>
+                {(article: string) => {
+                  return <Article title={article} />;
+                }}
+              </For>
+            </div>
+            <div class="card">
+              <div class="card-body">
+                for every article you find you get 10 points and 5 extra points
+                if you are the first person to find the article
+              </div>
             </div>
             <div>max time: </div>
             <SetTime time={local.lobby().time} />
