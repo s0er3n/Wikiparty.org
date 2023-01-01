@@ -1,17 +1,44 @@
 import { Accessor, Component, Show, For } from "solid-js";
 
+const Article: Component<{ title: string; points: number }> = (props) => {
+  return (
+    <div
+      class={`badge ${props.points ? "badge-info" : "badge-warning"
+        } gap-2 h-fit p-2 text-xs w-fit whitespace-nowrap`}
+    >
+      {props.title} {props.points}
+    </div>
+  );
+};
+
 const Header: Component<{
   id: string | null;
   lobby: Accessor<{
     state: string;
     id: string;
     players: any;
-    articles_to_find: Array<String>;
+    articles_to_find: Array<string>;
     articles_found: any;
   }>;
 }> = (props) => {
   const player = () =>
     props.lobby().players.find((player) => player[0].id === props.id);
+
+  const articles_to_find_with_points = () => {
+    return props
+      .lobby()
+      .articles_to_find?.filter((article) => {
+        return !player()[1]
+          .moves.map((move: { pretty_name: string }) => move.pretty_name)
+          ?.includes(article);
+      })
+      .map((article) => {
+        return {
+          title: article,
+          points: props.lobby().articles_found?.includes(article) ? 10 : 15,
+        };
+      });
+  };
   return (
     <div class="sticky top-0 bg-base-100 bg-slate-500 z-50">
       <div class="navbar ">
@@ -54,21 +81,13 @@ const Header: Component<{
               }}
             </For>
           </div>
-          Find these Articles:{" "}
-          {props
-            .lobby()
-            .articles_to_find?.filter((article) => {
-              return !player()[1]
-                .moves.map((move) => move.pretty_name)
-                ?.includes(article);
-            })
-            .map(
-              (article) =>
-                article +
-                " " +
-                (props.lobby().articles_found?.includes(article) ? "10" : "15")
-            )
-            .join(" | ")}
+        </div>
+        <div class="flex justify-center items-center space-x-2 p-2 overflow-hidden">
+          <For each={articles_to_find_with_points()}>
+            {(article) => (
+              <Article points={article.points} title={article.title} />
+            )}
+          </For>
         </div>
       </Show>
     </div>
