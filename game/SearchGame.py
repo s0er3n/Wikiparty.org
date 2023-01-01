@@ -60,8 +60,13 @@ class SearchGame(Game):
             # sending the starting postion to the player that joined
             self.players[player] = self.old_data.pop(player)
             if self.state == State.ingame:
+                if self.players[player].moves:
+                    next_move = self.players[player].moves[-1].url_name
+                else:
+                    next_move = self.start_article.url_name
+                    self.players[player].moves.append(next_move)
                 Query.execute(
-                    move=self.players[player].moves[-1].url_name, recipient=player
+                    move=next_move, recipient=player
                 )
             return self._make_lobby_update_response()
 
@@ -74,6 +79,11 @@ class SearchGame(Game):
                 rights=PlayerRights.normal,
             )
 
+        next_move = self.start_article
+        self.players[player].moves.append(next_move)
+        Query.execute(
+            move=next_move.url_name, recipient=player
+        )
         return self._make_lobby_update_response()
 
     def leave(self, player: Player) -> Response:
