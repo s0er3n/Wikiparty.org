@@ -13,7 +13,6 @@ import Wiki from "./Wiki";
 import PlayerList from "./PlayerList";
 import SetupGame from "./SetupGame";
 
-let startGameMsg = { type: "game", method: "start", args: {} };
 
 export const [goToLobby, setGoToLobby] = createSignal(false);
 
@@ -64,30 +63,7 @@ const Lobby: Component<{
           (!isHost(local) && local.lobby().state === "idle")
         }
       >
-        <div class="flex justify-center">
-          <div>
-            <div>Articles:</div>
-            <div>start: {local.lobby().start_article}</div>
-            <div>find: {local.lobby().articles_to_find.join(" | ")}</div>
-            <div>
-              for every article you find you get 10 points and 5 extra points if
-              you are the first person to find the article
-            </div>
-            <div>max time: </div>
-            <SetTime time={local.lobby().time} />
-            <Show when={isHost(local)}>
-              <button
-                class="btn"
-                onclick={() => {
-                  sendMessage(startGameMsg);
-                }}
-              >
-                start game
-              </button>
-              <PlayerList players={local.lobby()?.players} />
-            </Show>
-          </div>
-        </div>
+        <SetTime lobby={local.lobby} id={local.id} />
       </Show>
       <Show when={local.lobby().state === "ingame"}>
         <Wiki wiki={local.wiki} />
