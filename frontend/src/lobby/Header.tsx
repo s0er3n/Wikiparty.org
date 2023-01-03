@@ -1,11 +1,13 @@
 import { Accessor, Component, Show, For } from "solid-js";
 import Article from "../Article";
+import Timer from "../Timer";
 
 const Header: Component<{
   id: string | null;
   lobby: Accessor<{
     state: string;
     id: string;
+    end_time: number;
     players: any;
     articles_to_find: Array<string>;
     articles_found: any;
@@ -38,6 +40,9 @@ const Header: Component<{
           </a>
         </div>
         <Show when={props.lobby()}>
+          <Show when={props.lobby().state === "ingame"}>
+            <Timer validTill={props.lobby().end_time} />
+          </Show>
           <div class="flex-none space-x-2 ">
             <input
               class="hidden md:block input input-bordered"
