@@ -38,8 +38,8 @@ const SetTimePage = (props) => {
           >
             start game
           </button>
-          <PlayerList players={props.lobby()?.players} />
         </Show>
+        <PlayerList players={props.lobby()?.players} />
       </div>
     </div>
   )
