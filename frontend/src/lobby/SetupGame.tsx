@@ -30,27 +30,22 @@ const SetupGame: Component<{ id: any; lobby: any; search: Accessor<Array<Array<s
       <SetArticle lobby={props.lobby} search={props.search} />
       <Show
         when={
-          props.lobby().start_article
+          props.lobby().state === "idle" &&
+          props.lobby().articles_to_find.length &&
+          props.lobby().start_article &&
+          isHost(props)
         }
       >
-        <Show
-          when={
-            props.lobby().state === "idle" &&
-            props.lobby().articles_to_find.length &&
-            isHost(props)
-          }
-        >
-          <div class="flex justify-center">
-            <button
-              class="btn m-2"
-              onclick={() => {
-                setGoToLobby(true);
-              }}
-            >
-              go to lobby
-            </button>
-          </div>
-        </Show>
+        <div class="flex justify-center">
+          <button
+            class="btn m-2"
+            onclick={() => {
+              setGoToLobby(true);
+            }}
+          >
+            go to lobby
+          </button>
+        </div>
       </Show>
     </>
   )

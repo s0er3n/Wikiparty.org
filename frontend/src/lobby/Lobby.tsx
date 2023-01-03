@@ -15,7 +15,6 @@ import PlayerList from "./PlayerList";
 import SetupGame from "./SetupGame";
 import Article from "../Article";
 
-let startGameMsg = { type: "game", method: "start", args: {} };
 
 export const [goToLobby, setGoToLobby] = createSignal(false);
 
@@ -97,6 +96,8 @@ const Lobby: Component<{
             </Show>
           </div>
         </div>
+
+        <SetTime lobby={local.lobby} id={local.id} />
       </Show>
       <Show when={local.lobby().state === "ingame"}>
         <Wiki wiki={local.wiki} />
