@@ -1,5 +1,4 @@
 import { Component, For, Show } from "solid-js";
-import Article from "../Article";
 import { sendMessage } from "./../App";
 import { isHost } from "./Lobby";
 
@@ -18,20 +17,10 @@ const PlayerList: Component<Props> = (props) => {
                 <div class="flex flex-row">
                   <div class="font-bold">{player[0].name}</div>
                   <div class="ml-2 ">{player[0].points}</div>
-                  <div class="ml-2 flex flex-wrap breadcrumbs">
-                    <ul>
-                      <For
-                        each={player[1].moves.map(
-                          (move: any) => move.pretty_name
-                        )}
-                      >
-                        {(article) => (
-                          <li>
-                            <Article title={article} />
-                          </li>
-                        )}
-                      </For>
-                    </ul>
+                  <div class="ml-2 ">
+                    {player[1].moves
+                      .map((move: any) => move.pretty_name)
+                      .join(" -> ")}
                   </div>
                 </div>
               </li>
