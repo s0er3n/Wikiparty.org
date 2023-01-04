@@ -1,5 +1,6 @@
 import { Accessor, Component, createSignal, For, Show } from "solid-js";
 import { sendMessage } from "./../App";
+import RandomArticle from "./../RandomArticle";
 
 let [article, setArticle] = createSignal("");
 
@@ -31,6 +32,19 @@ const SetArticle: Component<{
             }, 200);
           }}
           value={article()}
+        />
+        <RandomArticle
+          setter={(random_article: string) => {
+            const searchMsg = {
+              type: "search",
+              method: "execute",
+              args: {
+                query: random_article,
+              },
+            };
+            sendMessage(searchMsg);
+            setArticle(random_article);
+          }}
         />
 
         <Show when={article() !== ""}>
@@ -68,13 +82,11 @@ const ArticleSuggestionsList: Component<{
             >
               select
             </button>
-            <span class="ml-2 font-bold">
-              {props.search()?.at(1)?.at(i())}
-            </span>
+            <span class="ml-2 font-bold">{props.search()?.at(1)?.at(i())}</span>
           </li>
         )}
       </For>
     </ul>
-  )
+  );
 };
 export default SetArticle;

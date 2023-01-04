@@ -5,6 +5,7 @@ import {
   splitProps,
   Setter,
   createSignal,
+  For,
 } from "solid-js";
 import SetTime from "./SetTime";
 import { sendMessage } from "./../App";
@@ -12,6 +13,7 @@ import GameOver from "./GameOver";
 import Wiki from "./Wiki";
 import PlayerList from "./PlayerList";
 import SetupGame from "./SetupGame";
+import Article from "../Article";
 
 
 export const [goToLobby, setGoToLobby] = createSignal(false);
@@ -47,11 +49,7 @@ const Lobby: Component<{
   return (
     <>
       <Show
-        when={
-          props.lobby().state === "idle" &&
-          !goToLobby() &&
-          isHost(props)
-        }
+        when={props.lobby().state === "idle" && !goToLobby() && isHost(props)}
       >
         <SetupGame id={local.id} lobby={local.lobby} search={local.search} />
       </Show>
@@ -63,6 +61,7 @@ const Lobby: Component<{
           (!isHost(local) && local.lobby().state === "idle")
         }
       >
+
         <SetTime lobby={local.lobby} id={local.id} />
       </Show>
       <Show when={local.lobby().state === "ingame"}>
