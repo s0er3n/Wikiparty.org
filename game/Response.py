@@ -23,6 +23,7 @@ class Error(Response):
 @dataclasses.dataclass(kw_only=True)
 class LobbyUpdate(Response):
     method: str = "LobbyUpdate"
+    end_time: int
     state: str
     id: str
     players: list[tuple[PlayerCopy, PlayerData]]

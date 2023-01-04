@@ -1,24 +1,51 @@
 import { Accessor, Component, Show, For } from "solid-js";
 
+import Article from "../Article";
+import Timer from "../Timer";
+import PlayerList from "./PlayerList";
+
+
 const Header: Component<{
   id: string | null;
   lobby: Accessor<{
     state: string;
     id: string;
+    end_time: number;
     players: any;
-    articles_to_find: Array<String>;
+    articles_to_find: Array<string>;
     articles_found: any;
   }>;
 }> = (props) => {
   const player = () =>
     props.lobby().players.find((player) => player[0].id === props.id);
+
+  const articles_to_find_with_points = () => {
+    return props
+      .lobby()
+      .articles_to_find?.filter((article) => {
+        return !player()[1]
+          .moves.map((move: { pretty_name: string }) => move.pretty_name)
+          ?.includes(article);
+      })
+      .map((article) => {
+        return {
+          title: article,
+          points: props.lobby().articles_found?.includes(article) ? 10 : 15,
+        };
+      });
+  };
   return (
     <div class="sticky top-0 bg-base-100 bg-slate-500 z-50">
       <div class="navbar ">
         <div class="flex-1">
-          <a class="btn btn-ghost normal-case text-xl">Better WikiGame</a>
+          <a href="/" class="btn btn-ghost normal-case text-xl">
+            Better WikiGame
+          </a>
         </div>
         <Show when={props.lobby()}>
+          <Show when={props.lobby().state === "ingame"}>
+            <Timer validTill={props.lobby().end_time} />
+          </Show>
           <div class="flex-none space-x-2 ">
             <input
               class="hidden md:block input input-bordered"
@@ -42,33 +69,15 @@ const Header: Component<{
       <Show when={props.lobby()?.state === "ingame"}>
         <div class="font-bold">
           <div class="flex">
-            <For each={props.lobby()?.players ?? []}>
-              {(player: any, i) => {
-                return (
-                  <div class="ml-2">
-                    <div>
-                      {player[0].name} : {player[0].points}
-                    </div>
-                  </div>
-                );
-              }}
-            </For>
+            <PlayerList players={props.lobby().players} />
           </div>
-          Find these Articles:{" "}
-          {props
-            .lobby()
-            .articles_to_find?.filter((article) => {
-              return !player()[1]
-                .moves.map((move) => move.pretty_name)
-                ?.includes(article);
-            })
-            .map(
-              (article) =>
-                article +
-                " " +
-                (props.lobby().articles_found?.includes(article) ? "10" : "15")
-            )
-            .join(" | ")}
+        </div>
+        <div class="flex justify-center items-center space-x-2 p-2 overflow-hidden">
+          <For each={articles_to_find_with_points()}>
+            {(article) => (
+              <Article points={article.points} title={article.title} />
+            )}
+          </For>
         </div>
       </Show>
     </div>
