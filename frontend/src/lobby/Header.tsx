@@ -1,6 +1,9 @@
 import { Accessor, Component, Show, For } from "solid-js";
+
 import Article from "../Article";
 import Timer from "../Timer";
+import PlayerList from "./PlayerList";
+
 
 const Header: Component<{
   id: string | null;
@@ -66,17 +69,7 @@ const Header: Component<{
       <Show when={props.lobby()?.state === "ingame"}>
         <div class="font-bold">
           <div class="flex">
-            <For each={props.lobby()?.players ?? []}>
-              {(player: any, i) => {
-                return (
-                  <div class="ml-2">
-                    <div>
-                      {player[0].name} : {player[0].points}
-                    </div>
-                  </div>
-                );
-              }}
-            </For>
+            <PlayerList players={props.lobby().players} />
           </div>
         </div>
         <div class="flex justify-center items-center space-x-2 p-2 overflow-hidden">
