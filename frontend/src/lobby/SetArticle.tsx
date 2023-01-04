@@ -34,47 +34,39 @@ const SetArticle: Component<{
         />
 
         <Show when={article() !== ""}>
-          <ArticleSuggestionsList search={props.search} lobby={props.lobby} />
+          <ul>
+            <For each={props.search ? props?.search()?.at(3) ?? [] : []}>
+              {(result, i) => (
+                <li class="mt-2">
+                  <button
+                    onclick={() => {
+                      let setArticleMsg = {
+                        type: "game",
+                        method: "set_article",
+                        args: {
+                          article: result.split("/").pop(),
+                          better_name: props.search()?.at(1)?.at(i()),
+                          start: props.lobby().start_article === "",
+                        },
+                      };
+                      sendMessage(setArticleMsg);
+                      setArticle("");
+                    }}
+                    class="btn"
+                  >
+                    select
+                  </button>
+                  <span class="ml-2 font-bold">
+                    {props.search()?.at(1)?.at(i())}
+                  </span>
+                </li>
+              )}
+            </For>
+          </ul>
         </Show>
       </div>
     </div>
   );
 };
 
-const ArticleSuggestionsList: Component<{
-  lobby: Accessor<any>;
-  search: Accessor<Array<Array<string>> | undefined>;
-}> = (props) => {
-  return (
-    <ul>
-      <For each={props.search ? props?.search()?.at(3) ?? [] : []}>
-        {(result, i) => (
-          <li class="mt-2">
-            <button
-              onclick={() => {
-                let setArticleMsg = {
-                  type: "game",
-                  method: "set_article",
-                  args: {
-                    article: result.split("/").pop(),
-                    better_name: props.search()?.at(1)?.at(i()),
-                    start: props.lobby().start_article === "",
-                  },
-                };
-                sendMessage(setArticleMsg);
-                setArticle("");
-              }}
-              class="btn"
-            >
-              select
-            </button>
-            <span class="ml-2 font-bold">
-              {props.search()?.at(1)?.at(i())}
-            </span>
-          </li>
-        )}
-      </For>
-    </ul>
-  )
-};
 export default SetArticle;

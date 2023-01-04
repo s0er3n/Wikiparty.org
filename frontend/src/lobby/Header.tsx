@@ -1,5 +1,4 @@
 import { Accessor, Component, Show, For } from "solid-js";
-import PlayerList from "./PlayerList";
 
 const Header: Component<{
   id: string | null;
@@ -43,7 +42,17 @@ const Header: Component<{
       <Show when={props.lobby()?.state === "ingame"}>
         <div class="font-bold">
           <div class="flex">
-            <PlayerList players={props.lobby().players} />
+            <For each={props.lobby()?.players ?? []}>
+              {(player: any, i) => {
+                return (
+                  <div class="ml-2">
+                    <div>
+                      {player[0].name} : {player[0].points}
+                    </div>
+                  </div>
+                );
+              }}
+            </For>
           </div>
           Find these Articles:{" "}
           {props
