@@ -1,8 +1,6 @@
 import { For, Component, createEffect, Show } from "solid-js";
 import { createSignal } from "solid-js";
 
-// TODO: no need for uuidv4 anymore
-import { v4 as uuidv4 } from "uuid";
 import Header from "./lobby/Header";
 import JoinOrCreateLobby from "./JoinOrCreateLobby";
 import SetUserName from "./SetUserName";
@@ -33,7 +31,7 @@ let setUserNameMsg = {
 };
 
 if (!id) {
-  id = uuidv4() as string;
+  id = self.crypto.randomUUID();
   localStorage.setItem("id", id);
 }
 
