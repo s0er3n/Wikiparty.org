@@ -1,5 +1,6 @@
 import { Component } from "solid-js";
 import { sendMessage } from "./../App";
+import styles from "./../wiki.module.css";
 
 const Wiki: Component<{ wiki: any }> = (props) => {
   return (
@@ -8,6 +9,7 @@ const Wiki: Component<{ wiki: any }> = (props) => {
         <div class="text-3xl font-bold">{props.wiki()?.title ?? ""}</div>
         <div class="flex justify-center mt-24" style={"all: revert"}>
           <div
+            class={styles}
             onclick={async (e) => {
               let targetValue = e.target.getAttribute("href");
               if (
@@ -26,7 +28,6 @@ const Wiki: Component<{ wiki: any }> = (props) => {
                 };
                 window.scrollTo(0, 0);
                 sendMessage(moveMsg);
-
               } else if (
                 targetValue?.includes("http") ||
                 targetValue?.includes("wiki")
@@ -34,7 +35,6 @@ const Wiki: Component<{ wiki: any }> = (props) => {
                 e.preventDefault();
                 return;
               }
-
             }}
             innerHTML={props.wiki()?.content_html ?? ""}
           />

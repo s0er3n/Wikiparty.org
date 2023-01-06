@@ -1,19 +1,23 @@
 import { Component, For, Show } from "solid-js";
 import Article from "../Article";
+import { TPlayer } from "../types";
 import { sendMessage } from "./../App";
 import { isHost } from "./Lobby";
 
 type Props = {
-  players: any[];
+  players: TPlayer[] | undefined;
+  // TOOD: invastigae whats happening here
+  local: any;
 };
 
 const PlayerList: Component<Props> = (props) => {
+  if (!props.players) return <></>;
   return (
     <div class="flex justify-center">
       <div>
         <ul>
           <For each={props.players ?? []}>
-            {(player, i) => (
+            {(player) => (
               <li>
                 <div class="flex flex-row">
                   <div class="font-bold">{player[0].name}</div>
@@ -21,9 +25,7 @@ const PlayerList: Component<Props> = (props) => {
                   <div class="ml-2 flex flex-wrap breadcrumbs">
                     <ul>
                       <For
-                        each={player[1].moves.map(
-                          (move: any) => move.pretty_name
-                        )}
+                        each={player[1].moves?.map((move) => move.pretty_name)}
                       >
                         {(article) => (
                           <li>

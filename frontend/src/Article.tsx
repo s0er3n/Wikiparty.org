@@ -1,6 +1,6 @@
 import { Component } from "solid-js";
 
-const Article: Component<{ title: string; points: number }> = (props) => {
+const Article: Component<{ title: string; points?: number }> = (props) => {
   return (
     <div
       class={`badge ${props?.points === 15 ? "badge-success" : "badge-warning"
