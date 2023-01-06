@@ -2,22 +2,15 @@ import { Accessor, Component, Show, For } from "solid-js";
 
 import Article from "../Article";
 import Timer from "../Timer";
+import { TLobby, TPlayer } from "../types";
 import PlayerList from "./PlayerList";
-
 
 const Header: Component<{
   id: string | null;
-  lobby: Accessor<{
-    state: string;
-    id: string;
-    end_time: number;
-    players: any;
-    articles_to_find: Array<string>;
-    articles_found: any;
-  }>;
+  lobby: Accessor<TLobby>;
 }> = (props) => {
   const player = () =>
-    props.lobby().players.find((player) => player[0].id === props.id);
+    props.lobby()?.players.find((player) => player[0]?.id === props?.id);
 
   const articles_to_find_with_points = () => {
     return props
@@ -39,7 +32,7 @@ const Header: Component<{
       <div class="navbar ">
         <div class="flex-1">
           <a href="/" class="btn btn-ghost normal-case text-xl">
-            Better WikiGame
+            WikiGame
           </a>
         </div>
         <Show when={props.lobby()}>

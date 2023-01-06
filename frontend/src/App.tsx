@@ -1,11 +1,11 @@
 import { For, Component, createEffect, Show } from "solid-js";
 import { createSignal } from "solid-js";
-import { v4 as uuidv4 } from "uuid";
+
 import Header from "./lobby/Header";
 import JoinOrCreateLobby from "./JoinOrCreateLobby";
 import SetUserName from "./SetUserName";
 import Lobby, { setGoToLobby } from "./lobby/Lobby";
-import "./wiki.css";
+import { TLobby, TWiki } from "./types";
 
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
@@ -21,7 +21,7 @@ export function sendMessage(msg: any) {
 
 // let [players, setPlayers = createSignal([])
 
-let [wiki, setWiki] = createSignal<{ title: string; text: { "*": string } }>();
+let [wiki, setWiki] = createSignal<TWiki>();
 let id = localStorage.getItem("id");
 
 let setUserNameMsg = {
@@ -31,7 +31,7 @@ let setUserNameMsg = {
 };
 
 if (!id) {
-  id = uuidv4() as string;
+  id = self.crypto.randomUUID();
   localStorage.setItem("id", id);
 }
 
@@ -61,8 +61,8 @@ function startWS() {
     }
   };
 
-  ws.onclose = (e) => {
-    setLobby(undefined);
+  ws.onclose = () => {
+    setLobby(null);
     setConnection(false);
   };
   ws.onmessage = (e) => {
@@ -93,15 +93,9 @@ function startWS() {
   };
 }
 
-let [lobby, setLobby] = createSignal<any>(undefined);
+let [lobby, setLobby] = createSignal<TLobby | null>(null);
 
 startWS();
-
-// export const isHost = () => {
-//   // TODO: this is assuming the host is always the first player
-//   // check for player rights
-//   return lobby().players[0][0].id == id;
-// };
 
 const App: Component = () => {
   // derived state if player is host

@@ -14,29 +14,23 @@ import Wiki from "./Wiki";
 import PlayerList from "./PlayerList";
 import SetupGame from "./SetupGame";
 import Article from "../Article";
-
+import type { TLobby } from "../types";
 
 export const [goToLobby, setGoToLobby] = createSignal(false);
 
-export const isHost = (props: any) => {
-  // TODO: this is assuming the host is always the first player
-  // check for player rights
-  return props.lobby().players[0][0].id == props.id;
+export const isHost = (props: {
+  id?: string;
+  lobby: Accessor<TLobby | null>;
+}) => {
+  return props?.lobby()?.players[0][0].id == props.id && props.id; // checks for not null
 };
 
 const Lobby: Component<{
   setGoToLobby: Setter<boolean>;
   search: any;
-  id: string | null;
+  id: string | undefined;
   wiki: any;
-  lobby: Accessor<{
-    players: any;
-    state: string;
-    start_article: Array<string>;
-    goToLobby: any;
-    articles_to_find: Array<string>;
-    time: any;
-  }>;
+  lobby: Accessor<TLobby | null>;
 }> = (props) => {
   const [local, others] = splitProps(props, [
     "setGoToLobby",
@@ -49,27 +43,30 @@ const Lobby: Component<{
   return (
     <>
       <Show
-        when={props.lobby().state === "idle" && !goToLobby() && isHost(props)}
+        when={
+          props?.lobby()?.state === "idle" &&
+          !goToLobby() &&
+          isHost({ lobby: props.lobby, id: props.id })
+        }
       >
         <SetupGame id={local.id} lobby={local.lobby} search={local.search} />
       </Show>
       <Show
         when={
-          (local.lobby().state === "idle" &&
-            local.lobby().start_article &&
+          (local.lobby()?.state === "idle" &&
+            local.lobby()?.start_article &&
             goToLobby()) ||
-          (!isHost(local) && local.lobby().state === "idle")
+          (!isHost(local) && local.lobby()?.state === "idle")
         }
       >
-
         <SetTime lobby={local.lobby} id={local.id} />
       </Show>
-      <Show when={local.lobby().state === "ingame"}>
+      <Show when={local.lobby()?.state === "ingame"}>
         <Wiki wiki={local.wiki} />
       </Show>
 
-      <Show when={local.lobby().state === "over"}>
-        <GameOver local={local} players={local.lobby().players} />
+      <Show when={local.lobby()?.state === "over"}>
+        <GameOver local={local} players={local.lobby()?.players} />
       </Show>
     </>
   );
