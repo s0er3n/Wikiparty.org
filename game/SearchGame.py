@@ -42,7 +42,7 @@ class SearchGame(Game):
     play_time: int
     round: int = 0
 
-    def __init__(self, id, host):
+    def __init__(self, id, host) -> None:
         self.points = defaultdict(int)
         self.players = {}
         self.old_data = {}
@@ -53,7 +53,7 @@ class SearchGame(Game):
         self.play_time = 60 * 10
         self.host = host
 
-    def set_time(self, player: Player, time: int):
+    def set_time(self, player: Player, time: int) -> Response | None:
         if self._check_host(player):
             self.play_time = time
             return self._make_lobby_update_response()
@@ -101,11 +101,10 @@ class SearchGame(Game):
             _recipients=[player],
         )
 
-    def _check_host(self, host: Player):
-        logging.warning("no admin rights")
+    def _check_host(self, host: Player) -> bool:
         return self.players[host].rights == PlayerRights.host
 
-    def start(self, host: Player):
+    def start(self, host: Player) -> Response | None:
         if not self._check_host(host):
             return
 
@@ -128,7 +127,7 @@ class SearchGame(Game):
 
         return self._make_lobby_update_response()
 
-    def go_to_lobby(self, host: Player):
+    def go_to_lobby(self, host: Player) -> Response | None:
         if not self._check_host(host):
             return
 
@@ -142,7 +141,7 @@ class SearchGame(Game):
 
         return self._make_lobby_update_response()
 
-    def _round_timer(self):
+    def _round_timer(self) -> None:
         async def update_state(round: int):
             sleep(self.play_time)
             if not (self.state == State.ingame and round == self.round):
@@ -155,7 +154,7 @@ class SearchGame(Game):
             update_state(round=self.round),))
         thread.start()
 
-    def set_role(self, host: Player, player_id: str, role: str):
+    def set_role(self, host: Player, player_id: str, role: str) -> Response | None:
         player = next(
             player for player in self.players if player.id == player_id)
 
@@ -175,7 +174,7 @@ class SearchGame(Game):
 
         return self._make_lobby_update_response()
 
-    def set_starting_position(self):
+    def set_starting_position(self) -> None:
         """gets a random wiki page to start"""
         print("setting start position")
         print(self.players.values())
@@ -215,7 +214,9 @@ class SearchGame(Game):
             _recipients=list(self.players.keys()),
         )
 
-    def set_article(self, player: Player, article: str, better_name, start=False):
+    def set_article(self, player: Player, article: str, better_name, start=False) -> Response:
+        if not self._check_host(player):
+            return Error(e="you are not allowed to do that", _recipients=[player])
 
         if start:
             self.start_article = Article(
@@ -227,7 +228,7 @@ class SearchGame(Game):
 
         return self._make_lobby_update_response()
 
-    def move(self, player: Player, url_name: str) -> Response:
+    def move(self, player: Player, url_name: str) -> Response | None:
         """when you click on a new link in wikipedia and move to the next page"""
 
         logging.info("move to " + url_name)
@@ -260,6 +261,10 @@ class SearchGame(Game):
 
         pretty_name = Query.execute(move=url_name, recipient=player)
 
+        if pretty_name is None:
+            logging.warning("move failed")
+            return None
+
         article = Article(pretty_name=pretty_name, url_name=url_name)
 
         self._add_points_current_move(article, player)
@@ -270,13 +275,13 @@ class SearchGame(Game):
 
         return self._make_lobby_update_response()
 
-    def _is_move_allowed(self, url_name: str, player: Player):
+    def _is_move_allowed(self, url_name: str, player: Player) -> bool:
         current_location = self.players[player].moves[-1].url_name
         # links is a list of pretty names and the key of queries is the url name
         # WARNING pretty confusing WARNING
         return url_name in Query.queries[current_location]["links"]
 
-    def _add_points_current_move(self, target: Article, player: Player):
+    def _add_points_current_move(self, target: Article, player: Player) -> None:
         if target not in self.articles_to_find:
             logging.info("move not in articles to find")
             return
@@ -295,6 +300,7 @@ class SearchGame(Game):
 
         self.found_articles.add(target)
 
-    def _check_if_player_found_all(self, player: Player):
+    def _check_if_player_found_all(self, player: Player) -> bool:
         if player_data := self.players.get(player):
             return set(player_data.moves).issuperset(self.articles_to_find)
+        return False

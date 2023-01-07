@@ -16,7 +16,7 @@ const RandomArticle: Component<{ setter: (random_article: string) => void }> = (
         props.setter(random_articles.pop());
       }}
     >
-      random
+      get random article name
     </button>
   );
 };

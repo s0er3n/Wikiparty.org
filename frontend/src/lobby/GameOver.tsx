@@ -13,35 +13,29 @@ type Props = {
 const PlayerList: Component<Props> = (props) => {
   if (!props.players) return <></>;
   return (
-    <div class="flex justify-center">
-      <div>
-        <ul>
-          <For each={props.players ?? []}>
-            {(player) => (
-              <li>
-                <div class="flex flex-row">
-                  <div class="font-bold">{player[0].name}</div>
-                  <div class="ml-2 ">{player[0].points}</div>
-                  <div class="ml-2 flex flex-wrap breadcrumbs">
-                    <ul>
-                      <For
-                        each={player[1].moves?.map((move) => move.pretty_name)}
-                      >
-                        {(article) => (
-                          <li>
-                            <Article title={article} />
-                          </li>
-                        )}
-                      </For>
-                    </ul>
-                  </div>
-                </div>
-              </li>
-            )}
-          </For>
-        </ul>
+    <div>
+      <ul>
+        <For each={props.players.sort((p: TPlayer) => p[0]?.points ?? 0) ?? []}>
+          {(player) => (
+            <li>
+              <span>{player[0].name} : </span>
+              <span>{player[0].points}</span>
+              <ol>
+                <For each={player[1].moves?.map((move) => move.pretty_name)}>
+                  {(article) => (
+                    <li>
+                      <Article title={article} />
+                    </li>
+                  )}
+                </For>
+              </ol>
+            </li>
+          )}
+        </For>
+      </ul>
 
-        <Show when={isHost(props.local)}>
+      <Show when={isHost(props.local)}>
+        <p>
           <button
             class="btn mt-3"
             onclick={() => {
@@ -50,8 +44,8 @@ const PlayerList: Component<Props> = (props) => {
           >
             go to lobby
           </button>
-        </Show>
-      </div>
+        </p>
+      </Show>
     </div>
   );
 };

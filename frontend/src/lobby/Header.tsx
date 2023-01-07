@@ -28,47 +28,50 @@ const Header: Component<{
       });
   };
   return (
-    <div class="sticky top-0 bg-base-100 bg-slate-500 z-50">
-      <div class="navbar ">
-        <div class="flex-1">
-          <a href="/" class="btn btn-ghost normal-case text-xl">
-            WikiGame
-          </a>
-        </div>
-        <Show when={props.lobby()}>
+    <div>
+      <h1>
+        <a href="/" class="btn btn-ghost normal-case text-xl">
+          WikiGame Beta
+        </a>
+      </h1>
+      <Show when={props.lobby()}>
+        <p>
+          <span> Code: </span>
+
+          <input
+            class="hidden md:block input input-bordered"
+            onclick={async () => {
+              await navigator.clipboard.writeText(props.lobby().id);
+            }}
+            value={props.lobby().id}
+            readonly
+          ></input>
+          <button
+            onclick={async () => {
+              await navigator.clipboard.writeText(props.lobby().id);
+            }}
+            class="btn"
+          >
+            copy
+          </button>
           <Show when={props.lobby().state === "ingame"}>
+            <span> Time: </span>
             <Timer validTill={props.lobby().end_time} />
+            <span> </span>
           </Show>
-          <div class="flex-none space-x-2 ">
-            <input
-              class="hidden md:block input input-bordered"
-              onclick={async () => {
-                await navigator.clipboard.writeText(props.lobby().id);
-              }}
-              value={props.lobby().id}
-              readonly
-            ></input>
-            <button
-              onclick={async () => {
-                await navigator.clipboard.writeText(props.lobby().id);
-              }}
-              class="btn"
-            >
-              copy
-            </button>
-          </div>
-        </Show>
-      </div>
+        </p>
+      </Show>
       <Show when={props.lobby()?.state === "ingame"}>
-        <div class="font-bold">
-          <div class="flex">
-            <PlayerList players={props.lobby().players} />
-          </div>
-        </div>
-        <div class="flex justify-center items-center space-x-2 p-2 overflow-hidden">
+        <span> Players: </span>
+        <PlayerList players={props.lobby().players} />
+        <div>
+          <span> Articles to find: </span>
           <For each={articles_to_find_with_points()}>
             {(article) => (
-              <Article points={article.points} title={article.title} />
+              <>
+                <Article points={article.points} title={article.title} />{" "}
+                <span> </span>
+              </>
             )}
           </For>
         </div>
