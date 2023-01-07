@@ -64,6 +64,7 @@ const ArticleSuggestionsList: Component<{
       <For each={props.search ? props?.search()?.at(3) ?? [] : []}>
         {(result, i) => (
           <li class="mt-2">
+            <span> {props.search()?.at(1)?.at(i())} </span>
             <button
               onclick={() => {
                 let setArticleMsg = {
@@ -82,7 +83,6 @@ const ArticleSuggestionsList: Component<{
             >
               select
             </button>
-            <span class="ml-2 font-bold">{props.search()?.at(1)?.at(i())}</span>
           </li>
         )}
       </For>

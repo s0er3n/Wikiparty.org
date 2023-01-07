@@ -5,15 +5,11 @@ import {
   splitProps,
   Setter,
   createSignal,
-  For,
 } from "solid-js";
 import SetTime from "./SetTime";
-import { sendMessage } from "./../App";
 import GameOver from "./GameOver";
 import Wiki from "./Wiki";
-import PlayerList from "./PlayerList";
 import SetupGame from "./SetupGame";
-import Article from "../Article";
 import type { TLobby } from "../types";
 
 export const [goToLobby, setGoToLobby] = createSignal(false);
