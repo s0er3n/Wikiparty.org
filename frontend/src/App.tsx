@@ -37,7 +37,7 @@ if (!id) {
 
 const [search, setSearch] = createSignal([]);
 
-function startWS() {
+export const startWS = () => {
   ws = new WebSocket(`${import.meta.env.VITE_backend_url}/ws/${id}`);
 
   ws.onopen = (_) => {
@@ -67,7 +67,6 @@ function startWS() {
   };
   ws.onmessage = (e) => {
     let data = JSON.parse(e.data);
-
     if (data.method === "LobbyUpdate") {
       const urlParams = new URLSearchParams(window.location.search);
       urlParams.set("code", data.id);
@@ -91,11 +90,13 @@ function startWS() {
       console.log(e);
     }
   };
-}
+};
 
 let [lobby, setLobby] = createSignal<TLobby | null>(null);
 
-startWS();
+if (localStorage.getItem("username")) {
+  startWS();
+}
 
 const App: Component = () => {
   // derived state if player is host
@@ -104,31 +105,33 @@ const App: Component = () => {
     <div>
       <Header lobby={lobby} id={id} />
 
-      <div class="sticky mt-32 sticky bottom-0 z-20 gray-200">
-        <Show
-          when={connected()}
-          fallback={
-            <button
-              class="w-96"
-              onclick={() => {
-                startWS();
-              }}
-            >
-              start ws connection
-            </button>
-          }
-        >
-          <Show when={!hasUserName() && !lobby()}>
-            <SetUserName setHasUserName={setHasUserName} />
+      <Show when={!hasUserName()}>
+        <SetUserName setHasUserName={setHasUserName} />
+      </Show>
+      <Show when={hasUserName()}>
+        <div class="sticky mt-32 sticky bottom-0 z-20 gray-200">
+          <Show
+            when={connected()}
+            fallback={
+              <button
+                class="w-96"
+                onclick={() => {
+                  startWS();
+                }}
+              >
+                start ws connection
+              </button>
+            }
+          >
+            <Show when={lobby()}>
+              <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
+            </Show>
+            <Show when={!lobby() && hasUserName()}>
+              <JoinOrCreateLobby />
+            </Show>
           </Show>
-          <Show when={lobby()}>
-            <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
-          </Show>
-          <Show when={!lobby() && hasUserName()}>
-            <JoinOrCreateLobby />
-          </Show>
-        </Show>
-      </div>
+        </div>
+      </Show>
     </div>
   );
 };
