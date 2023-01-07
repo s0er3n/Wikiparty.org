@@ -15,7 +15,14 @@ const PlayerList: Component<Props> = (props) => {
   return (
     <div>
       <ul>
-        <For each={props.players.sort((p: TPlayer) => p[0]?.points ?? 0) ?? []}>
+        <For
+          each={
+            props.players.sort(
+              (a: TPlayer, b: TPlayer) =>
+                (b[0]?.points ?? 0) - (a[0]?.points ?? 0) ?? []
+            ) ?? []
+          }
+        >
           {(player) => (
             <li>
               <span>{player[0].name} : </span>
