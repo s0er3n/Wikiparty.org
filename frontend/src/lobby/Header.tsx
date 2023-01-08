@@ -36,8 +36,6 @@ const Header: Component<{
       </h1>
       <Show when={props.lobby()}>
         <p align="right">
-          <span> Code: </span>
-
           <input
             class="hidden md:block input input-bordered"
             onclick={async () => {
@@ -55,7 +53,6 @@ const Header: Component<{
             copy
           </button>
           <Show when={props.lobby().state === "ingame"}>
-            <span> Time: </span>
             <Timer validTill={props.lobby().end_time} />
             <span> </span>
           </Show>
