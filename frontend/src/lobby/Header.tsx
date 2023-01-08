@@ -35,7 +35,7 @@ const Header: Component<{
         </a>
       </h1>
       <Show when={props.lobby()}>
-        <p>
+        <p align="right">
           <span> Code: </span>
 
           <input

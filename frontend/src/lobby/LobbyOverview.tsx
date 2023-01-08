@@ -18,10 +18,14 @@ type Props = {
 
 const LobbyOverview: Component<any> = (props) => {
   return (
-    <div class="flex justify-center">
+    <div align="center">
       <h3>Settings:</h3>
-      <p>start: {props.lobby().start_article}</p>
-      <p>find: {props.lobby().articles_to_find.join(" | ")}</p>
+      <p>
+        <b>start article:</b> {props.lobby().start_article}
+      </p>
+      <p>
+        <b>articles to find:</b> {props.lobby().articles_to_find.join(" | ")}
+      </p>
       <span>max time: </span>
       <SetTime time={props.lobby().time} />
       <span> seconds</span>
@@ -48,7 +52,7 @@ const LobbyOverview: Component<any> = (props) => {
         </p>
       </Show>
       <div>
-        <h3>Players</h3>
+        <h3>Players in Lobby:</h3>
         <PlayerList players={props.lobby()?.players} />
       </div>
     </div>

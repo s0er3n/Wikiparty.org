@@ -10,7 +10,6 @@ import { TLobby, TWiki } from "./types";
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
 let ws: WebSocket | null = null;
-
 export function sendMessage(msg: any) {
   if (ws) {
     ws.send(JSON.stringify(msg));
@@ -106,33 +105,35 @@ const App: Component = () => {
     <div>
       <Header lobby={lobby} id={id} />
 
-      <Show when={!hasUserName()}>
-        <SetUserName setHasUserName={setHasUserName} />
-      </Show>
-      <Show when={hasUserName()}>
-        <div>
-          <Show
-            when={connected()}
-            fallback={
-              <button
-                class="w-96"
-                onclick={() => {
-                  startWS();
-                }}
-              >
-                start ws connection
-              </button>
-            }
-          >
-            <Show when={lobby()}>
-              <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
+      <div align="center">
+        <Show when={!hasUserName()}>
+          <SetUserName setHasUserName={setHasUserName} />
+        </Show>
+        <Show when={hasUserName()}>
+          <div>
+            <Show
+              when={connected()}
+              fallback={
+                <button
+                  class="w-96"
+                  onclick={() => {
+                    startWS();
+                  }}
+                >
+                  start ws connection
+                </button>
+              }
+            >
+              <Show when={lobby()}>
+                <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
+              </Show>
+              <Show when={!lobby() && hasUserName()}>
+                <JoinOrCreateLobby />
+              </Show>
             </Show>
-            <Show when={!lobby() && hasUserName()}>
-              <JoinOrCreateLobby />
-            </Show>
-          </Show>
-        </div>
-      </Show>
+          </div>
+        </Show>
+      </div>
     </div>
   );
 };

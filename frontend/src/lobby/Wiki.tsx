@@ -4,7 +4,7 @@ import "./../wiki.css";
 
 const Wiki: Component<{ wiki: any }> = (props) => {
   return (
-    <div>
+    <div align="left">
       <h1>{props.wiki()?.title ?? ""}</h1>
       <div
         onclick={async (e) => {

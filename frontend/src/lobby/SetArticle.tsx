@@ -1,6 +1,7 @@
 import { Accessor, Component, createSignal, For, Show } from "solid-js";
 import { sendMessage } from "./../App";
 import RandomArticle from "./../RandomArticle";
+import { isHost, setGoToLobby } from "./Lobby";
 
 let [article, setArticle] = createSignal("");
 
@@ -10,48 +11,63 @@ const SetArticle: Component<{
 }> = (props) => {
   let timeout: any = null;
   return (
-    <div class="flex flex-row justify-center ">
-      <div>
-        <input
-          class="input input-bordered"
-          onkeyup={(e: any) => {
-            if (timeout != null) {
-              clearTimeout(timeout);
-            }
-            timeout = setTimeout(() => {
-              const searchMsg = {
-                type: "search",
-                method: "execute",
-                args: {
-                  query: e.target.value,
-                },
-              };
-              sendMessage(searchMsg);
-
-              setArticle(e.target.value);
-            }, 200);
-          }}
-          value={article()}
-        />
-        <RandomArticle
-          setter={(random_article: string) => {
+    <>
+      <input
+        class="input input-bordered"
+        onkeyup={(e: any) => {
+          if (timeout != null) {
+            clearTimeout(timeout);
+          }
+          timeout = setTimeout(() => {
             const searchMsg = {
               type: "search",
               method: "execute",
               args: {
-                query: random_article,
+                query: e.target.value,
               },
             };
             sendMessage(searchMsg);
-            setArticle(random_article);
-          }}
-        />
 
-        <Show when={article() !== ""}>
-          <ArticleSuggestionsList search={props.search} lobby={props.lobby} />
-        </Show>
-      </div>
-    </div>
+            setArticle(e.target.value);
+          }, 200);
+        }}
+        value={article()}
+      />
+      <RandomArticle
+        setter={(random_article: string) => {
+          const searchMsg = {
+            type: "search",
+            method: "execute",
+            args: {
+              query: random_article,
+            },
+          };
+          sendMessage(searchMsg);
+          setArticle(random_article);
+        }}
+      />
+      <Show
+        when={
+          props.lobby().state === "idle" &&
+          props.lobby().articles_to_find.length &&
+          props.lobby().start_article &&
+          isHost(props)
+        }
+      >
+        <button
+          class="btn m-2"
+          onclick={() => {
+            setGoToLobby(true);
+          }}
+        >
+          go to lobby
+        </button>
+      </Show>
+
+      <Show when={article() !== ""}>
+        <ArticleSuggestionsList search={props.search} lobby={props.lobby} />
+      </Show>
+    </>
   );
 };
 
@@ -63,7 +79,7 @@ const ArticleSuggestionsList: Component<{
     <ul>
       <For each={props.search ? props?.search()?.at(3) ?? [] : []}>
         {(result, i) => (
-          <li class="mt-2">
+          <p>
             <span> {props.search()?.at(1)?.at(i())} </span>
             <button
               onclick={() => {
@@ -83,7 +99,7 @@ const ArticleSuggestionsList: Component<{
             >
               select
             </button>
-          </li>
+          </p>
         )}
       </For>
     </ul>
