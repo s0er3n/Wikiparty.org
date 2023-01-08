@@ -293,6 +293,14 @@ class SearchGame(Game):
                       recipient=player)
         return self._make_lobby_update_response()
 
+    def page_forward(self, player: Player):
+        if self.players[player].node_position.parent is None:
+            return
+        self.players[player].node_position = self.players[player].node_position.children[0]
+        Query.execute(move=self.players[player].node_position.article.pretty_name,
+                      recipient=player)
+        return self._make_lobby_update_response()
+
     def _is_move_allowed(self, url_name: str, player: Player) -> bool:
         current_location = self.players[player].node_position.article.url_name
         # links is a list of pretty names and the key of queries is the url name

@@ -4,7 +4,7 @@ import Article from "../Article";
 import Timer from "../Timer";
 import { TLobby, TPlayer } from "../types";
 import PlayerList from "./PlayerList";
-import BackButton from "./BackButton";
+import { ForwardButton, BackButton } from "./NavigationButtons";
 
 const Header: Component<{
   id: string | null;
@@ -37,6 +37,7 @@ const Header: Component<{
       </h1>
       <Show when={props.lobby()?.state === "ingame"}>
         <BackButton />
+        <ForwardButton />
       </Show>
       <Show when={props.lobby()}>
         <p>
