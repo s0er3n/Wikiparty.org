@@ -4,3 +4,7 @@
 body {
   padding: 5px;
 }
+button {
+  margin-left: 5px !important;
+  margin-right: 5px !important;
+}
