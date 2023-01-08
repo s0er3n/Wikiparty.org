@@ -16,14 +16,14 @@ type Props = {
   time: number;
 };
 
-const SetTimePage = (props) => {
+const LobbyOverview: Component<any> = (props) => {
   return (
     <div class="flex justify-center">
       <h3>Settings:</h3>
       <p>start: {props.lobby().start_article}</p>
       <p>find: {props.lobby().articles_to_find.join(" | ")}</p>
       <span>max time: </span>
-      <SetUserNameComponent time={props.lobby().time} />
+      <SetTime time={props.lobby().time} />
       <span> seconds</span>
       <Show when={isHost(props)}>
         <p>
@@ -56,7 +56,7 @@ const setTime = (e: any) => {
   sendMessage(msg);
 };
 
-const SetUserNameComponent: Component<Props> = (props) => {
+const SetTime: Component<Props> = (props) => {
   return (
     <input
       value={props.time}
@@ -67,4 +67,4 @@ const SetUserNameComponent: Component<Props> = (props) => {
   );
 };
 
-export default SetTimePage;
+export default LobbyOverview;
