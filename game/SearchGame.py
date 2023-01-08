@@ -10,7 +10,7 @@ from game.ConnectionManager import manager
 from game.Game import Game
 from game.GameState import State
 from game.Player import Player, PlayerCopy
-from game.PlayerData import PlayerData, PlayerRights, PlayerState
+from game.PlayerData import PlayerData, PlayerRights, PlayerState, PlayerDataNoNode, Node
 from game.Query import Query
 from game.Response import Error, LobbyUpdate, Response
 
@@ -207,9 +207,12 @@ class SearchGame(Game):
                     PlayerCopy(
                         id=player.id, name=player.name, points=self.points[player]
                     ),
-                    data,
+                    PlayerDataNoNode(
+                        rights=playerData.rights, state=playerData.state,
+                        moves=playerData.moves,
+                    ),
                 )
-                for player, data in self.players.items()
+                for player, playerData in self.players.items()
             ],
             _recipients=list(self.players.keys()),
         )
@@ -221,6 +224,12 @@ class SearchGame(Game):
         if start:
             self.start_article = Article(
                 url_name=article, pretty_name=better_name)
+            self.players[player].nodes.append(Node(
+                parent=None,
+                children=list(),
+                article=self.start_article
+            ))
+            self.players[player].node_position = self.players[player].nodes[-1]
         else:
             self.articles_to_find.add(
                 Article(url_name=article, pretty_name=better_name)
@@ -238,19 +247,6 @@ class SearchGame(Game):
                 e="not allowed to move",
                 _recipients=[player],
             )
-
-        # if (
-        #     self.players[player].state == PlayerState.watching
-        #     or self.players[player].state == PlayerState.finnished
-        # ):
-        #     logging.warning("Watching People cannot not move")
-        #     return Error(
-        #         e="Watching People cannot not move",
-        #         _recipients=[player],
-        #     )
-
-        # no need to query the name bc its done by the rust api now
-        # pretty_name = Query.execute(move=url_name, recipient=player)
 
         if not self._is_move_allowed(url_name=url_name, player=player):
             logging.warning("cheate detected")
@@ -270,9 +266,23 @@ class SearchGame(Game):
         self._add_points_current_move(article, player)
 
         self.players[player].moves.append(article)
+
+        current_node = self.players[player].node_position
+
+        new_node = current_node.add_child(article)
+
+        self.players[player].node_position = new_node
         if self._check_if_player_found_all(player):
             self.state = State.over
 
+        return self._make_lobby_update_response()
+
+    def page_back(self, player: Player):
+        if self.players[player].node_position is None:
+            return
+        self.players[player].node_position = self.players[player].node_position.parent
+        Query.execute(move=self.players[player].node_position.article.pretty_name,
+                      recipient=player)
         return self._make_lobby_update_response()
 
     def _is_move_allowed(self, url_name: str, player: Player) -> bool:
