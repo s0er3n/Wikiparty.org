@@ -79,6 +79,7 @@ export const startWS = () => {
       setLobby(data);
     } else if (data.method === "Wiki" && !Array.isArray(data.data)) {
       setWiki(data.data);
+      window.scrollTo(0, 0);
       console.log(data);
       // search -> maybe add a method on backend
     } else if (typeof data.data === "object") {
@@ -109,7 +110,7 @@ const App: Component = () => {
         <SetUserName setHasUserName={setHasUserName} />
       </Show>
       <Show when={hasUserName()}>
-        <div class="sticky mt-32 sticky bottom-0 z-20 gray-200">
+        <div>
           <Show
             when={connected()}
             fallback={

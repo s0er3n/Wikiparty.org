@@ -6,7 +6,7 @@ import {
   Setter,
   createSignal,
 } from "solid-js";
-import SetTime from "./SetTime";
+import LobbyOverview from "./LobbyOverview";
 import GameOver from "./GameOver";
 import Wiki from "./Wiki";
 import SetupGame from "./SetupGame";
@@ -55,7 +55,7 @@ const Lobby: Component<{
           (!isHost(local) && local.lobby()?.state === "idle")
         }
       >
-        <SetTime lobby={local.lobby} id={local.id} />
+        <LobbyOverview lobby={local.lobby} id={local.id} />
       </Show>
       <Show when={local.lobby()?.state === "ingame"}>
         <Wiki wiki={local.wiki} />

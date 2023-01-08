@@ -11,7 +11,7 @@ const PlayerList: Component<{ players: TPlayer[] }> = (props) => {
     >
       {(player: TPlayer) => (
         <>
-          <span> {player[0].name}:</span>
+          <span> {player[0].name} : </span>
           <span> {JSON.stringify(player[0].points ?? 0)}</span>
         </>
       )}

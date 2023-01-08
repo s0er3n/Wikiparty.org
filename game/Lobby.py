@@ -7,10 +7,10 @@ class Lobby:
     game: SearchGame | None
     host: Player
 
-    def __init__(self, host: Player, id: str) -> None:
+    def __init__(self, host: Player, id: str, Game=SearchGame) -> None:
         self.host = host
         self.players = []
-        self.game = SearchGame(host=host, id=id)
+        self.game = Game(host=host, id=id)
 
     def leave(self, player) -> None:
         if isinstance(self.game, SearchGame):

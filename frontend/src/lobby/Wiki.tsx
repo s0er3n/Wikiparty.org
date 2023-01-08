@@ -23,7 +23,6 @@ const Wiki: Component<{ wiki: any }> = (props) => {
                 url_name: targetValue?.split("wiki/").pop(),
               },
             };
-            window.scrollTo(0, 0);
             sendMessage(moveMsg);
           } else if (
             targetValue?.includes("http") ||

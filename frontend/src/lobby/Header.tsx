@@ -7,7 +7,7 @@ import PlayerList from "./PlayerList";
 
 const Header: Component<{
   id: string | null;
-  lobby: Accessor<TLobby>;
+  lobby: Accessor<TLobby | null>;
 }> = (props) => {
   const player = () =>
     props.lobby()?.players.find((player) => player[0]?.id === props?.id);

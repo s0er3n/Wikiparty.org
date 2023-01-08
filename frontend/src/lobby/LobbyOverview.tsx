@@ -16,14 +16,14 @@ type Props = {
   time: number;
 };
 
-const SetTimePage = (props) => {
+const LobbyOverview: Component<any> = (props) => {
   return (
     <div class="flex justify-center">
       <h3>Settings:</h3>
       <p>start: {props.lobby().start_article}</p>
       <p>find: {props.lobby().articles_to_find.join(" | ")}</p>
       <span>max time: </span>
-      <SetUserNameComponent time={props.lobby().time} />
+      <SetTime time={props.lobby().time} />
       <span> seconds</span>
       <Show when={isHost(props)}>
         <p>
@@ -36,10 +36,15 @@ const SetTimePage = (props) => {
             start game
           </button>
         </p>
-        <h3>How do I get Points?:</h3>
+        <h3>How do I get Points?</h3>
         <p>
           for every article you find you get 10 points and 5 extra points if you
           are the first person to find the article
+        </p>
+        <h3>When does the game end?</h3>
+        <p>
+          the game ends if one person has found every article or the time runs
+          out
         </p>
       </Show>
       <div>
@@ -56,7 +61,7 @@ const setTime = (e: any) => {
   sendMessage(msg);
 };
 
-const SetUserNameComponent: Component<Props> = (props) => {
+const SetTime: Component<Props> = (props) => {
   return (
     <input
       value={props.time}
@@ -67,4 +72,4 @@ const SetUserNameComponent: Component<Props> = (props) => {
   );
 };
 
-export default SetTimePage;
+export default LobbyOverview;
