@@ -36,10 +36,15 @@ const LobbyOverview: Component<any> = (props) => {
             start game
           </button>
         </p>
-        <h3>How do I get Points?:</h3>
+        <h3>How do I get Points?</h3>
         <p>
           for every article you find you get 10 points and 5 extra points if you
           are the first person to find the article
+        </p>
+        <h3>When does the game end?</h3>
+        <p>
+          the game ends if one person has found every article or the time runs
+          out
         </p>
       </Show>
       <div>
