@@ -287,6 +287,7 @@ class SearchGame(Game):
 
     def page_back(self, player: Player):
         if self.players[player].node_position.parent is None:
+            logging.warning("cant go back already at first page")
             return
         self.players[player].node_position = self.players[player].node_position.parent
         Query.execute(move=self.players[player].node_position.article.pretty_name,
@@ -294,7 +295,8 @@ class SearchGame(Game):
         return self._make_lobby_update_response()
 
     def page_forward(self, player: Player):
-        if self.players[player].node_position.parent is None:
+        if not self.players[player].node_position.children:
+            logging.warning("cant go forward already at latest page")
             return
         self.players[player].node_position = self.players[player].node_position.children[0]
         Query.execute(move=self.players[player].node_position.article.pretty_name,
