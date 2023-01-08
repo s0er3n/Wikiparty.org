@@ -14,6 +14,8 @@ from game.PlayerData import PlayerData, PlayerRights, PlayerState, PlayerDataNoN
 from game.Query import Query
 from game.Response import Error, LobbyUpdate, Response
 
+logging.getLogger().setLevel(logging.INFO)
+
 
 class SearchGame(Game):
     """handles all the game related stuff"""
@@ -85,6 +87,13 @@ class SearchGame(Game):
         if self.state == State.ingame:
             next_move = self.start_article
             self.players[player].moves.append(next_move)
+            self.players[player].nodes.append(Node(
+                parent=None,
+                children=list(),
+                article=self.start_article
+            ))
+            self.players[player].node_position = self.players[player].nodes[-1]
+
             Query.execute(
                 move=next_move.url_name, recipient=player
             )
@@ -175,7 +184,6 @@ class SearchGame(Game):
         return self._make_lobby_update_response()
 
     def set_starting_position(self) -> None:
-        """gets a random wiki page to start"""
         print("setting start position")
         print(self.players.values())
 
@@ -278,7 +286,7 @@ class SearchGame(Game):
         return self._make_lobby_update_response()
 
     def page_back(self, player: Player):
-        if self.players[player].node_position is None:
+        if self.players[player].node_position.parent is None:
             return
         self.players[player].node_position = self.players[player].node_position.parent
         Query.execute(move=self.players[player].node_position.article.pretty_name,
@@ -286,7 +294,7 @@ class SearchGame(Game):
         return self._make_lobby_update_response()
 
     def _is_move_allowed(self, url_name: str, player: Player) -> bool:
-        current_location = self.players[player].moves[-1].url_name
+        current_location = self.players[player].node_position.article.url_name
         # links is a list of pretty names and the key of queries is the url name
         # WARNING pretty confusing WARNING
         return url_name in Query.queries[current_location]["links"]
