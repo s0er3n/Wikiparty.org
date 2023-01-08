@@ -4,14 +4,12 @@ import SetArticle from "./SetArticle";
 
 const SetArticleHeadline: Component<{ lobby: any }> = (props) => {
   return (
-    <div class="flex justify-center font-bold">
-      <Show
-        when={props.lobby().start_article}
-        fallback={<p>Search for a page to start:</p>}
-      >
-        <p>Search for a page or pages to find:</p>
-      </Show>
-    </div>
+    <Show
+      when={props.lobby().start_article}
+      fallback={<p>Search for a page to start:</p>}
+    >
+      <p>Search for a page or pages to find:</p>
+    </Show>
   );
 };
 
@@ -32,16 +30,14 @@ const SetupGame: Component<{
           isHost(props)
         }
       >
-        <div class="flex justify-center">
-          <button
-            class="btn m-2"
-            onclick={() => {
-              setGoToLobby(true);
-            }}
-          >
-            go to lobby
-          </button>
-        </div>
+        <button
+          class="btn m-2"
+          onclick={() => {
+            setGoToLobby(true);
+          }}
+        >
+          go to lobby
+        </button>
       </Show>
     </>
   );

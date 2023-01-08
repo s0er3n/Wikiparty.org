@@ -37,7 +37,7 @@ const Lobby: Component<{
   ]);
 
   return (
-    <>
+    <div align="center">
       <Show
         when={
           props?.lobby()?.state === "idle" &&
@@ -64,7 +64,7 @@ const Lobby: Component<{
       <Show when={local.lobby()?.state === "over"}>
         <GameOver local={local} players={local.lobby()?.players} />
       </Show>
-    </>
+    </div>
   );
 };
 
