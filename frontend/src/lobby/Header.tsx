@@ -31,10 +31,14 @@ const Header: Component<{
     <div>
       <h1>
         <a href="/" class="btn btn-ghost normal-case text-xl">
-          WikiGame Beta
+          WikiGame (pre-alpha)
         </a>
       </h1>
       <Show when={props.lobby()}>
+        <b>
+          WARNING: This game is really new, so write me on discord if you
+          experience any bugs or have suggestions (Sören#1141)
+        </b>
         <p align="right">
           <input
             class="hidden md:block input input-bordered"
