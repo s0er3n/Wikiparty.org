@@ -4,6 +4,7 @@ import Article from "../Article";
 import Timer from "../Timer";
 import { TLobby, TPlayer } from "../types";
 import PlayerList from "./PlayerList";
+import { ForwardButton, BackButton } from "./NavigationButtons";
 
 const Header: Component<{
   id: string | null;
@@ -34,6 +35,10 @@ const Header: Component<{
           WikiGame Beta
         </a>
       </h1>
+      <Show when={props.lobby()?.state === "ingame"}>
+        <BackButton />
+        <ForwardButton />
+      </Show>
       <Show when={props.lobby()}>
         <p align="right">
           <input
