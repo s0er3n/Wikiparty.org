@@ -23,7 +23,12 @@ class ConnectionManager:
         return player
 
     def disconnect(self, player: Player) -> None:
-        del self.active_connections[player]
+        try:
+            del self.active_connections[player]
+        except KeyError:
+            logging.warning(
+                "could not disconnect player he is not in the active connections"
+            )
 
     async def send_response(self, message: Response | None) -> None:
         if not message:
