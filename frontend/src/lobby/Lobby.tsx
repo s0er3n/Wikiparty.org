@@ -18,7 +18,10 @@ export const isHost = (props: {
   id?: string;
   lobby: Accessor<TLobby | null>;
 }) => {
-  return props?.lobby()?.players[0][0].id == props.id && props.id; // checks for not null
+  // find host
+  const host = props.lobby()?.players.find((p) => p[1].rights === "host");
+  if (!host) return false;
+  return host[0].id == props.id && props.id; // checks for not null
 };
 
 const Lobby: Component<{
