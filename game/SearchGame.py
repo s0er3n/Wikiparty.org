@@ -269,13 +269,18 @@ class SearchGame(Game):
             logging.warning("move failed")
             return None
 
+        current_node = self.players[player].node_position
+
+        if current_node.article.url_name == url_name:
+            logging.info(
+                "tried moving to same node as last move e.g. double click")
+            return None
+
         article = Article(pretty_name=pretty_name, url_name=url_name)
 
         self._add_points_current_move(article, player)
 
         self.players[player].moves.append(article)
-
-        current_node = self.players[player].node_position
 
         new_node = current_node.add_child(article)
 
