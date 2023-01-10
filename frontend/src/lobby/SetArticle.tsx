@@ -87,7 +87,7 @@ const ArticleSuggestionsList: Component<{
                   type: "game",
                   method: "set_article",
                   args: {
-                    article: result.split("/").pop(),
+                    url_name: result?.split("wiki/").pop(),
                     better_name: props.search()?.at(1)?.at(i()),
                     start: props.lobby().start_article === "",
                   },

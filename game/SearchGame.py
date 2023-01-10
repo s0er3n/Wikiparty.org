@@ -214,16 +214,19 @@ class SearchGame(Game):
             _recipients=list(self.players.keys()),
         )
 
-    def set_article(self, player: Player, article: str, better_name, start=False) -> Response:
+    def set_article(self, player: Player, url_name: str, better_name, start=False) -> Response:
+
+        url_name = url_name.split("#")[0]
+
         if not self._check_host(player):
             return Error(e="you are not allowed to do that", _recipients=[player])
 
         if start:
             self.start_article = Article(
-                url_name=article, pretty_name=better_name)
+                url_name=url_name, pretty_name=better_name)
         else:
             self.articles_to_find.add(
-                Article(url_name=article, pretty_name=better_name)
+                Article(url_name=url_name, pretty_name=better_name)
             )
 
         return self._make_lobby_update_response()
