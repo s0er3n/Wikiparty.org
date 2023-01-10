@@ -257,9 +257,9 @@ class SearchGame(Game):
             )
 
         if not self._is_move_allowed(url_name=url_name, player=player):
-            logging.warning("cheate detected")
+            logging.warning("cheate detected/ or double click")
             return Error(
-                e="cheater detected",
+                e="cheater detected/ or double click",
                 _recipients=[player],
             )
 
@@ -269,13 +269,18 @@ class SearchGame(Game):
             logging.warning("move failed")
             return None
 
+        current_node = self.players[player].node_position
+
+        if current_node.article.url_name == url_name:
+            logging.info(
+                "tried moving to same node as last move e.g. double click")
+            return None
+
         article = Article(pretty_name=pretty_name, url_name=url_name)
 
         self._add_points_current_move(article, player)
 
         self.players[player].moves.append(article)
-
-        current_node = self.players[player].node_position
 
         new_node = current_node.add_child(article)
 
@@ -298,7 +303,7 @@ class SearchGame(Game):
         if not self.players[player].node_position.children:
             logging.warning("cant go forward already at latest page")
             return
-        self.players[player].node_position = self.players[player].node_position.children[0]
+        self.players[player].node_position = self.players[player].node_position.children[-1]
         Query.execute(move=self.players[player].node_position.article.pretty_name,
                       recipient=player)
         return self._make_lobby_update_response()
