@@ -193,6 +193,7 @@ class SearchGame(Game):
         for data in self.players.values():
             data.nodes.clear()
             data.node_position = Node(article=self.start_article, parent=None)
+            data.nodes.append(data.node_position)
 
         for data in self.old_data.values():
             data.nodes.clear()
