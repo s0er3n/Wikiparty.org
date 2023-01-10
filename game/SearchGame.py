@@ -231,6 +231,8 @@ class SearchGame(Game):
     def move(self, player: Player, url_name: str) -> Response | None:
         """when you click on a new link in wikipedia and move to the next page"""
 
+        url_name = url_name.split("#")[0]
+
         logging.info("move to " + url_name)
         if self.state != State.ingame:
             logging.warning("not allowed to move because not ingame")
@@ -238,19 +240,6 @@ class SearchGame(Game):
                 e="not allowed to move",
                 _recipients=[player],
             )
-
-        # if (
-        #     self.players[player].state == PlayerState.watching
-        #     or self.players[player].state == PlayerState.finnished
-        # ):
-        #     logging.warning("Watching People cannot not move")
-        #     return Error(
-        #         e="Watching People cannot not move",
-        #         _recipients=[player],
-        #     )
-
-        # no need to query the name bc its done by the rust api now
-        # pretty_name = Query.execute(move=url_name, recipient=player)
 
         if not self._is_move_allowed(url_name=url_name, player=player):
             logging.warning("cheate detected")
