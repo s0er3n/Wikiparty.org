@@ -293,6 +293,7 @@ class SearchGame(Game):
         new_node = current_node.add_child(article)
 
         self.players[player].node_position = new_node
+        self.players[player].nodes.append(new_node)
         if self._check_if_player_found_all(player):
             self.state = State.over
 
