@@ -15,6 +15,7 @@ export type TPlayer = [
     id?: string;
     name?: string;
     points?: number;
+    points_current_round?: number;
   },
   {
     rights?: string;

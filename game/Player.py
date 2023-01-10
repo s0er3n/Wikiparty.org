@@ -25,3 +25,4 @@ class PlayerCopy:
     id: str
     name: str
     points: int
+    points_current_round: int

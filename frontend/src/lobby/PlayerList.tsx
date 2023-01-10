@@ -1,18 +1,21 @@
-import { Component, For } from "solid-js";
+import { Component, For, Show } from "solid-js";
 import { TPlayer } from "../types";
 
-const PlayerList: Component<{ players: TPlayer[] }> = (props) => {
+const PlayerList: Component<{
+  players: TPlayer[];
+  pointsKey: "points" | "points_current_round";
+}> = (props) => {
   return (
     <For
       each={props.players.sort(
         (a: TPlayer, b: TPlayer) =>
-          (b[0]?.points ?? 0) - (a[0]?.points ?? 0) ?? []
+          (b[0]?.[props.pointsKey] ?? 0) - (a[0]?.[props.pointsKey] ?? 0) ?? []
       )}
     >
       {(player: TPlayer) => (
         <>
           <span> {player[0].name} : </span>
-          <span> {JSON.stringify(player[0].points ?? 0)}</span>
+          <span> {player[0][props.pointsKey] ?? 0} </span>
         </>
       )}
     </For>

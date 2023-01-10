@@ -21,6 +21,7 @@ class SearchGame(Game):
     state: State = State.idle
 
     points: dict[Player, int]
+    points_current_round: dict[Player, int]
 
     players: dict[Player, PlayerData]
 
@@ -44,6 +45,7 @@ class SearchGame(Game):
 
     def __init__(self, id, host) -> None:
         self.points = defaultdict(int)
+        self.points_current_round = defaultdict(int)
         self.players = {}
         self.old_data = {}
         self.id = id
@@ -116,6 +118,7 @@ class SearchGame(Game):
             return
 
         self.found_articles: set[Article] = set()
+        self.points_current_round = defaultdict(int)
         self.round += 1
         self.state = State.ingame
         self._round_timer()
@@ -205,7 +208,9 @@ class SearchGame(Game):
             players=[
                 (
                     PlayerCopy(
-                        id=player.id, name=player.name, points=self.points[player]
+                        id=player.id, name=player.name,
+                        points=self.points[player],
+                        points_current_round=self.points_current_round[player]
                     ),
                     data,
                 )
@@ -293,10 +298,12 @@ class SearchGame(Game):
         if target in self.found_articles:
             logging.info("article found but not first")
             self.points[player] += 10
+            self.points_current_round[player] += 10
             return
 
         logging.info("article found for the first time")
         self.points[player] += 15
+        self.points_current_round[player] += 15
 
         self.found_articles.add(target)
 

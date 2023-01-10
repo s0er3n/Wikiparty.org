@@ -64,7 +64,10 @@ const Header: Component<{
       </Show>
       <Show when={props.lobby()?.state === "ingame"}>
         <span> Players: </span>
-        <PlayerList players={props.lobby().players} />
+        <PlayerList
+          players={props.lobby().players}
+          pointsKey="points_current_round"
+        />
         <div>
           <span> Articles to find: </span>
           <For each={articles_to_find_with_points()}>
