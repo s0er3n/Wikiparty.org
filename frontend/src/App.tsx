@@ -10,10 +10,13 @@ import { TLobby, TWiki } from "./types";
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
 let ws: WebSocket | null = null;
+
+let missedMessages: string[] = [];
 export function sendMessage(msg: any) {
   if (ws) {
     ws.send(JSON.stringify(msg));
   } else {
+    missedMessages.push(JSON.stringify(msg));
     console.warn("websocket not connected");
   }
 }
@@ -58,11 +61,23 @@ export const startWS = () => {
       };
       sendMessage(joinLobbyMsg);
     }
+    missedMessages.forEach((msg) => {
+      ws?.send(msg);
+    });
   };
-
-  ws.onclose = () => {
-    setLobby(null);
+  ws.onerror = function(err) {
+    console.error("Socket encountered error: ", err, "Closing socket");
+    ws?.close();
+  };
+  ws.onclose = function(e) {
+    console.log(
+      "Socket is closed. Reconnect will be attempted in 1 second.",
+      e.reason
+    );
     setConnection(false);
+    setTimeout(function() {
+      startWS();
+    }, 1000);
   };
   ws.onmessage = (e) => {
     let data = JSON.parse(e.data);
@@ -110,26 +125,13 @@ const App: Component = () => {
           <SetUserName setHasUserName={setHasUserName} />
         </Show>
         <Show when={hasUserName()}>
+          <Show when={connected()} fallback={<>connecting...</>}></Show>
           <div>
-            <Show
-              when={connected()}
-              fallback={
-                <button
-                  class="w-96"
-                  onclick={() => {
-                    startWS();
-                  }}
-                >
-                  start ws connection
-                </button>
-              }
-            >
-              <Show when={lobby()}>
-                <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
-              </Show>
-              <Show when={!lobby() && hasUserName()}>
-                <JoinOrCreateLobby />
-              </Show>
+            <Show when={lobby()}>
+              <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
+            </Show>
+            <Show when={!lobby() && hasUserName()}>
+              <JoinOrCreateLobby />
             </Show>
           </div>
         </Show>
