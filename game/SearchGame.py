@@ -282,15 +282,16 @@ class SearchGame(Game):
         return url_name in Query.queries[current_location]["links"]
 
     def _add_points_current_move(self, target: Article, player: Player) -> None:
-        if target not in self.articles_to_find:
+        if target.url_name not in [article.url_name for article in self.articles_to_find]:
             logging.info("move not in articles to find")
             return
-        if target in self.players[player].moves:
+
+        if target.url_name in [article.url_name for article in self.players[player].moves]:
             logging.info(
                 "article already found by player not counting it again")
             return
 
-        if target in self.found_articles:
+        if target.url_name in [article.url_name for article in self.found_articles]:
             logging.info("article found but not first")
             self.points[player] += 10
             return
