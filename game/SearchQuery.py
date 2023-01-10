@@ -17,10 +17,12 @@ class SearchQuery:
             f"https://en.wikipedia.org/w/api.php?action=opensearch&search={query}&limit=10&namespace=0&format=json"
         )
         data = r.json()
-
-        thread = Thread(
-            target=asyncio.run,
-            args=(manager.send_response(
-                Wiki(data=data, _recipients=[player])),),
-        )
-        thread.start()
+        if r.status_code == 200:
+            thread = Thread(
+                target=asyncio.run,
+                args=(manager.send_response(
+                    Wiki(data=data, _recipients=[player])),),
+            )
+            thread.start()
+        else:
+            raise Exception("Error while fetching data from wikipedia search")
