@@ -31,11 +31,18 @@ class Node:
         return new_node
 
 
+def iter(node: Node, res=[]) -> list[Node]:
+    res.append(node)
+    for child in node.children:
+        if child not in res:
+            iter(child, res=res)
+    return res
+
+
 @dataclasses.dataclass
 class PlayerData:
     rights: PlayerRights
     state: PlayerState = PlayerState.watching
-    moves: list[Article] = dataclasses.field(default_factory=list)
     node_position: Node | None = None
     nodes: list[Node] = dataclasses.field(default_factory=list)
 
