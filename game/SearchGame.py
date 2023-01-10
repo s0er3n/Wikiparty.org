@@ -303,5 +303,5 @@ class SearchGame(Game):
 
     def _check_if_player_found_all(self, player: Player) -> bool:
         if player_data := self.players.get(player):
-            return set(player_data.moves).issuperset(self.articles_to_find)
+            return set(article.url_name for article in player_data.moves).issuperset(article.url_name for article in self.articles_to_find)
         return False
