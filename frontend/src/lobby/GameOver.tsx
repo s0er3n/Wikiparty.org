@@ -19,14 +19,17 @@ const PlayerList: Component<Props> = (props) => {
           each={
             props.players.sort(
               (a: TPlayer, b: TPlayer) =>
-                (b[0]?.points ?? 0) - (a[0]?.points ?? 0) ?? []
+                (b[0]?.points_current_round ?? 0) -
+                (a[0]?.points_current_round ?? 0) ?? []
             ) ?? []
           }
         >
           {(player) => (
             <li>
               <span>{player[0].name} : </span>
-              <span>{player[0].points}</span>
+              <span>
+                + {player[0].points_current_round} ({player[0].points})
+              </span>
               <ol>
                 <For each={player[1].moves?.map((move) => move.pretty_name)}>
                   {(article) => (

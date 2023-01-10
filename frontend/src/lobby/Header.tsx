@@ -4,6 +4,7 @@ import Article from "../Article";
 import Timer from "../Timer";
 import { TLobby, TPlayer } from "../types";
 import PlayerList from "./PlayerList";
+import { ForwardButton, BackButton } from "./NavigationButtons";
 
 const Header: Component<{
   id: string | null;
@@ -34,6 +35,10 @@ const Header: Component<{
           WikiGame (pre-alpha)
         </a>
       </h1>
+      <Show when={props.lobby()?.state === "ingame"}>
+        <BackButton />
+        <ForwardButton />
+      </Show>
       <Show when={props.lobby()}>
         <b>
           WARNING: This game is really new, so write me on discord if you
@@ -64,7 +69,10 @@ const Header: Component<{
       </Show>
       <Show when={props.lobby()?.state === "ingame"}>
         <span> Players: </span>
-        <PlayerList players={props.lobby().players} />
+        <PlayerList
+          players={props.lobby().players}
+          pointsKey="points_current_round"
+        />
         <div>
           <span> Articles to find: </span>
           <For each={articles_to_find_with_points()}>

@@ -53,7 +53,7 @@ const LobbyOverview: Component<any> = (props) => {
       </Show>
       <div>
         <h3>Players in Lobby:</h3>
-        <PlayerList players={props.lobby()?.players} />
+        <PlayerList players={props.lobby()?.players} pointsKey="points" />
       </div>
     </div>
   );

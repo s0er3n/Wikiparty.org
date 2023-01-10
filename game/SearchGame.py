@@ -10,9 +10,11 @@ from game.ConnectionManager import manager
 from game.Game import Game
 from game.GameState import State
 from game.Player import Player, PlayerCopy
-from game.PlayerData import PlayerData, PlayerRights, PlayerState
+from game.PlayerData import PlayerData, PlayerRights, PlayerState, PlayerDataNoNode, Node
 from game.Query import Query
 from game.Response import Error, LobbyUpdate, Response
+
+logging.getLogger().setLevel(logging.INFO)
 
 
 class SearchGame(Game):
@@ -21,6 +23,7 @@ class SearchGame(Game):
     state: State = State.idle
 
     points: dict[Player, int]
+    points_current_round: dict[Player, int]
 
     players: dict[Player, PlayerData]
 
@@ -44,6 +47,7 @@ class SearchGame(Game):
 
     def __init__(self, id, host) -> None:
         self.points = defaultdict(int)
+        self.points_current_round = defaultdict(int)
         self.players = {}
         self.old_data = {}
         self.id = id
@@ -85,6 +89,13 @@ class SearchGame(Game):
         if self.state == State.ingame:
             next_move = self.start_article
             self.players[player].moves.append(next_move)
+            self.players[player].nodes.append(Node(
+                parent=None,
+                children=list(),
+                article=self.start_article
+            ))
+            self.players[player].node_position = self.players[player].nodes[-1]
+
             Query.execute(
                 move=next_move.url_name, recipient=player
             )
@@ -116,6 +127,7 @@ class SearchGame(Game):
             return
 
         self.found_articles: set[Article] = set()
+        self.points_current_round = defaultdict(int)
         self.round += 1
         self.state = State.ingame
         self._round_timer()
@@ -175,7 +187,6 @@ class SearchGame(Game):
         return self._make_lobby_update_response()
 
     def set_starting_position(self) -> None:
-        """gets a random wiki page to start"""
         print("setting start position")
         print(self.players.values())
 
@@ -205,11 +216,16 @@ class SearchGame(Game):
             players=[
                 (
                     PlayerCopy(
-                        id=player.id, name=player.name, points=self.points[player]
+                        id=player.id, name=player.name,
+                        points=self.points[player],
+                        points_current_round=self.points_current_round[player]
                     ),
-                    data,
+                    PlayerDataNoNode(
+                        rights=playerData.rights, state=playerData.state,
+                        moves=playerData.moves,
+                    ),
                 )
-                for player, data in self.players.items()
+                for player, playerData in self.players.items()
             ],
             _recipients=list(self.players.keys()),
         )
@@ -224,6 +240,12 @@ class SearchGame(Game):
         if start:
             self.start_article = Article(
                 url_name=url_name, pretty_name=better_name)
+            self.players[player].nodes.append(Node(
+                parent=None,
+                children=list(),
+                article=self.start_article
+            ))
+            self.players[player].node_position = self.players[player].nodes[-1]
         else:
             self.articles_to_find.add(
                 Article(url_name=url_name, pretty_name=better_name)
@@ -245,9 +267,9 @@ class SearchGame(Game):
             )
 
         if not self._is_move_allowed(url_name=url_name, player=player):
-            logging.warning("cheate detected")
+            logging.warning("cheate detected/ or double click")
             return Error(
-                e="cheater detected",
+                e="cheater detected/ or double click",
                 _recipients=[player],
             )
 
@@ -257,42 +279,74 @@ class SearchGame(Game):
             logging.warning("move failed")
             return None
 
+        current_node = self.players[player].node_position
+
+        if current_node.article.url_name == url_name:
+            logging.info(
+                "tried moving to same node as last move e.g. double click")
+            return None
+
         article = Article(pretty_name=pretty_name, url_name=url_name)
 
         self._add_points_current_move(article, player)
 
         self.players[player].moves.append(article)
+
+        new_node = current_node.add_child(article)
+
+        self.players[player].node_position = new_node
         if self._check_if_player_found_all(player):
             self.state = State.over
 
         return self._make_lobby_update_response()
 
+    def page_back(self, player: Player):
+        if self.players[player].node_position.parent is None:
+            logging.warning("cant go back already at first page")
+            return
+        self.players[player].node_position = self.players[player].node_position.parent
+        Query.execute(move=self.players[player].node_position.article.pretty_name,
+                      recipient=player)
+        return self._make_lobby_update_response()
+
+    def page_forward(self, player: Player):
+        if not self.players[player].node_position.children:
+            logging.warning("cant go forward already at latest page")
+            return
+        self.players[player].node_position = self.players[player].node_position.children[-1]
+        Query.execute(move=self.players[player].node_position.article.pretty_name,
+                      recipient=player)
+        return self._make_lobby_update_response()
+
     def _is_move_allowed(self, url_name: str, player: Player) -> bool:
-        current_location = self.players[player].moves[-1].url_name
+        current_location = self.players[player].node_position.article.url_name
         # links is a list of pretty names and the key of queries is the url name
         # WARNING pretty confusing WARNING
         return url_name in Query.queries[current_location]["links"]
 
     def _add_points_current_move(self, target: Article, player: Player) -> None:
-        if target not in self.articles_to_find:
+        if target.url_name not in [article.url_name for article in self.articles_to_find]:
             logging.info("move not in articles to find")
             return
-        if target in self.players[player].moves:
+
+        if target.url_name in [article.url_name for article in self.players[player].moves]:
             logging.info(
                 "article already found by player not counting it again")
             return
 
-        if target in self.found_articles:
+        if target.url_name in [article.url_name for article in self.found_articles]:
             logging.info("article found but not first")
             self.points[player] += 10
+            self.points_current_round[player] += 10
             return
 
         logging.info("article found for the first time")
         self.points[player] += 15
+        self.points_current_round[player] += 15
 
         self.found_articles.add(target)
 
     def _check_if_player_found_all(self, player: Player) -> bool:
         if player_data := self.players.get(player):
-            return set(player_data.moves).issuperset(self.articles_to_find)
+            return set(article.url_name for article in player_data.moves).issuperset(article.url_name for article in self.articles_to_find)
         return False
