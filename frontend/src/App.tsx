@@ -64,6 +64,7 @@ export const startWS = () => {
     missedMessages.forEach((msg) => {
       ws?.send(msg);
     });
+    missedMessages = [];
   };
   ws.onerror = function(err) {
     console.error("Socket encountered error: ", err, "Closing socket");
