@@ -27,7 +27,9 @@ const PlayerList: Component<Props> = (props) => {
           {(player) => (
             <li>
               <span>{player[0].name} : </span>
-              <span>{player[0].points_current_round}</span>
+              <span>
+                + {player[0].points_current_round} ({player[0].points})
+              </span>
               <ol>
                 <For each={player[1].moves?.map((move) => move.pretty_name)}>
                   {(article) => (
