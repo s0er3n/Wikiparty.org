@@ -6,6 +6,7 @@ import JoinOrCreateLobby from "./JoinOrCreateLobby";
 import SetUserName from "./SetUserName";
 import Lobby, { setGoToLobby } from "./lobby/Lobby";
 import { TLobby, TWiki } from "./types";
+import PlayerList from "./lobby/PlayerList";
 
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
@@ -118,24 +119,36 @@ const App: Component = () => {
   // derived state if player is host
 
   return (
-    <div>
-      <Header lobby={lobby} id={id} />
+    <div style="display: flex;">
+      <div>
+        <div style="width: max-content; position: sticky; left: 0.5; top: 50%;">
+          <Show when={lobby()}>
+            <PlayerList
+              players={lobby()?.players}
+              pointsKey="points_current_round"
+            />
+          </Show>
+        </div>
+      </div>
+      <div>
+        <Header lobby={lobby} id={id} />
 
-      <div align="center">
-        <Show when={!hasUserName()}>
-          <SetUserName setHasUserName={setHasUserName} />
-        </Show>
-        <Show when={hasUserName()}>
-          <Show when={connected()} fallback={<>connecting...</>}></Show>
-          <div>
-            <Show when={lobby()}>
-              <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
-            </Show>
-            <Show when={!lobby() && hasUserName()}>
-              <JoinOrCreateLobby />
-            </Show>
-          </div>
-        </Show>
+        <div align="center">
+          <Show when={!hasUserName()}>
+            <SetUserName setHasUserName={setHasUserName} />
+          </Show>
+          <Show when={hasUserName()}>
+            <Show when={connected()} fallback={<>connecting...</>}></Show>
+            <div>
+              <Show when={lobby()}>
+                <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
+              </Show>
+              <Show when={!lobby() && hasUserName()}>
+                <JoinOrCreateLobby />
+              </Show>
+            </div>
+          </Show>
+        </div>
       </div>
     </div>
   );
