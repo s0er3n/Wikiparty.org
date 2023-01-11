@@ -119,8 +119,8 @@ const App: Component = () => {
   // derived state if player is host
 
   return (
-    <div style="display: flex;">
-      <div>
+    <div style="display: flex; align-items: stretch; ">
+      <div style="border-right: 1px solid gray; margin-right: 5px;">
         <div style="width: max-content; position: sticky; padding-right: 5px; top: 50%;">
           <Show when={lobby()?.state === "ingame"}>
             <PlayerList
