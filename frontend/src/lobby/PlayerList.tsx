@@ -14,8 +14,10 @@ const PlayerList: Component<{
     >
       {(player: TPlayer) => (
         <>
-          <span> {player[0].name} : </span>
-          <span> {player[0][props.pointsKey] ?? 0} </span>
+          <div>
+            <span> {player[0].name} : </span>
+            <span> {player[0][props.pointsKey] ?? 0} </span>
+          </div>
         </>
       )}
     </For>

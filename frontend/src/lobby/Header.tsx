@@ -3,7 +3,6 @@ import { Accessor, Component, Show, For } from "solid-js";
 import Article from "../Article";
 import Timer from "../Timer";
 import { TLobby, TPlayer } from "../types";
-import PlayerList from "./PlayerList";
 import { ForwardButton, BackButton } from "./NavigationButtons";
 
 const Header: Component<{
