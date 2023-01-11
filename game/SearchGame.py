@@ -233,7 +233,14 @@ class SearchGame(Game):
 
     def set_article(self, player: Player, url_name: str, better_name, start=False) -> Response:
 
-        url_name = url_name.split("#")[0]
+        url_name: str | None = url_name.split("#")[0]
+
+        url_name = Query.query_and_add_to_queries(url_name)
+        if url_name is None:
+            return Error(
+                e="couldnt find article",
+                _recipients=[player],
+            )
 
         if not self._check_host(player):
             return Error(e="you are not allowed to do that", _recipients=[player])
