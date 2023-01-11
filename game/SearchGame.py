@@ -334,16 +334,16 @@ class SearchGame(Game):
         return url_name in Query.queries[current_location]["links"]
 
     def _add_points_current_move(self, target: Article, player: Player) -> None:
-        if target.url_name not in [article.url_name for article in self.articles_to_find]:
+        if target.pretty_name not in [article.pretty_name for article in self.articles_to_find]:
             logging.info("move not in articles to find")
             return
 
-        if target.url_name in [node.article.url_name for node in sorted_moves_list(self.players[player].node_position)]:
+        if target.pretty_name in [node.article.pretty_name for node in sorted_moves_list(self.players[player].node_position)]:
             logging.info(
                 "article already found by player not counting it again")
             return
 
-        if target.url_name in [article.url_name for article in self.found_articles]:
+        if target.pretty_name in [article.pretty_name for article in self.found_articles]:
             logging.info("article found but not first")
             self.points[player] += 10
             self.points_current_round[player] += 10
@@ -357,5 +357,5 @@ class SearchGame(Game):
 
     def _check_if_player_found_all(self, player: Player) -> bool:
         if player_data := self.players.get(player):
-            return set(node.article.url_name for node in sorted_moves_list(player_data.start_node, [])).issuperset(article.url_name for article in self.articles_to_find)
+            return set(node.article.pretty_name for node in sorted_moves_list(player_data.start_node, [])).issuperset(article.pretty_name for article in self.articles_to_find)
         return False
