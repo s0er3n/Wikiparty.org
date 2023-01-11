@@ -10,7 +10,7 @@ from game.ConnectionManager import manager
 from game.Game import Game
 from game.GameState import State
 from game.Player import Player, PlayerCopy
-from game.PlayerData import PlayerData, PlayerRights, PlayerState, PlayerDataNoNode, Node
+from game.PlayerData import PlayerData, PlayerRights, PlayerState, PlayerDataNoNode, Node, sorted_moves_list
 from game.Query import Query
 from game.Response import Error, LobbyUpdate, Response
 
@@ -61,6 +61,7 @@ class SearchGame(Game):
         if self._check_host(player):
             self.play_time = time
             return self._make_lobby_update_response()
+        return
 
     def join(self, player: Player) -> Response:
         if player in self.old_data.keys():
@@ -89,12 +90,15 @@ class SearchGame(Game):
 
         if self.state == State.ingame:
             next_move = self.start_article
-            self.players[player].nodes.append(Node(
+
+            start_node = Node(
                 parent=None,
                 children=list(),
                 article=self.start_article
-            ))
-            self.players[player].node_position = self.players[player].nodes[-1]
+            )
+
+            self.players[player].start_node = start_node
+            self.players[player].node_position = start_node
 
             Query.execute(
                 move=next_move.url_name, recipient=player
@@ -147,7 +151,7 @@ class SearchGame(Game):
         self.articles_to_find = set()
 
         for player_data in self.players.values():
-            player_data.nodes = []
+            player_data.node_position = None
 
         self.start_article = Article()
 
@@ -187,17 +191,16 @@ class SearchGame(Game):
         return self._make_lobby_update_response()
 
     def set_starting_position(self) -> None:
-        print("setting start position")
-        print(self.players.values())
 
         for data in self.players.values():
-            data.nodes.clear()
-            data.node_position = Node(article=self.start_article, parent=None)
-            data.nodes.append(data.node_position)
+            node = Node(article=self.start_article, parent=None)
+            data.node_position = node
+            data.start_node = node
 
         for data in self.old_data.values():
-            data.nodes.clear()
-            data.node_position = Node(article=self.start_article, parent=None)
+            node = Node(article=self.start_article, parent=None)
+            data.node_position = node
+            data.start_node = node
 
         for player in self.players:
             Query.execute(move=self.start_article.url_name, recipient=player)
@@ -223,7 +226,8 @@ class SearchGame(Game):
                     ),
                     PlayerDataNoNode(
                         rights=playerData.rights, state=playerData.state,
-                        moves=[node.article for node in self.players[player].nodes]
+                        moves=[node.article for node in sorted_moves_list(
+                            self.players[player].start_node)]
                     ),
                 )
                 for player, playerData in self.players.items()
@@ -248,12 +252,11 @@ class SearchGame(Game):
         if start:
             self.start_article = Article(
                 url_name=url_name, pretty_name=better_name)
-            self.players[player].nodes.append(Node(
+            self.players[player].node_position = Node(
                 parent=None,
                 children=list(),
                 article=self.start_article
-            ))
-            self.players[player].node_position = self.players[player].nodes[-1]
+            )
         else:
             self.articles_to_find.add(
                 Article(url_name=url_name, pretty_name=better_name)
@@ -301,7 +304,6 @@ class SearchGame(Game):
         new_node = current_node.add_child(article)
 
         self.players[player].node_position = new_node
-        self.players[player].nodes.append(new_node)
         if self._check_if_player_found_all(player):
             self.state = State.over
 
@@ -336,7 +338,7 @@ class SearchGame(Game):
             logging.info("move not in articles to find")
             return
 
-        if target.url_name in [node.article.url_name for node in self.players[player].nodes]:
+        if target.url_name in [node.article.url_name for node in sorted_moves_list(self.players[player].node_position)]:
             logging.info(
                 "article already found by player not counting it again")
             return
@@ -355,5 +357,5 @@ class SearchGame(Game):
 
     def _check_if_player_found_all(self, player: Player) -> bool:
         if player_data := self.players.get(player):
-            return set(node.article.url_name for node in player_data.nodes).issuperset(article.url_name for article in self.articles_to_find)
+            return set(node.article.url_name for node in sorted_moves_list(player_data.start_node, [])).issuperset(article.url_name for article in self.articles_to_find)
         return False
