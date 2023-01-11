@@ -191,19 +191,16 @@ class SearchGame(Game):
         return self._make_lobby_update_response()
 
     def set_starting_position(self) -> None:
-        print("setting start position")
-        print(self.players.values())
 
         for data in self.players.values():
-            # data.nodes.clear()
-            data.node_position = Node(article=self.start_article, parent=None)
-            data.start_node = data.node_position
-            # data.nodes.append(data.node_position)
+            node = Node(article=self.start_article, parent=None)
+            data.node_position = node
+            data.start_node = node
 
         for data in self.old_data.values():
-            # data.nodes.clear()
-            data.node_position = Node(article=self.start_article, parent=None)
-            data.start_node = data.node_position
+            node = Node(article=self.start_article, parent=None)
+            data.node_position = node
+            data.start_node = node
 
         for player in self.players:
             Query.execute(move=self.start_article.url_name, recipient=player)
@@ -353,10 +350,5 @@ class SearchGame(Game):
 
     def _check_if_player_found_all(self, player: Player) -> bool:
         if player_data := self.players.get(player):
-            print("start node:")
-            print(player_data.start_node)
-            print([node.article.url_name for node in sorted_moves_list(
-                player_data.start_node)])
-            print(set(article.url_name for article in self.articles_to_find))
             return set(node.article.url_name for node in sorted_moves_list(player_data.start_node, [])).issuperset(article.url_name for article in self.articles_to_find)
         return False

@@ -34,20 +34,14 @@ class Node:
 
 def sorted_moves_list(node: Node, res: list | None = None) -> list[Node]:
     if node is None:
-        logging.warning("sorted_moves_list got object None")
+        logging.info("sorted_moves_list got object None")
         return []
     if res is None:
         res = []
-    print("rec parent")
-    print(node)
-    print(node.children)
     res.append(node)
     if not node.children:
         return res
     for child in node.children:
-        print("rec child")
-        print(child)
-        print(child.children)
         if child not in res:
             res = sorted_moves_list(child, res=res)
     return res
