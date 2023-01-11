@@ -1,4 +1,5 @@
 from __future__ import annotations
+import logging
 
 import dataclasses
 from enum import Enum
@@ -31,11 +32,24 @@ class Node:
         return new_node
 
 
-def iter(node: Node, res=[]) -> list[Node]:
+def sorted_moves_list(node: Node, res: list | None = None) -> list[Node]:
+    if node is None:
+        logging.warning("sorted_moves_list got object None")
+        return []
+    if res is None:
+        res = []
+    print("rec parent")
+    print(node)
+    print(node.children)
     res.append(node)
+    if not node.children:
+        return res
     for child in node.children:
+        print("rec child")
+        print(child)
+        print(child.children)
         if child not in res:
-            iter(child, res=res)
+            res = sorted_moves_list(child, res=res)
     return res
 
 
@@ -44,7 +58,7 @@ class PlayerData:
     rights: PlayerRights
     state: PlayerState = PlayerState.watching
     node_position: Node | None = None
-    nodes: list[Node] = dataclasses.field(default_factory=list)
+    start_node: Node | None = None
 
 
 @dataclasses.dataclass
