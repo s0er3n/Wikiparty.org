@@ -25,13 +25,6 @@ const RandomArticle: Component<{ setter: (random_article: string) => void }> = (
       onclick={async () => {
         if (random_articles.length === 5 || random_articles.length === 0) {
           try {
-            // let response = await fetch(
-            //   "https://en.wikipedia.org/w/api.php?action=query&list=random&format=json&rnnamespace=0&rnlimit=100&origin=*"
-            // );
-            // let data = (await response.json()) as {
-            //   query: { random: { title: string }[] };
-            // };
-            // random_articles = data.query.random.map((e) => e.title);
             sendMessage(getRandomArticleMsg);
           } catch (e) {
             alert(e);
