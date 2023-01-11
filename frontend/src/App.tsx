@@ -6,7 +6,9 @@ import JoinOrCreateLobby from "./JoinOrCreateLobby";
 import SetUserName from "./SetUserName";
 import Lobby, { setGoToLobby } from "./lobby/Lobby";
 import { TLobby, TWiki } from "./types";
+import { addRandomArticles } from "./RandomArticle";
 import PlayerList from "./lobby/PlayerList";
+
 
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
@@ -98,6 +100,8 @@ export const startWS = () => {
       window.scrollTo(0, 0);
       console.log(data);
       // search -> maybe add a method on backend
+    } else if (data.method === "Random") {
+      addRandomArticles(data.data);
     } else if (typeof data.data === "object") {
       console.log(data.data);
       if (!data.data.error) {
