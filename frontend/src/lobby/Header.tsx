@@ -29,7 +29,7 @@ const Header: Component<{
       });
   };
   return (
-    <div style="position: sticky; top: 0;  background-color: rgba(255,255,255,1);">
+    <div style="margin-bottom: 5px; border-bottom: 2px solid black; position: sticky; top: 0;  background-color: rgba(255,255,255,1);">
       <h1>
         <a href="/" class="btn btn-ghost normal-case text-xl">
           WikiGame (pre-alpha)
@@ -72,11 +72,6 @@ const Header: Component<{
         </Show>
       </div>
       <Show when={props.lobby()?.state === "ingame"}>
-        <span> Players: </span>
-        <PlayerList
-          players={props.lobby().players}
-          pointsKey="points_current_round"
-        />
         <div>
           <span> Articles to find: </span>
           <For each={articles_to_find_with_points()}>

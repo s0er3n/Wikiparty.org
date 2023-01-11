@@ -121,8 +121,8 @@ const App: Component = () => {
   return (
     <div style="display: flex;">
       <div>
-        <div style="width: max-content; position: sticky; left: 0.5; top: 50%;">
-          <Show when={lobby()}>
+        <div style="width: max-content; position: sticky; padding-right: 5px; top: 50%;">
+          <Show when={lobby()?.state === "ingame"}>
             <PlayerList
               players={lobby()?.players}
               pointsKey="points_current_round"
@@ -130,7 +130,7 @@ const App: Component = () => {
           </Show>
         </div>
       </div>
-      <div>
+      <div style="width: 100%">
         <Header lobby={lobby} id={id} />
 
         <div align="center">
