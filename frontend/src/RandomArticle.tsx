@@ -10,9 +10,6 @@ let getRandomArticleMsg = {
 let random_articles: string[] = [];
 export const addRandomArticles = (articles: string[]) => {
   random_articles = random_articles.concat(articles);
-
-  random_articles = random_articles.sort(() => Math.random() - 0.5);
-  console.log(random_articles);
 };
 
 const RandomArticle: Component<{ setter: (random_article: string) => void }> = (
