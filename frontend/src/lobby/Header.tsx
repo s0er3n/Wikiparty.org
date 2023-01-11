@@ -29,7 +29,7 @@ const Header: Component<{
       });
   };
   return (
-    <div>
+    <div style="position: sticky; top: 0;  background-color: rgba(255,255,255,1);">
       <h1>
         <a href="/" class="btn btn-ghost normal-case text-xl">
           WikiGame (pre-alpha)
