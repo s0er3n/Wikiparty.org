@@ -133,11 +133,18 @@ class PlayersHandler:
 
     players: dict[Player, PlayerData]
 
+    players_offline: dict[Player, PlayerData]
+
     def __init__(self) -> None:
         self.players = {}
+        self.players_offline = {}
 
     def add_player(self, player: Player, player_data: PlayerData) -> None:
-        self.players[player] = player_data
+        if player not in self.players and player not in self.players_offline:
+            self.players[player] = player_data
+        if self.players_offline.get(player):
+            self.players[player] = self.players_offline[player]
+            del self.players_offline[player]
 
     def get_player_data(self, player: Player) -> PlayerData | None:
         return self.players.get(player)
@@ -147,6 +154,12 @@ class PlayersHandler:
 
     def get_all_players(self):
         return self.players.keys()
+
+    def go_offline(self, player: Player) -> None:
+        player_data = self.players.get(player)
+        if player_data:
+            self.players_offline[player] = player_data
+            del self.players[player]
 
 
 class SearchGame(Game):
@@ -192,20 +205,15 @@ class SearchGame(Game):
             ))
 
         if self.state == State.ingame:
-            next_move = self.rounds[-1].start_article
+
+            next_move = self.rounds[-1].get_current_article(player)
             Query.execute(
                 move=next_move.url_name, recipient=player
             )
         return self._make_lobby_update_response()
 
     def leave(self, player: Player) -> Response | None:
-        # TODO: implement this
-        return
-
-        return Error(
-            e="you are not in this lobby",
-            _recipients=[player],
-        )
+        self.players_handler.go_offline(player)
 
     def _check_host(self, host: Player) -> bool:
         return self.players_handler.get_player_data(host).rights == PlayerRights.host
@@ -254,6 +262,13 @@ class SearchGame(Game):
             Query.execute(
                 move=self.rounds[-1].start_article.url_name, recipient=player)
 
+    def _calculate_points_total(self, player: Player) -> int:
+        points = 0
+        for round in self.rounds:
+            if round.points.get(player):
+                points += round.points[player]
+        return points
+
     def _make_lobby_update_response(self) -> LobbyUpdate:
         return LobbyUpdate(
             articles_to_find=list(
@@ -270,8 +285,8 @@ class SearchGame(Game):
                     PlayerCopy(
                         id=player.id, name=player.name,
                         points=self.rounds[-1].get_points(player),
-                        # FIXME: calculate total points
-                        points_current_round=self.rounds[-1].get_points(player)
+                        points_current_round=self._calculate_points_total(
+                            player)
                     ),
                     PlayerDataNoNode(
                         rights=playerData.rights,
@@ -320,12 +335,12 @@ class SearchGame(Game):
                 _recipients=[player],
             )
 
-        # if not self._is_move_allowed(url_name=url_name, player=player):
-        #     logging.warning("cheate detected/ or double click")
-        #     return Error(
-        #         e="cheater detected/ or double click",
-        #         _recipients=[player],
-        #     )
+        if not self._is_move_allowed(url_name=url_name, player=player):
+            logging.warning("cheate detected/ or double click")
+            return Error(
+                e="cheater detected/ or double click",
+                _recipients=[player],
+            )
 
         pretty_name = Query.execute(move=url_name, recipient=player)
 
@@ -363,8 +378,8 @@ class SearchGame(Game):
                       recipient=player)
         return self._make_lobby_update_response()
 
-    # def _is_move_allowed(self, url_name: str, player: Player) -> bool:
-    #     current_location = self.players[player].node_position.article.url_name
-    #     # links is a list of pretty names and the key of queries is the url name
-    #     # WARNING pretty confusing WARNING
-    #     return url_name in Query.queries[current_location]["links"]
+    def _is_move_allowed(self, url_name: str, player: Player) -> bool:
+        current_location = self.rounds[-1].get_current_article(player).url_name
+        # links is a list of pretty names and the key of queries is the url name
+        # WARNING pretty confusing WARNING
+        return url_name in Query.queries[current_location]["links"]
