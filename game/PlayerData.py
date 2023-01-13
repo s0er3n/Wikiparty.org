@@ -12,12 +12,6 @@ class PlayerRights(str, Enum):
     normal = "normal"
 
 
-class PlayerState(str, Enum):
-    hunting = "hunting"
-    watching = "watching"
-    finnished = "finnished"
-
-
 @dataclasses.dataclass
 class Node:
     article: Article
@@ -50,13 +44,9 @@ def sorted_moves_list(node: Node, res: list | None = None) -> list[Node]:
 @dataclasses.dataclass
 class PlayerData:
     rights: PlayerRights
-    state: PlayerState = PlayerState.watching
-    node_position: Node | None = None
-    start_node: Node | None = None
 
 
 @dataclasses.dataclass
 class PlayerDataNoNode:
     rights: PlayerRights
-    state: PlayerState = PlayerState.watching
     moves: list[Article] = dataclasses.field(default_factory=list)
