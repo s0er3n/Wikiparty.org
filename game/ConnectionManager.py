@@ -34,6 +34,8 @@ class ConnectionManager:
         if not message:
             logging.warning("no response")
             return
+        if message.method == "Error":
+            logging.warning(message.e)
 
         for player in message._recipients:
             try:

@@ -39,7 +39,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                     if method.startswith("_"):
                         await manager.send_response(Error(e="not allowed", _recipients=[player]))
                         continue
-                    target: SearchQuery | SearchGame | LobbyServer | Player | None = None
+                    target: SearchQuery | RandomQuery | SearchGame | LobbyServer | Player | None = None
                     if data.get("type") == "player":
                         target = player
                     elif data.get("type") == "game":
@@ -52,10 +52,10 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                         target = RandomQuery()
                     else:
                         target = lobbyServer
-                    # try:
-                    await manager.send_response(getattr(target, method)(player, **args))
-                    # except Exception as e:
-                    #     await manager.send_response(Error(e=str(e), _recipients=[player]))
+                    try:
+                        await manager.send_response(getattr(target, method)(player, **args))
+                    except Exception as e:
+                        await manager.send_response(Error(e=str(e), _recipients=[player]))
 
                 case _:
                     await manager.send_response(
