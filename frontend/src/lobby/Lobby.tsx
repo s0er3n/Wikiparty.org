@@ -19,7 +19,7 @@ export const isHost = (props: {
   lobby: Accessor<TLobby | null>;
 }) => {
   // find host
-  const host = props.lobby()?.players.find((p) => p[1].rights === "host");
+  const host = props?.lobby()?.players.find((p) => p[1].rights === "host");
   if (!host) return false;
   return host[0].id == props.id && props.id; // checks for not null
 };
@@ -65,7 +65,7 @@ const Lobby: Component<{
       </Show>
 
       <Show when={local.lobby()?.state === "over"}>
-        <GameOver local={local} players={local.lobby()?.players} />
+        <GameOver lobby={local.lobby} players={local.lobby()?.players} />
       </Show>
     </div>
   );
