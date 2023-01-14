@@ -110,13 +110,15 @@ class PointsCounter:
         self.round_data = round_data
 
     def check_for_points_on_move(self, player: Player, article: Article) -> None:
-        if article.pretty_name in self.round_data.get_articles_to_find_pretty_name():
+        player_moves = [
+            article.pretty_name for article in self.round_data.get_moves(player)]
+        if article.pretty_name in self.round_data.get_articles_to_find_pretty_name() and article.pretty_name not in player_moves:
             if not self.round_data.points.get(player):
                 self.round_data.points[player] = 0
             self.round_data.points[player] += 10
             logging.info(
                 f"Player {player.name} found article {article.pretty_name} + 10 points")
-            if article.pretty_name in self.round_data.get_found_articles_pretty_name():
+            if article.pretty_name not in self.round_data.get_found_articles_pretty_name():
                 self.round_data.points[player] += 5
                 self.round_data.found_articles.add(article)
                 logging.info(
@@ -346,12 +348,6 @@ class SearchGame(Game):
         url_name = url_name.split("#")[0]
 
         logging.info("move to " + url_name)
-        if self.state != State.ingame:
-            logging.warning("not allowed to move because not ingame")
-            return Error(
-                e="not allowed to move",
-                _recipients=[player],
-            )
 
         pretty_name = Query.execute(move=url_name, recipient=player)
 
