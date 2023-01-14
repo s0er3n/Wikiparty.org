@@ -335,6 +335,14 @@ class SearchGame(Game):
                 _recipients=[player],
             )
 
+        if not self._is_move_allowed(url_name=url_name, player=player):
+            logging.warning("cheate detected/ or double click")
+            return Error(
+                e="cheater detected/ or double click",
+                _recipients=[player],
+            )
+
+        # needs be after is move allowed otherwise links with # are not allowed bc they are not in the link list
         url_name = url_name.split("#")[0]
 
         logging.info("move to " + url_name)
@@ -342,13 +350,6 @@ class SearchGame(Game):
             logging.warning("not allowed to move because not ingame")
             return Error(
                 e="not allowed to move",
-                _recipients=[player],
-            )
-
-        if not self._is_move_allowed(url_name=url_name, player=player):
-            logging.warning("cheate detected/ or double click")
-            return Error(
-                e="cheater detected/ or double click",
                 _recipients=[player],
             )
 
