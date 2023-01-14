@@ -2,7 +2,6 @@ import { Accessor, Component, createSignal, For, Show } from "solid-js";
 import { sendMessage } from "./../App";
 import RandomArticle from "./../RandomArticle";
 import { isHost, setGoToLobby } from "./Lobby";
-
 let [article, setArticle] = createSignal("");
 
 const SetArticle: Component<{
@@ -50,8 +49,7 @@ const SetArticle: Component<{
         when={
           props.lobby().state === "idle" &&
           props.lobby().articles_to_find.length &&
-          props.lobby().start_article &&
-          isHost(props)
+          props.lobby().start_article
         }
       >
         <button
@@ -63,7 +61,6 @@ const SetArticle: Component<{
           go to lobby
         </button>
       </Show>
-
       <Show when={article() !== ""}>
         <ArticleSuggestionsList search={props.search} lobby={props.lobby} />
       </Show>
@@ -76,33 +73,31 @@ const ArticleSuggestionsList: Component<{
   search: Accessor<Array<Array<string>> | undefined>;
 }> = (props) => {
   return (
-    <ul>
-      <For each={props.search ? props?.search()?.at(3) ?? [] : []}>
-        {(result, i) => (
-          <p>
-            <span> {props.search()?.at(1)?.at(i())} </span>
-            <button
-              onclick={() => {
-                let setArticleMsg = {
-                  type: "game",
-                  method: "set_article",
-                  args: {
-                    url_name: result?.split("wiki/").pop(),
-                    better_name: props.search()?.at(1)?.at(i()),
-                    start: props.lobby().start_article === "",
-                  },
-                };
-                sendMessage(setArticleMsg);
-                setArticle("");
-              }}
-              class="btn"
-            >
-              select
-            </button>
-          </p>
-        )}
-      </For>
-    </ul>
+    <For each={props.search ? props?.search()?.at(3) ?? [] : []}>
+      {(result, i) => (
+        <p>
+          <span> {props.search()?.at(1)?.at(i())} </span>
+          <button
+            onclick={() => {
+              let setArticleMsg = {
+                type: "game",
+                method: "set_article",
+                args: {
+                  url_name: result?.split("wiki/").pop(),
+                  better_name: props.search()?.at(1)?.at(i()),
+                  start: props.lobby().start_article === "",
+                },
+              };
+              sendMessage(setArticleMsg);
+              setArticle("");
+            }}
+            class="btn"
+          >
+            select
+          </button>
+        </p>
+      )}
+    </For>
   );
 };
 export default SetArticle;
