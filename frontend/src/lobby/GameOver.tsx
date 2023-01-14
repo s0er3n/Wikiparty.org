@@ -9,6 +9,7 @@ type Props = {
   players: TPlayer[] | undefined;
   // TOOD: invastigae whats happening here
   lobby: Accessor<TLobby | null>;
+  id: any;
 };
 
 const PlayerList: Component<Props> = (props) => {
@@ -35,7 +36,7 @@ const PlayerList: Component<Props> = (props) => {
                 <For each={player[1].moves?.map((move) => move.pretty_name)}>
                   {(article, i) => (
                     <div>
-                      {i() + 1} <Article articles_to_find={props.lobby()?.articles_to_find} lobby={props.lobby} title={article} />
+                      {i() + 1} <Article articles_to_find={props.lobby()?.articles_to_find} title={article} />
                     </div>
                   )}
                 </For>
@@ -45,7 +46,7 @@ const PlayerList: Component<Props> = (props) => {
         </For>
       </div>
 
-      <Show when={isHost(props)}>
+      <Show when={isHost({ lobby: props.lobby, id: props.id })}>
         <p>
           <button
             class="btn mt-3"
