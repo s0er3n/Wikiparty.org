@@ -10,8 +10,6 @@ import { addRandomArticles } from "./RandomArticle";
 
 import PlayerList from "./lobby/PlayerList";
 
-
-
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
 let ws: WebSocket | null = null;
@@ -104,6 +102,8 @@ export const startWS = () => {
       // search -> maybe add a method on backend
     } else if (data.method === "Random") {
       addRandomArticles(data.data);
+    } else if (data.method === "LobbyNotFound") {
+      setLobby(null);
     } else if (typeof data.data === "object") {
       console.log(data.data);
       if (!data.data.error) {
@@ -126,16 +126,16 @@ const App: Component = () => {
 
   return (
     <div style="display: flex; align-items: stretch; ">
-      <div style="border-right: 1px solid gray; margin-right: 5px;">
-        <div style="width: max-content; position: sticky; padding-right: 5px; top: 50%;">
-          <Show when={lobby()?.state === "ingame"}>
+      <Show when={lobby()?.state === "ingame"}>
+        <div style="border-right: 1px solid gray; margin-right: 5px;">
+          <div style="width: max-content; position: sticky; padding-right: 5px; top: 50%;">
             <PlayerList
               players={lobby()?.players}
               pointsKey="points_current_round"
             />
-          </Show>
+          </div>
         </div>
-      </div>
+      </Show>
       <div style="width: 100%">
         <Header lobby={lobby} id={id} />
 

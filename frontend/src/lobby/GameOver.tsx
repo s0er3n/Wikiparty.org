@@ -14,7 +14,7 @@ const PlayerList: Component<Props> = (props) => {
   if (!props.players) return <></>;
   return (
     <div>
-      <ul>
+      <div>
         <For
           each={
             props.players.sort(
@@ -25,24 +25,24 @@ const PlayerList: Component<Props> = (props) => {
           }
         >
           {(player) => (
-            <li>
+            <div>
               <span>{player[0].name} : </span>
               <span>
                 + {player[0].points_current_round} ({player[0].points})
               </span>
               <ol>
                 <For each={player[1].moves?.map((move) => move.pretty_name)}>
-                  {(article) => (
-                    <li>
-                      <Article title={article} />
-                    </li>
+                  {(article, i) => (
+                    <div>
+                      {i() + 1} <Article title={article} />
+                    </div>
                   )}
                 </For>
               </ol>
-            </li>
+            </div>
           )}
         </For>
-      </ul>
+      </div>
 
       <Show when={isHost(props.local)}>
         <p>

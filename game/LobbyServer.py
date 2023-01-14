@@ -3,7 +3,7 @@ import uuid
 
 from game.Lobby import Lobby
 from game.Player import Player
-from game.Response import Response
+from game.Response import Response, LobbyNotFound
 
 
 class LobbyServer:
@@ -41,7 +41,7 @@ class LobbyServer:
 
         if not lobby:
             logging.warning("lobby with that id not found")
-            return None
+            return LobbyNotFound(_recipients=[player])
 
         # if player in lobby.players:
         #     logging.warning("player already in lobby doing nothing")

@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 
 from game.Player import Player, PlayerCopy
-from game.PlayerData import PlayerData
+from game.PlayerData import PlayerDataNoNode
 from game.QueryResult import QueryResult
 
 
@@ -26,7 +26,7 @@ class LobbyUpdate(Response):
     end_time: int
     state: str
     id: str
-    players: list[tuple[PlayerCopy, PlayerData]]
+    players: list[tuple[PlayerCopy, PlayerDataNoNode]]
     articles_to_find: list[str]
     articles_found: list[str]
     start_article: str
@@ -43,3 +43,8 @@ class Wiki(Response):
 class Random(Response):
     data: list[str]
     method: str = "Random"
+
+
+@dataclasses.dataclass(kw_only=True)
+class LobbyNotFound(Response):
+    method: str = "LobbyNotFound"

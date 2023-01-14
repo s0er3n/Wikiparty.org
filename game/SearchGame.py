@@ -10,11 +10,158 @@ from game.ConnectionManager import manager
 from game.Game import Game
 from game.GameState import State
 from game.Player import Player, PlayerCopy
-from game.PlayerData import PlayerData, PlayerRights, PlayerState, PlayerDataNoNode, Node, sorted_moves_list
+from game.PlayerData import PlayerData, PlayerRights,  PlayerDataNoNode, Node, sorted_moves_list
 from game.Query import Query
 from game.Response import Error, LobbyUpdate, Response
+from dataclasses import dataclass, field
 
 logging.getLogger().setLevel(logging.INFO)
+
+
+@dataclass
+class Moves:
+    start: Node
+    current: Node
+
+    def get_moves(self) -> list[Article]:
+        return [node.article for node in sorted_moves_list(self.start, [])]
+
+    def go_back(self) -> None:
+        if self.current.parent is not None:
+            self.current = self.current.parent
+
+    def go_forward(self) -> None:
+        if self.current.children:
+            self.current = self.current.children[-1]
+
+
+def create_defaultdict():
+    return defaultdict(int)
+
+
+@dataclass
+class RoundData:
+    """Data for a single round of the game."""
+
+    points: dict[Player, int] = field(default_factory=create_defaultdict)
+
+    moves: dict[Player, Moves] = field(default_factory=dict)
+
+    articles_to_find: set[Article] = field(default_factory=set)
+
+    found_articles: set[Article] = field(default_factory=set)
+
+    start_article: Article = Article("", "")
+
+    end_time: int = 0
+
+    def get_articles_to_find_pretty_name(self) -> set[str]:
+        return set(article.pretty_name for article in self.articles_to_find)
+
+    def get_found_articles_pretty_name(self) -> set[str]:
+        return set(article.pretty_name for article in self.found_articles)
+
+    def add_move(self, player: Player, article: Article):
+        """Add a move to the round data."""
+        if player not in self.moves:
+            start_node = Node(self.start_article, parent=None)
+            new_node = start_node.add_child(article)
+            self.moves[player] = Moves(start_node, new_node)
+        else:
+            self.moves[player].current = self.moves[player].current.add_child(
+                article)
+
+    def get_points(self, player: Player) -> int:
+        """Get the points of a player."""
+        if player not in self.points:
+            return 0
+        return self.points[player]
+
+    def get_moves(self, player: Player) -> list[Article]:
+        """Get the moves of a player."""
+        if player not in self.moves:
+            return []
+        return self.moves[player].get_moves()
+
+    def go_back(self, player: Player) -> None:
+        """Go back one move for a player."""
+        if player in self.moves:
+            self.moves[player].go_back()
+
+    def go_forward(self, player: Player) -> None:
+        """Go forward one move for a player."""
+        if player in self.moves:
+            self.moves[player].go_forward()
+
+    def get_current_article(self, player: Player) -> Article:
+        """Get the current article of a player."""
+        if player in self.moves:
+            return self.moves[player].current.article
+        return self.start_article
+
+
+class PointsCounter:
+    """Counts points for a single round."""
+
+    def __init__(self, round_data: RoundData) -> None:
+        self.round_data = round_data
+
+    def set_new_round(self, round_data: RoundData) -> None:
+        self.round_data = round_data
+
+    def check_for_points_on_move(self, player: Player, article: Article) -> None:
+        player_moves = [
+            article.pretty_name for article in self.round_data.get_moves(player)]
+        if article.pretty_name in self.round_data.get_articles_to_find_pretty_name() and article.pretty_name not in player_moves:
+            if not self.round_data.points.get(player):
+                self.round_data.points[player] = 0
+            self.round_data.points[player] += 10
+            logging.info(
+                f"Player {player.name} found article {article.pretty_name} + 10 points")
+            if article.pretty_name not in self.round_data.get_found_articles_pretty_name():
+                self.round_data.points[player] += 5
+                self.round_data.found_articles.add(article)
+                logging.info(
+                    f"Player {player.name} found article {article.pretty_name} + 5 points")
+
+
+class RoundEndChecker:
+
+    def check_for_end(self, player: Player, round_data: RoundData) -> bool:
+        return set(article.pretty_name for article in round_data.get_moves(player)).issuperset(round_data.get_articles_to_find_pretty_name())
+
+
+class PlayersHandler:
+
+    players: dict[Player, PlayerData]
+
+    players_offline: dict[Player, PlayerData]
+
+    def __init__(self) -> None:
+        self.players = {}
+        self.players_offline = {}
+
+    def add_player(self, player: Player, player_data: PlayerData) -> None:
+        if player not in self.players and player not in self.players_offline:
+            self.players[player] = player_data
+        if self.players_offline.get(player):
+            self.players[player] = self.players_offline[player]
+            del self.players_offline[player]
+
+    def get_player_data(self, player: Player) -> PlayerData | None:
+        return self.players.get(player)
+
+    def get_all_players_with_data(self):
+        return self.players.items()
+
+    def get_all_players(self):
+        return self.players.keys()
+
+    def go_offline(self, player: Player) -> None:
+        player_data = self.players.get(player)
+        if player_data:
+            self.players_offline[player] = player_data
+            del self.players[player]
 
 
 class SearchGame(Game):
@@ -22,40 +169,25 @@ class SearchGame(Game):
 
     state: State = State.idle
 
-    points: dict[Player, int]
-    points_current_round: dict[Player, int]
-
-    players: dict[Player, PlayerData]
-
-    old_data: dict[Player, PlayerData]
-
-    articles_to_find: set[Article]
-
-    found_articles: set[Article]
-
-    start_article: Article
-
-    end_time: int = 0
-
     host: Player
+
+    rounds: list[RoundData]
 
     # TODO: why is here the id shouldnt it be in lobby server
     id: str
 
-    play_time: int
     round: int = 0
 
-    def __init__(self, id, host) -> None:
-        self.points = defaultdict(int)
-        self.points_current_round = defaultdict(int)
-        self.players = {}
-        self.old_data = {}
+    play_time: int = 600
+
+    def __init__(self, id, host, points_counter=PointsCounter, round_end_checker=RoundEndChecker) -> None:
         self.id = id
-        self.articles_to_find = set()
-        self.found_articles = set()
-        self.start_article = Article("", "")
-        self.play_time = 60 * 10
         self.host = host
+        round_data = RoundData()
+        self.rounds = [round_data]
+        self.points_counter = points_counter(round_data)
+        self.round_end_checker = round_end_checker()
+        self.players_handler = PlayersHandler()
 
     def set_time(self, player: Player, time: int) -> Response | None:
         if self._check_host(player):
@@ -64,82 +196,42 @@ class SearchGame(Game):
         return
 
     def join(self, player: Player) -> Response:
-        if player in self.old_data.keys():
-            # sending the starting postion to the player that joined
-            self.players[player] = self.old_data.pop(player)
-            if self.state == State.ingame:
-                if self.players[player].node_position is not None:
-                    next_move = self.players[player].node_position.article
-                else:
-                    next_move = self.start_article
-                    self.players[player].node_position = Node(
-                        article=next_move, parent=None)
-                Query.execute(
-                    move=next_move.url_name, recipient=player
-                )
-            return self._make_lobby_update_response()
 
         if player == self.host:
-            self.players[player] = PlayerData(
+            self.players_handler.add_player(player, PlayerData(
                 rights=PlayerRights.host,
-            )
+            ))
         else:
-            self.players[player] = PlayerData(
+            self.players_handler.add_player(player, PlayerData(
                 rights=PlayerRights.normal,
-            )
+            ))
 
         if self.state == State.ingame:
-            next_move = self.start_article
 
-            start_node = Node(
-                parent=None,
-                children=list(),
-                article=self.start_article
-            )
-
-            self.players[player].start_node = start_node
-            self.players[player].node_position = start_node
-
+            next_move = self.rounds[-1].get_current_article(player)
             Query.execute(
                 move=next_move.url_name, recipient=player
             )
         return self._make_lobby_update_response()
 
-    def leave(self, player: Player) -> Response:
-        if player in self.players.keys():
-            self.old_data[player] = self.players.pop(player)
-            return self._make_lobby_update_response()
-
-        # TODO: improve errors
-        return Error(
-            e="you are not in this lobby",
-            _recipients=[player],
-        )
+    def leave(self, player: Player) -> Response | None:
+        self.players_handler.go_offline(player)
 
     def _check_host(self, host: Player) -> bool:
-        return self.players[host].rights == PlayerRights.host
+        return self.players_handler.get_player_data(host).rights == PlayerRights.host
 
     def start(self, host: Player) -> Response | None:
         if not self._check_host(host):
             return
 
-        if not self.start_article:
-            return
-
-        if self.players[host].rights != PlayerRights.host:
-            logging.warning("not allowed to start the game")
-            return
-
-        self.found_articles: set[Article] = set()
-        self.points_current_round = defaultdict(int)
         self.round += 1
         self.state = State.ingame
+
         self._round_timer()
         self.set_starting_position()
 
-        self.end_time = int(time.time() * 1000) + self.play_time * 1000
-        for player_data in self.players.values():
-            player_data.state = PlayerState.hunting
+        self.rounds[-1].end_time = int(time.time()
+                                       * 1000) + self.play_time * 1000
 
         return self._make_lobby_update_response()
 
@@ -148,12 +240,9 @@ class SearchGame(Game):
             return
 
         self.state = State.idle
-        self.articles_to_find = set()
 
-        for player_data in self.players.values():
-            player_data.node_position = None
-
-        self.start_article = Article()
+        self.rounds.append(RoundData())
+        self.points_counter.set_new_round(self.rounds[-1])
 
         return self._make_lobby_update_response()
 
@@ -170,50 +259,26 @@ class SearchGame(Game):
             update_state(round=self.round),))
         thread.start()
 
-    def set_role(self, host: Player, player_id: str, role: str) -> Response | None:
-        player = next(
-            player for player in self.players if player.id == player_id)
-
-        role = PlayerState(role)
-        if not self._check_host(host):
-            return
-        if not State.idle:
-            logging.warning(
-                "someone tried to change the role while ingame/gameover")
-            return
-
-        if not (role == PlayerState.hunting or role == PlayerState.watching):
-            logging.warning("cannot give you that role")
-            return
-
-        self.players[player].state = role
-
-        return self._make_lobby_update_response()
-
     def set_starting_position(self) -> None:
+        for player in self.players_handler.get_all_players():
+            Query.execute(
+                move=self.rounds[-1].start_article.url_name, recipient=player)
 
-        for data in self.players.values():
-            node = Node(article=self.start_article, parent=None)
-            data.node_position = node
-            data.start_node = node
-
-        for data in self.old_data.values():
-            node = Node(article=self.start_article, parent=None)
-            data.node_position = node
-            data.start_node = node
-
-        for player in self.players:
-            Query.execute(move=self.start_article.url_name, recipient=player)
+    def _calculate_points_total(self, player: Player) -> int:
+        points = 0
+        for round in self.rounds:
+            if round.points.get(player):
+                points += round.points[player]
+        return points
 
     def _make_lobby_update_response(self) -> LobbyUpdate:
         return LobbyUpdate(
             articles_to_find=list(
-                article.pretty_name for article in self.articles_to_find
-            ),
-            end_time=self.end_time,
+                self.rounds[-1].get_articles_to_find_pretty_name()),
+            end_time=self.rounds[-1].end_time,
             articles_found=list(
-                article.pretty_name for article in self.found_articles),
-            start_article=self.start_article.pretty_name,
+                self.rounds[-1].get_found_articles_pretty_name()),
+            start_article=self.rounds[-1].start_article.pretty_name,
             id=self.id,
             state=self.state.value,
             time=self.play_time,
@@ -221,21 +286,26 @@ class SearchGame(Game):
                 (
                     PlayerCopy(
                         id=player.id, name=player.name,
-                        points=self.points[player],
-                        points_current_round=self.points_current_round[player]
+                        points=self.rounds[-1].get_points(player),
+                        points_current_round=self._calculate_points_total(
+                            player)
                     ),
                     PlayerDataNoNode(
-                        rights=playerData.rights, state=playerData.state,
-                        moves=[node.article for node in sorted_moves_list(
-                            self.players[player].start_node)]
+                        rights=playerData.rights,
+                        moves=self.rounds[-1].get_moves(player)
                     ),
                 )
-                for player, playerData in self.players.items()
+                for player, playerData in self.players_handler.get_all_players_with_data()
             ],
-            _recipients=list(self.players.keys()),
+            _recipients=list(self.players_handler.get_all_players()),
         )
 
     def set_article(self, player: Player, url_name: str, better_name, start=False) -> Response:
+        if not self._check_host(player):
+            return Error(
+                e="You are not the host",
+                _recipients=[player]
+            )
 
         url_name: str | None = url_name.split("#")[0]
 
@@ -250,15 +320,10 @@ class SearchGame(Game):
             return Error(e="you are not allowed to do that", _recipients=[player])
 
         if start:
-            self.start_article = Article(
+            self.rounds[-1].start_article = Article(
                 url_name=url_name, pretty_name=better_name)
-            self.players[player].node_position = Node(
-                parent=None,
-                children=list(),
-                article=self.start_article
-            )
         else:
-            self.articles_to_find.add(
+            self.rounds[-1].articles_to_find.add(
                 Article(url_name=url_name, pretty_name=better_name)
             )
 
@@ -266,14 +331,9 @@ class SearchGame(Game):
 
     def move(self, player: Player, url_name: str) -> Response | None:
         """when you click on a new link in wikipedia and move to the next page"""
-
-        url_name = url_name.split("#")[0]
-
-        logging.info("move to " + url_name)
         if self.state != State.ingame:
-            logging.warning("not allowed to move because not ingame")
             return Error(
-                e="not allowed to move",
+                e="not ingame",
                 _recipients=[player],
             )
 
@@ -284,78 +344,59 @@ class SearchGame(Game):
                 _recipients=[player],
             )
 
+        # needs be after is move allowed otherwise links with # are not allowed bc they are not in the link list
+        url_name = url_name.split("#")[0]
+
+        logging.info("move to " + url_name)
+
         pretty_name = Query.execute(move=url_name, recipient=player)
 
         if pretty_name is None:
             logging.warning("move failed")
             return None
 
-        current_node = self.players[player].node_position
-
-        if current_node.article.url_name == url_name:
-            logging.info(
-                "tried moving to same node as last move e.g. double click")
-            return None
-
         article = Article(pretty_name=pretty_name, url_name=url_name)
 
-        self._add_points_current_move(article, player)
+        self.points_counter.check_for_points_on_move(player, article)
 
-        new_node = current_node.add_child(article)
+        self.rounds[-1].add_move(player, article)
 
-        self.players[player].node_position = new_node
-        if self._check_if_player_found_all(player):
+        if self.round_end_checker.check_for_end(player, self.rounds[-1]):
             self.state = State.over
 
         return self._make_lobby_update_response()
 
     def page_back(self, player: Player):
-        if self.players[player].node_position.parent is None:
-            logging.warning("cant go back already at first page")
-            return
-        self.players[player].node_position = self.players[player].node_position.parent
-        Query.execute(move=self.players[player].node_position.article.pretty_name,
+        if self.state != State.ingame:
+            return Error(
+                e="not ingame",
+                _recipients=[player],
+            )
+
+        self.rounds[-1].go_back(player)
+
+        url_name = self.rounds[-1].get_current_article(player).url_name
+
+        Query.execute(move=url_name,
                       recipient=player)
         return self._make_lobby_update_response()
 
     def page_forward(self, player: Player):
-        if not self.players[player].node_position.children:
-            logging.warning("cant go forward already at latest page")
-            return
-        self.players[player].node_position = self.players[player].node_position.children[-1]
-        Query.execute(move=self.players[player].node_position.article.pretty_name,
+        if self.state != State.ingame:
+            return Error(
+                e="not ingame",
+                _recipients=[player],
+            )
+        self.rounds[-1].go_forward(player)
+
+        url_name = self.rounds[-1].get_current_article(player).url_name
+
+        Query.execute(move=url_name,
                       recipient=player)
         return self._make_lobby_update_response()
 
     def _is_move_allowed(self, url_name: str, player: Player) -> bool:
-        current_location = self.players[player].node_position.article.url_name
+        current_location = self.rounds[-1].get_current_article(player).url_name
         # links is a list of pretty names and the key of queries is the url name
         # WARNING pretty confusing WARNING
         return url_name in Query.queries[current_location]["links"]
-
-    def _add_points_current_move(self, target: Article, player: Player) -> None:
-        if target.pretty_name not in [article.pretty_name for article in self.articles_to_find]:
-            logging.info("move not in articles to find")
-            return
-
-        if target.pretty_name in [node.article.pretty_name for node in sorted_moves_list(self.players[player].node_position)]:
-            logging.info(
-                "article already found by player not counting it again")
-            return
-
-        if target.pretty_name in [article.pretty_name for article in self.found_articles]:
-            logging.info("article found but not first")
-            self.points[player] += 10
-            self.points_current_round[player] += 10
-            return
-
-        logging.info("article found for the first time")
-        self.points[player] += 15
-        self.points_current_round[player] += 15
-
-        self.found_articles.add(target)
-
-    def _check_if_player_found_all(self, player: Player) -> bool:
-        if player_data := self.players.get(player):
-            return set(node.article.pretty_name for node in sorted_moves_list(player_data.start_node, [])).issuperset(article.pretty_name for article in self.articles_to_find)
-        return False

@@ -31,7 +31,7 @@ const Header: Component<{
     <div style="margin-bottom: 5px; border-bottom: 2px solid black; position: sticky; top: 0;  background-color: rgba(255,255,255,1);">
       <h1>
         <a href="/" class="btn btn-ghost normal-case text-xl">
-          WikiGame (pre-alpha)
+          WikiParty.org (pre-alpha)
         </a>
       </h1>
       <div style="display: flex; justify-content: space-between;">
