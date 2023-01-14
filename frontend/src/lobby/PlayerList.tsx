@@ -15,7 +15,12 @@ const PlayerList: Component<{
       {(player: TPlayer) => (
         <>
           <div>
-            <span> {player[0].name} : </span>
+            <span>
+              {player[0].name.length > 12
+                ? player[0].name.substring(0, 12)
+                : player[0].name}
+              :{" "}
+            </span>
             <span> {player[0][props.pointsKey] ?? 0} </span>
           </div>
         </>
