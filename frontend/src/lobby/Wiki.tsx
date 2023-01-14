@@ -7,15 +7,27 @@ const Wiki: Component<{ wiki: any }> = (props) => {
     <div align="left">
       <h1>{props.wiki()?.title ?? ""}</h1>
       <div
-        onclick={async (e) => {
-          let targetValue = e.target.getAttribute("href");
+        onclick={async (e: any) => {
+          let targetValue = e.path
+            .find((element) => {
+              return element.getAttribute("href") !== null;
+            })
+            .getAttribute("href");
+
+          console.log(targetValue);
+
+          if (!targetValue) {
+            return;
+          }
+
+          if (!targetValue.startsWith("#")) {
+            e.preventDefault();
+          }
           if (
             targetValue?.includes("wiki") &&
             !targetValue?.includes("wiki/Help") &&
             !targetValue?.includes("wiki/File")
           ) {
-            e.preventDefault();
-
             let moveMsg = {
               type: "game",
               method: "move",
@@ -28,7 +40,6 @@ const Wiki: Component<{ wiki: any }> = (props) => {
             targetValue?.includes("http") ||
             targetValue?.includes("wiki")
           ) {
-            e.preventDefault();
             return;
           }
         }}
