@@ -18,6 +18,7 @@ const SetupGame: Component<{
   lobby: any;
   search: Accessor<Array<Array<string>> | undefined>;
 }> = (props) => {
+  console.log("SetupGame", props.search());
   return (
     <>
       <p>
@@ -29,23 +30,6 @@ const SetupGame: Component<{
       <SetArticleHeadline lobby={props.lobby} />
 
       <SetArticle lobby={props.lobby} search={props.search} />
-      <Show
-        when={
-          props.lobby().state === "idle" &&
-          props.lobby().articles_to_find.length &&
-          props.lobby().start_article &&
-          isHost(props)
-        }
-      >
-        <button
-          class="btn m-2"
-          onclick={() => {
-            setGoToLobby(true);
-          }}
-        >
-          go to lobby
-        </button>
-      </Show>
     </>
   );
 };
