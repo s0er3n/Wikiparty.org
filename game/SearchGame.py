@@ -299,6 +299,11 @@ class SearchGame(Game):
         )
 
     def set_article(self, player: Player, url_name: str, better_name, start=False) -> Response:
+        if not self._check_host(player):
+            return Error(
+                e="You are not the host",
+                _recipients=[player]
+            )
 
         url_name: str | None = url_name.split("#")[0]
 
@@ -324,6 +329,11 @@ class SearchGame(Game):
 
     def move(self, player: Player, url_name: str) -> Response | None:
         """when you click on a new link in wikipedia and move to the next page"""
+        if self.state != State.ingame:
+            return Error(
+                e="not ingame",
+                _recipients=[player],
+            )
 
         url_name = url_name.split("#")[0]
 
@@ -360,6 +370,11 @@ class SearchGame(Game):
         return self._make_lobby_update_response()
 
     def page_back(self, player: Player):
+        if self.state != State.ingame:
+            return Error(
+                e="not ingame",
+                _recipients=[player],
+            )
 
         self.rounds[-1].go_back(player)
 
@@ -370,6 +385,11 @@ class SearchGame(Game):
         return self._make_lobby_update_response()
 
     def page_forward(self, player: Player):
+        if self.state != State.ingame:
+            return Error(
+                e="not ingame",
+                _recipients=[player],
+            )
         self.rounds[-1].go_forward(player)
 
         url_name = self.rounds[-1].get_current_article(player).url_name
