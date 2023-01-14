@@ -43,3 +43,8 @@ class Wiki(Response):
 class Random(Response):
     data: list[str]
     method: str = "Random"
+
+
+@dataclasses.dataclass(kw_only=True)
+class LobbyNotFound(Response):
+    method: str = "LobbyNotFound"

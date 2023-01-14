@@ -10,8 +10,6 @@ import { addRandomArticles } from "./RandomArticle";
 
 import PlayerList from "./lobby/PlayerList";
 
-
-
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
 let ws: WebSocket | null = null;
@@ -104,6 +102,8 @@ export const startWS = () => {
       // search -> maybe add a method on backend
     } else if (data.method === "Random") {
       addRandomArticles(data.data);
+    } else if (data.method === "LobbyNotFound") {
+      setLobby(null);
     } else if (typeof data.data === "object") {
       console.log(data.data);
       if (!data.data.error) {
