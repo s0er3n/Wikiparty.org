@@ -1,9 +1,7 @@
 import { Component, createEffect, createSignal } from "solid-js";
 
 import { sendMessage, startWS } from "./App";
-let [userName, setUserName] = createSignal<string>(
-  `Gast ${Math.floor(Math.random() * 1000)}`
-);
+let [userName, setUserName] = createSignal<string>(``);
 
 let setUserNameMsg = {
   type: "player",
@@ -17,6 +15,8 @@ const SetUserNameComponent: Component<any> = (props) => {
       <input
         value={userName()}
         onchange={(e) => setUserName(e.target.value)}
+        minlength="2"
+        maxlength="12"
         type="text"
         class="input input-bordered"
       />
