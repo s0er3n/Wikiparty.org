@@ -17,7 +17,12 @@ let ws: WebSocket | null = null;
 let missedMessages: string[] = [];
 export function sendMessage(msg: any) {
   if (ws) {
-    ws.send(JSON.stringify(msg));
+    try {
+      ws.send(JSON.stringify(msg));
+    } catch (e) {
+      console.error(e);
+      missedMessages.push(JSON.stringify(msg));
+    }
   } else {
     missedMessages.push(JSON.stringify(msg));
     console.warn("websocket not connected");

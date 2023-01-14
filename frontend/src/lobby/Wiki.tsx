@@ -8,13 +8,11 @@ const Wiki: Component<{ wiki: any }> = (props) => {
       <h1>{props.wiki()?.title ?? ""}</h1>
       <div
         onclick={async (e: any) => {
-          let targetValue = e.path
-            .find((element) => {
-              return element.getAttribute("href") !== null;
+          let targetValue = e?.path
+            ?.find((element) => {
+              return element?.getAttribute("href") !== null;
             })
-            .getAttribute("href");
-
-          console.log(targetValue);
+            ?.getAttribute("href");
 
           if (!targetValue) {
             return;

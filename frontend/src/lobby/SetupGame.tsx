@@ -6,9 +6,9 @@ const SetArticleHeadline: Component<{ lobby: any }> = (props) => {
   return (
     <Show
       when={props.lobby().start_article}
-      fallback={<p>Search for a page to start:</p>}
+      fallback={<h1>Search for a page to start:</h1>}
     >
-      <p>Search for a page or pages to find:</p>
+      <h1>Search for a page or pages to find:</h1>
     </Show>
   );
 };
@@ -20,7 +20,14 @@ const SetupGame: Component<{
 }> = (props) => {
   return (
     <>
+      <p>
+        <b>start article:</b> {props.lobby().start_article}
+      </p>
+      <p>
+        <b>articles to find:</b> {props.lobby().articles_to_find.join(" | ")}
+      </p>
       <SetArticleHeadline lobby={props.lobby} />
+
       <SetArticle lobby={props.lobby} search={props.search} />
       <Show
         when={
