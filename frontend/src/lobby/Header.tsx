@@ -29,6 +29,7 @@ const Header: Component<{
       });
   };
   return (
+
     <div class="bg-base-200 p-3 sticky top-0 z-50 ">
       <div>
         <div class="navbar rounded-md shadow-md bg-base-100 mb-3">
@@ -78,6 +79,7 @@ const Header: Component<{
           </div>
         </div>
       </div>
+
       <Show when={props.lobby()?.state === "ingame"}>
         <div class="bg-base-100 mt-3 shadow-md rounded-md p-2 ">
           <span> Articles to find: </span>
