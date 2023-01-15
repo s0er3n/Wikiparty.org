@@ -59,6 +59,7 @@ const PlayerList: Component<{
                   setChangeName(true)
                   container()?.focus()
                 }
+                }
               }>
               {player[0].name.length > 12
                 ? player[0].name.substring(0, 12)
