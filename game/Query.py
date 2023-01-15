@@ -25,11 +25,15 @@ class Query:
     queries: dict[str, QueryResult] = dict()
 
     @classmethod
-    def _query_and_add_to_queries(cls, move: str) -> None:
+    def query_and_add_to_queries(cls, move: str) -> str | None:
         logging.warning(f"add move to query {move}")
-        resp_text = requests.get(
+        resp = requests.get(
             f"https://en.wikipedia.org/wiki/{move}"
-        ).text
+        )
+        resp_text = resp.text
+
+        if resp.history:
+            move = resp.history[-1].url
 
         soup = BeautifulSoup(resp_text, "html.parser")
 
@@ -52,13 +56,15 @@ class Query:
                              "title": str(title),
                              "content_html": str(article),
                              "url_ending": move}
+        return move
 
     @classmethod
     def execute(cls, move: str, recipient: Player) -> str | None:
         if not cls.queries.get(move):
             logging.warning(f"before try move {move}")
             try:
-                cls._query_and_add_to_queries(move)
+                move = cls.query_and_add_to_queries(move)
+                assert move is not None
             except:
                 logging.error("could not query wikipedia")
                 return
@@ -83,5 +89,5 @@ class Query:
 
 def test_query() -> None:
     target = "berlin"
-    Query._query_and_add_to_queries(target)
+    Query.query_and_add_to_queries(target)
     assert Query.queries.get(target) is not None

@@ -6,9 +6,13 @@ const SetArticleHeadline: Component<{ lobby: any }> = (props) => {
   return (
     <Show
       when={props.lobby().start_article}
-      fallback={<p>Search for a page to start:</p>}
+      fallback={
+        <h1 class="mt-5 text-3xl font-light">Search for a page to start:</h1>
+      }
     >
-      <p>Search for a page or pages to find:</p>
+      <h1 class="mt-5 text-3xl font-light">
+        Search for a page or pages to find:
+      </h1>
     </Show>
   );
 };
@@ -18,28 +22,19 @@ const SetupGame: Component<{
   lobby: any;
   search: Accessor<Array<Array<string>> | undefined>;
 }> = (props) => {
+  console.log("SetupGame", props.search());
   return (
-    <>
+    <div class="bg-base-100 shadow-md rounded-md p-3">
+      <p>
+        <b>start article:</b> {props.lobby().start_article}
+      </p>
+      <p>
+        <b>articles to find:</b> {props.lobby().articles_to_find.join(" | ")}
+      </p>
       <SetArticleHeadline lobby={props.lobby} />
+
       <SetArticle lobby={props.lobby} search={props.search} />
-      <Show
-        when={
-          props.lobby().state === "idle" &&
-          props.lobby().articles_to_find.length &&
-          props.lobby().start_article &&
-          isHost(props)
-        }
-      >
-        <button
-          class="btn m-2"
-          onclick={() => {
-            setGoToLobby(true);
-          }}
-        >
-          go to lobby
-        </button>
-      </Show>
-    </>
+    </div>
   );
 };
 
