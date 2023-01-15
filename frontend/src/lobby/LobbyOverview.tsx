@@ -1,3 +1,4 @@
+
 import {
   Show,
   Component,
@@ -5,6 +6,7 @@ import {
   createSignal,
   Accessor,
 } from "solid-js";
+
 
 import { sendMessage } from "./../App";
 import { isHost } from "./Lobby";
@@ -69,6 +71,7 @@ const LobbyOverview: Component<any> = (props) => {
             pointsKey="points_current_round"
             id={props.id}
           />
+
         </div>
       </div>
     </div>
