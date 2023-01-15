@@ -76,7 +76,7 @@ const Header: Component<{
           <For each={articles_to_find_with_points()}>
             {(article) => (
               <>
-                <Article points={article.points} title={article.title} />{" "}
+                <Article points={article.points} title={article.title} articles_to_find={props.lobby()?.articles_to_find} />{" "}
                 <span> </span>
               </>
             )}

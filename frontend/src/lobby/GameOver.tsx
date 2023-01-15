@@ -1,13 +1,15 @@
-import { Component, For, Show } from "solid-js";
+import { Component, For, Show, Accessor } from "solid-js";
 import Article from "../Article";
 import { TPlayer } from "../types";
 import { sendMessage } from "./../App";
 import { isHost } from "./Lobby";
+import type { TLobby } from "../types";
 
 type Props = {
   players: TPlayer[] | undefined;
   // TOOD: invastigae whats happening here
-  local: any;
+  lobby: Accessor<TLobby | null>;
+  id: any;
 };
 
 const PlayerList: Component<Props> = (props) => {
@@ -34,7 +36,7 @@ const PlayerList: Component<Props> = (props) => {
                 <For each={player[1].moves?.map((move) => move.pretty_name)}>
                   {(article, i) => (
                     <div>
-                      {i() + 1} <Article title={article} />
+                      {i() + 1} <Article articles_to_find={props.lobby()?.articles_to_find} title={article} />
                     </div>
                   )}
                 </For>
@@ -44,7 +46,7 @@ const PlayerList: Component<Props> = (props) => {
         </For>
       </div>
 
-      <Show when={isHost(props.local)}>
+      <Show when={isHost({ lobby: props.lobby, id: props.id })}>
         <p>
           <button
             class="btn mt-3"

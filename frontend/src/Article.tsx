@@ -1,10 +1,19 @@
-import { Component } from "solid-js";
+import { Component, Show, Accessor } from "solid-js";
+import type { TLobby } from "./types";
 
-const Article: Component<{ title: string; points?: number }> = (props) => {
+const Article: Component<{ articles_to_find: Array<any>; lobby: Accessor<TLobby | null>; title: string; points?: number }> = (props) => {
   return (
-    <>
-      <b>{props.title}</b> {props.points ? "(" + props.points + ")" : ""}
-    </>
+    <Show when={props.articles_to_find?.includes(props.title)}
+      fallback={
+        <>
+          <span>{props.title}</span> {props.points ? "(" + props.points + ")" : ""}
+        </>
+      }
+    >
+      <>
+        <b>{props.title}</b> {props.points ? "(" + props.points + ")" : ""}
+      </>
+    </Show>
   );
 };
 
