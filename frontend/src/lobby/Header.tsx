@@ -112,8 +112,14 @@ const Header: Component<{
               />
             </svg>
             <span>
-              WARNING: This game is really new, so write me on discord if you
-              experience any bugs or have suggestions (Sören#1141)
+              WARNING: This game is really new. Join our Discord if you have
+              suggestions or bugs:
+              <a
+                class="ml-2 font-bold underline"
+                href="https://discord.gg/GvqXjxc3xx"
+              >
+                https://discord.gg/GvqXjxc3xx
+              </a>
             </span>
           </div>
         </div>
