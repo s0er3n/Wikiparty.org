@@ -32,7 +32,18 @@ const Header: Component<{
       <div>
         <div class="navbar rounded-md shadow-md bg-base-100 mb-3">
           <div class="flex-1">
-            <a href="/" class="btn btn-ghost normal-case text-xl">
+            <a
+              href="/"
+              onclick={() => {
+                let leaveMsg = {
+                  method: "leave_lobby",
+                  type: "lobby",
+                  args: {},
+                };
+                sendMsg(leaveMsg);
+              }}
+              class="btn btn-ghost normal-case text-xl"
+            >
               WikiParty.org (pre-alpha)
             </a>
           </div>
@@ -111,3 +122,6 @@ const Header: Component<{
 };
 
 export default Header;
+function sendMsg(leaveMsg: { method: string; type: string; args: {} }) {
+  throw new Error("Function not implemented.");
+}
