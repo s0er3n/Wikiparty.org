@@ -1,4 +1,5 @@
 import { Accessor, Component, Show, For } from "solid-js";
+import { sendMessage } from "../App";
 
 import Article from "../Article";
 import Timer from "../Timer";
@@ -33,13 +34,14 @@ const Header: Component<{
         <div class="navbar rounded-md shadow-md bg-base-100 mb-3">
           <div class="flex-1">
             <a
+              href="/"
               onclick={() => {
                 let leaveMsg = {
                   method: "leave_lobby",
                   type: "lobby",
                   args: {},
                 };
-                sendMsg(leaveMsg);
+                sendMessage(leaveMsg);
               }}
               class="btn btn-ghost normal-case text-xl"
             >
@@ -121,6 +123,3 @@ const Header: Component<{
 };
 
 export default Header;
-function sendMsg(leaveMsg: { method: string; type: string; args: {} }) {
-  throw new Error("Function not implemented.");
-}
