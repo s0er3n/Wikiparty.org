@@ -61,11 +61,16 @@ const Lobby: Component<{
         <LobbyOverview lobby={local.lobby} id={local.id} />
       </Show>
       <Show when={local.lobby()?.state === "ingame"}>
+        <div id="shadow"></div>
         <Wiki wiki={local.wiki} />
       </Show>
 
       <Show when={local.lobby()?.state === "over"}>
-        <GameOver lobby={local.lobby} id={local.id} players={local.lobby()?.players} />
+        <GameOver
+          lobby={local.lobby}
+          id={local.id}
+          players={local.lobby()?.players}
+        />
       </Show>
     </div>
   );
