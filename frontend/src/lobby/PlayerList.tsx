@@ -25,7 +25,7 @@ const PlayerList: Component<{
     >
       {(player: TPlayer) => (
         <>
-          <div>
+           <div class="w-fit">
             <Show when={!changeName() || player[0].id !== id}
               fallback={
                 <span onkeyup={(key) => {
@@ -53,20 +53,19 @@ const PlayerList: Component<{
                   </input>
                 </span>
               }>
-              <span onclick={() => {
+        
+            <span class="font-light" onclick={() => {
                 if (player[0].id == props.id) {
                   setChangeName(true)
                   container()?.focus()
                 }
-              }
               }>
-                {player[0].name.length > 12
-                  ? player[0].name.substring(0, 12)
-                  : player[0].name}
-                :{" "}
-              </span>
+              {player[0].name.length > 12
+                ? player[0].name.substring(0, 12)
+                : player[0].name}
+            </span>
             </Show>
-            <span> {player[0][props.pointsKey] ?? 0} </span>
+            :<span class="font-bold"> {player[0][props.pointsKey] ?? 0} </span>
           </div>
         </>
       )}

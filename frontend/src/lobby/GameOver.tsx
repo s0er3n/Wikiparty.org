@@ -15,7 +15,7 @@ type Props = {
 const PlayerList: Component<Props> = (props) => {
   if (!props.players) return <></>;
   return (
-    <div>
+    <div class="shadow-md bg-base-100 rounded-md p-3">
       <div>
         <For
           each={
@@ -28,15 +28,19 @@ const PlayerList: Component<Props> = (props) => {
         >
           {(player) => (
             <div>
-              <span>{player[0].name} : </span>
-              <span>
-                + {player[0].points_current_round} ({player[0].points})
+              <span class="text-2xl font-light">
+                {player[0].name} : + {player[0].points_current_round} (
+                {player[0].points})
               </span>
               <ol>
                 <For each={player[1].moves?.map((move) => move.pretty_name)}>
                   {(article, i) => (
-                    <div>
-                      {i() + 1} <Article articles_to_find={props.lobby()?.articles_to_find} title={article} />
+                    <div class="text-sm font-light">
+                      {i() + 1}{" "}
+                      <Article
+                        articles_to_find={props.lobby()?.articles_to_find}
+                        title={article}
+                      />
                     </div>
                   )}
                 </For>
