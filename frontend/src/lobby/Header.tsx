@@ -33,7 +33,6 @@ const Header: Component<{
         <div class="navbar rounded-md shadow-md bg-base-100 mb-3">
           <div class="flex-1">
             <a
-              href="/"
               onclick={() => {
                 let leaveMsg = {
                   method: "leave_lobby",
