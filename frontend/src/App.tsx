@@ -130,21 +130,22 @@ const App: Component = () => {
   // derived state if player is host
 
   return (
-    <div style="display: flex; align-items: stretch; ">
+    <div class="flex items-stretch min-h-screen">
       <Show when={lobby()?.state === "ingame"}>
-        <div style="border-right: 1px solid gray; margin-right: 5px;">
-          <div style="width: max-content; position: sticky; padding-right: 5px; top: 50%;">
-            <PlayerList
-              players={lobby()?.players}
-              pointsKey="points_current_round"
-            />
+        <aside class="p-3 grow flex flex-col justify-start max-h-screen w-48 m-3 mr-0 bg-base-100 shadow-md rounded-md sticky top-3">
+          <div class="font-bold mb-3">
+            <h3>Players</h3>
           </div>
-        </div>
+          <PlayerList
+            players={lobby()?.players}
+            pointsKey="points_current_round"
+          />
+        </aside>
       </Show>
       <div style="width: 100%">
         <Header lobby={lobby} id={id} />
 
-        <div align="center">
+        <div class="flex justify-center">
           <Show when={!hasUserName()}>
             <SetUserName setHasUserName={setHasUserName} />
           </Show>

@@ -44,8 +44,9 @@ const Ticker = ({ validTill }: Props) => {
 
   return (
     <>
-      <span>{timerDetails().minutes}</span>m
-      <span>{timerDetails().seconds}</span>s
+      <span class="font-mono font-bold ">
+        {timerDetails().minutes}m {timerDetails().seconds}s
+      </span>
     </>
   );
 };
