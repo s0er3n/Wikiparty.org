@@ -1,8 +1,9 @@
-import { Show, Component, createEffect, createSignal } from "solid-js";
+import { Show, Component, createEffect, createSignal, Accessor } from "solid-js";
 
 import { sendMessage } from "./../App";
 import { isHost } from "./Lobby";
 import PlayerList from "./PlayerList";
+import type { TLobby } from "../types";
 
 let startGameMsg = { type: "game", method: "start", args: {} };
 
@@ -13,7 +14,8 @@ let setTimeMsg = {
 };
 
 type Props = {
-  time: number;
+  id?: string;
+  lobby: Accessor<TLobby | null>;
 };
 
 const LobbyOverview: Component<any> = (props) => {
@@ -53,7 +55,7 @@ const LobbyOverview: Component<any> = (props) => {
       </Show>
       <div>
         <h3>Players in Lobby:</h3>
-        <PlayerList players={props.lobby()?.players} pointsKey="points" />
+        <PlayerList id={props.id} players={props.lobby()?.players} pointsKey="points" />
       </div>
     </div>
   );

@@ -1,10 +1,21 @@
-import { Component, For, Show } from "solid-js";
+import { Component, For, Show, createSignal } from "solid-js";
 import { TPlayer } from "../types";
+import { sendMessage } from "../App";
+import { setUserNameMsg } from "../SetUserName";
+
+let [changeName, setChangeName] = createSignal<boolean>(false);
+const [container, setContainer] = createSignal<HTMLDivElement>();
 
 const PlayerList: Component<{
   players: TPlayer[];
   pointsKey: "points" | "points_current_round";
+  id: string;
 }> = (props) => {
+  let id = localStorage.getItem("id");
+  let [userName, setUserName] = createSignal<string>(props.players.find(player =>
+    player[0].id === id
+  )[0].name);
+
   return (
     <For
       each={props.players.sort(
@@ -15,12 +26,46 @@ const PlayerList: Component<{
       {(player: TPlayer) => (
         <>
           <div>
-            <span>
-              {player[0].name.length > 12
-                ? player[0].name.substring(0, 12)
-                : player[0].name}
-              :{" "}
-            </span>
+            <Show when={!changeName() || player[0].id !== id}
+              fallback={
+                <span onkeyup={(key) => {
+                  if (key.key == "Enter" || key.key == "Escape") {
+                    setChangeName(false)
+                  }
+                }
+                }>
+                  <input
+                    ref={setContainer}
+                    value={userName()}
+                    onchange={(e) => {
+                      let msg = setUserNameMsg;
+                      setUserName(e.target.value)
+                      setUserNameMsg.args.name = userName();
+                      sendMessage(msg);
+                      localStorage.setItem("username", userName());
+                    }}
+                    onblur={() => setChangeName(false)}
+                  >
+                    {player[0].name.length > 12
+                      ? player[0].name.substring(0, 12)
+                      : player[0].name}
+                    :{" "}
+                  </input>
+                </span>
+              }>
+              <span onclick={() => {
+                if (player[0].id == props.id) {
+                  setChangeName(true)
+                  container()?.focus()
+                }
+              }
+              }>
+                {player[0].name.length > 12
+                  ? player[0].name.substring(0, 12)
+                  : player[0].name}
+                :{" "}
+              </span>
+            </Show>
             <span> {player[0][props.pointsKey] ?? 0} </span>
           </div>
         </>
