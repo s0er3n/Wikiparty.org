@@ -3,7 +3,7 @@ import { Component, createEffect, createSignal } from "solid-js";
 import { sendMessage, startWS } from "./App";
 let [userName, setUserName] = createSignal<string>(``);
 
-let setUserNameMsg = {
+export let setUserNameMsg = {
   type: "player",
   method: "set_user_name",
   args: { name: userName() },
