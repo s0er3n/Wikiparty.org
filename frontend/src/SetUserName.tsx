@@ -12,31 +12,35 @@ let setUserNameMsg = {
 const SetUserNameComponent: Component<any> = (props) => {
   return (
     <div class="w-full flex flex-row items-center justify-center justify-items-center">
-      <input
-        value={userName()}
-        onchange={(e) => setUserName(e.target.value)}
-        minlength="2"
-        maxlength="12"
-        type="text"
-        class="input input-bordered"
-      />
-      <button
-        class="btn "
-        onclick={() => {
-          if (userName().length > 3) {
-            let msg = setUserNameMsg;
-            setUserNameMsg.args.name = userName();
-            sendMessage(msg);
-            localStorage.setItem("username", userName());
-            props.setHasUserName(true);
-            startWS();
-          } else {
-            alert("user name should be longer than 3 chars");
-          }
-        }}
-      >
-        set username
-      </button>
+      <div class="bg-base-100 shadow-md rounded-md p-3">
+        <div class="flex space-x-3">
+          <input
+            value={userName()}
+            onchange={(e) => setUserName(e.target.value)}
+            minlength="2"
+            maxlength="12"
+            type="text"
+            class="input input-bordered"
+          />
+          <button
+            class="btn "
+            onclick={() => {
+              if (userName().length > 3) {
+                let msg = setUserNameMsg;
+                setUserNameMsg.args.name = userName();
+                sendMessage(msg);
+                localStorage.setItem("username", userName());
+                props.setHasUserName(true);
+                startWS();
+              } else {
+                alert("user name should be longer than 3 chars");
+              }
+            }}
+          >
+            set username
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

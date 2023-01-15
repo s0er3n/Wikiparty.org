@@ -5,7 +5,7 @@ import { Portal } from "solid-js/web";
 
 const [container, setContainer] = createSignal<HTMLDivElement>();
 const WikiProvider = () => {
-  return <div ref={setContainer} id="modal" />;
+  return <div class="m-3" ref={setContainer} id="modal" />;
 };
 
 const Wiki: Component<{ wiki: any }> = (props) => {

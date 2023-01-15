@@ -6,9 +6,13 @@ const SetArticleHeadline: Component<{ lobby: any }> = (props) => {
   return (
     <Show
       when={props.lobby().start_article}
-      fallback={<h1>Search for a page to start:</h1>}
+      fallback={
+        <h1 class="mt-5 text-3xl font-light">Search for a page to start:</h1>
+      }
     >
-      <h1>Search for a page or pages to find:</h1>
+      <h1 class="mt-5 text-3xl font-light">
+        Search for a page or pages to find:
+      </h1>
     </Show>
   );
 };
@@ -20,7 +24,7 @@ const SetupGame: Component<{
 }> = (props) => {
   console.log("SetupGame", props.search());
   return (
-    <>
+    <div class="bg-base-100 shadow-md rounded-md p-3">
       <p>
         <b>start article:</b> {props.lobby().start_article}
       </p>
@@ -30,7 +34,7 @@ const SetupGame: Component<{
       <SetArticleHeadline lobby={props.lobby} />
 
       <SetArticle lobby={props.lobby} search={props.search} />
-    </>
+    </div>
   );
 };
 
