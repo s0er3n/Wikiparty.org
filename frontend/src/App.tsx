@@ -122,6 +122,8 @@ export const startWS = () => {
 
 let [lobby, setLobby] = createSignal<TLobby | null>(null);
 
+let [code, setCode] = createSignal<bool>(false);
+
 if (localStorage.getItem("username")) {
   startWS();
 }
@@ -129,6 +131,37 @@ if (localStorage.getItem("username")) {
 const App: Component = () => {
   // derived state if player is host
 
+  if (code() || !localStorage.getItem("pre-alpha"))
+    return (
+      <>
+        <div class="flex flex-col justify-center h-screen items-center">
+          <div class="text-xl font-light">Enter Your Code:</div>
+          <div class="flex space-x-2">
+            <input
+              onchange={(e) => {
+                if (e.target.value === "pre-alpha") {
+                  setCode(true);
+                  localStorage.setItem("pre-alpha", crypto.randomUUID());
+                }
+              }}
+              type="text"
+              placeholder="Code"
+              class="input input-bordered"
+            />
+            <button
+              onclick={() => {
+                if (code()) {
+                  window.location.reload();
+                }
+              }}
+              class="btn"
+            >
+              Join Now
+            </button>
+          </div>
+        </div>
+      </>
+    );
   return (
     <div class="flex items-stretch min-h-screen">
       <Show when={lobby()?.state === "ingame"}>
