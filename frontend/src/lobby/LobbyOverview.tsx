@@ -1,4 +1,12 @@
-import { Show, Component, createEffect, createSignal, Accessor } from "solid-js";
+
+import {
+  Show,
+  Component,
+  createEffect,
+  createSignal,
+  Accessor,
+} from "solid-js";
+
 
 import { sendMessage } from "./../App";
 import { isHost } from "./Lobby";
@@ -58,7 +66,12 @@ const LobbyOverview: Component<any> = (props) => {
         </Show>
         <div>
           <h3 class="text-xl font-bold">Players in Lobby:</h3>
-          <PlayerList players={props.lobby()?.players} pointsKey="points" id={props.id}  />
+          <PlayerList
+            players={props.lobby()?.players}
+            pointsKey="points_current_round"
+            id={props.id}
+          />
+
         </div>
       </div>
     </div>
