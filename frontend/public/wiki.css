@@ -45,14 +45,12 @@ sup.reference {
 }
 ol.references li:target,
 sup.reference:target {
-  background-color: #eaf3ff;
 }
 .mw-ext-cite-error {
   font-weight: bold;
   unicode-bidi: embed;
 }
 .mw-ext-cite-error code {
-  background-color: transparent;
   color: inherit;
   padding: 1px 2px;
 }
@@ -71,10 +69,8 @@ sup.reference:target {
 }
 .mw-kartographer-error {
   display: inline-block;
-  background: #ffc0cb;
 }
 .mw-kartographer-error .mw-kartographer-error-log {
-  background: #f8f9fa;
   font-family: monospace;
   line-height: 1.2em;
   margin: 0;
@@ -212,7 +208,6 @@ body:not(.skin-monobook)
 .mw-kartographer-map:hover
   .mw-kartographer-fullScreen
   .oo-ui-buttonElement-button {
-  background-color: #fff;
 }
 .client-js {
 }
@@ -246,7 +241,6 @@ body:not(.skin-monobook)
   cursor: default;
 }
 a.mw-kartographer-autostyled {
-  color: #fff;
   display: inline-block;
   position: relative;
   top: -0.08em;
@@ -262,7 +256,6 @@ a.mw-kartographer-autostyled {
   vertical-align: middle;
 }
 a.mw-kartographer-autostyled:visited {
-  color: #fff;
 }
 .mw-kartographer-attribution {
   position: absolute;
@@ -274,8 +267,6 @@ a.mw-kartographer-autostyled:visited {
 }
 .mw-kartographer-attribution,
 .leaflet-right.leaflet-bottom {
-  background-color: rgba(255, 255, 255, 0.8);
-  color: #202122;
   max-width: 100%;
 }
 .leaflet-right.leaflet-bottom .leaflet-control.leaflet-control-attribution {
@@ -330,7 +321,6 @@ a.mw-kartographer-autostyled:visited {
 .leaflet-right.leaflet-bottom
   .leaflet-control.leaflet-control-scale
   .leaflet-control-scale-line:hover {
-  border-color: #000;
   cursor: pointer;
 }
 .leaflet-right.leaflet-bottom
@@ -344,7 +334,6 @@ a.mw-kartographer-autostyled:visited {
   z-index: 0;
 }
 .mw-kartographer-interactive.leaflet-container {
-  color: #202122;
   font-size: 14px;
   font-family: "Helvetica Neue", "Helvetica", "Liberation Sans", "Arial",
     sans-serif;
@@ -397,7 +386,6 @@ a.mw-kartographer-autostyled:visited {
 .mw-kartographer-interactive .leaflet-draw-actions,
 .mw-kartographer-interactive .leaflet-control-layers,
 .mw-kartographer-interactive .leaflet-bar {
-  background-color: #f8f9fa;
   border: 0;
   box-shadow: none;
 }
@@ -406,8 +394,6 @@ a.mw-kartographer-autostyled:visited {
 }
 .mw-kartographer-interactive .leaflet-draw-actions a,
 .mw-kartographer-interactive .leaflet-bar > a {
-  background-color: #f8f9fa;
-  color: #202122;
   box-sizing: content-box;
   border: 1px solid #a2a9b1;
   border-radius: 2px;
@@ -418,15 +404,12 @@ a.mw-kartographer-autostyled:visited {
 }
 .mw-kartographer-interactive .leaflet-draw-actions a:hover,
 .mw-kartographer-interactive .leaflet-bar > a:hover {
-  background-color: #ffffff;
   border-bottom-width: 0;
   color: #404244;
   border-color: #a2a9b1;
 }
 .mw-kartographer-interactive .leaflet-draw-actions a:active,
 .mw-kartographer-interactive .leaflet-bar > a:active {
-  background-color: #c8ccd1;
-  color: #000000;
   border-color: #72777d;
 }
 .mw-kartographer-interactive .leaflet-draw-actions a:focus,
@@ -716,7 +699,6 @@ ul.mw-gallery-packed-hover
   li.gallerybox.mw-gallery-focused
   div.gallerytextwrapper {
   position: absolute;
-  background: #fff;
   background: rgba(255, 255, 255, 0.8);
   padding: 5px 10px;
   bottom: 0;
@@ -792,7 +774,6 @@ ul.gallery.mw-gallery-slideshow
   margin-right: 0;
 }
 ul.gallery.mw-gallery-slideshow .gallerybox.slideshow-current {
-  background: #efefef;
 }
 ul.gallery.mw-gallery-slideshow .gallerybox > div {
   max-width: 120px;
@@ -807,7 +788,6 @@ ul.gallery.mw-gallery-slideshow .gallerybox div.thumb {
 @media screen {
   li.gallerybox div.thumb {
     border: 1px solid #c8ccd1;
-    background-color: #f8f9fa;
   }
 }
 @media print {
@@ -816,7 +796,6 @@ ul.gallery.mw-gallery-slideshow .gallerybox div.thumb {
     display: inline-block;
   }
   li.gallerybox div.thumb {
-    background-color: #fff;
     border: 1px solid #ccc;
   }
   ul.gallery {
@@ -977,7 +956,6 @@ div.thumbinner {
   overflow: hidden;
 }
 .mw-message-box {
-  color: #000;
   box-sizing: border-box;
   margin-bottom: 16px;
   border: 1px solid;
@@ -985,7 +963,6 @@ div.thumbinner {
   word-wrap: break-word;
   overflow-wrap: break-word;
   overflow: hidden;
-  background-color: #eaecf0;
   border-color: #a2a9b1;
 }
 .mw-message-box > :only-child {
@@ -1002,15 +979,12 @@ div.thumbinner {
   font-size: 90%;
 }
 .mw-message-box-error {
-  background-color: #fee7e6;
   border-color: #d33;
 }
 .mw-message-box-warning {
-  background-color: #fef6e7;
   border-color: #fc3;
 }
 .mw-message-box-success {
-  background-color: #d5fdf4;
   border-color: #14866d;
 }
 .toctogglecheckbox:checked ~ ul {
@@ -1189,7 +1163,6 @@ div.thumbinner {
   }
   .vector-menu-dropdown .selected a,
   .vector-menu-dropdown .selected a:visited {
-    color: #202122;
     text-decoration: none;
   }
   .vector-menu-checkbox {
@@ -1223,7 +1196,6 @@ div.thumbinner {
   }
   .vector-search-box-input {
     background-color: rgba(255, 255, 255, 0.5);
-    color: #000000;
     width: 100%;
     height: 2.15384615em;
     box-sizing: border-box;
@@ -1322,7 +1294,6 @@ div.thumbinner {
     padding: 0;
   }
   .mw-footer li {
-    color: #202122;
     margin: 0;
     padding: 0.5em 0;
     font-size: 0.75em;
@@ -1513,7 +1484,6 @@ div.thumbinner {
     color: #999 !important;
   }
   #footer-info-lastmod {
-    color: #000000;
     font-size: 12pt;
     font-weight: bold;
   }
@@ -1524,8 +1494,6 @@ div.thumbinner {
   }
   .mw-body,
   .parsoid-body {
-    background-color: #ffffff;
-    color: #202122;
     direction: ltr;
     padding: 1em;
   }
@@ -1558,7 +1526,6 @@ div.thumbinner {
     z-index: 0;
   }
   #mw-page-base {
-    background-color: #fbfbfb;
     background-image: linear-gradient(to bottom, #ffffff 50%, #f6f6f6 100%);
     background-position: bottom left;
     height: 5em;
@@ -1665,7 +1632,6 @@ div.thumbinner {
   }
   .vector-menu-dropdown .vector-menu-heading:hover,
   .vector-menu-dropdown .vector-menu-heading:focus {
-    color: #202122;
   }
   .vector-menu-dropdown .vector-menu-heading:hover:after,
   .vector-menu-dropdown .vector-menu-heading:focus:after {
@@ -1673,7 +1639,6 @@ div.thumbinner {
   }
   .vector-menu-dropdown .vector-menu-content {
     line-height: 1.125em;
-    background-color: #ffffff;
     border: 1px solid #a2a9b1;
     border-top-width: 0;
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
@@ -1698,7 +1663,6 @@ div.thumbinner {
   }
   .vector-menu-dropdown .mw-list-item.selected a,
   .vector-menu-dropdown .mw-list-item.selected a:visited {
-    color: #202122;
     text-decoration: none;
   }
   .vector-menu-tabs-legacy {
@@ -1753,11 +1717,9 @@ div.thumbinner {
     color: #ba0000;
   }
   .vector-menu-tabs-legacy .selected {
-    background: #ffffff;
   }
   .vector-menu-tabs-legacy .selected a,
   .vector-menu-tabs-legacy .selected a:visited {
-    color: #202122;
     text-decoration: none;
   }
   .vector-menu-tabs-legacy .icon a {
@@ -1987,8 +1949,6 @@ div.thumbinner {
     display: none;
   }
   #footer {
-    background: #fff;
-    color: #000;
     margin-top: 1em;
     border-top: 1pt solid #aaa;
     padding-top: 5px;
@@ -2019,7 +1979,6 @@ div.thumbinner {
   }
   div.thumbinner {
     border: 1px;
-    background-color: #ffffff;
     font-size: 10pt;
     color: #666666;
     border-radius: 2px;
@@ -2044,7 +2003,6 @@ div.thumbinner {
     content: " (https:" attr(href) ")";
   }
   .wikitable {
-    background: #fff;
     margin: 1em 0;
     border: 1pt solid #aaa;
     border-collapse: collapse;
@@ -2059,8 +2017,6 @@ div.thumbinner {
   .wikitable > tr > td,
   .wikitable > * > tr > th,
   .wikitable > * > tr > td {
-    background: #fff !important;
-    color: #000 !important;
     border: 1pt solid #aaa;
     padding: 0.4em 0.6em;
   }
@@ -2146,8 +2102,6 @@ div.thumbinner {
   }
   pre,
   .mw-code {
-    background: #fff;
-    color: #000;
     border: 1pt dashed #000;
     padding: 1em;
     font-size: 8pt;
@@ -2162,7 +2116,6 @@ div.thumbinner {
     display: none;
   }
   .toc {
-    background-color: #f9f9f9;
     border: 1pt solid #aaa;
     padding: 5px;
     display: table;
@@ -2187,11 +2140,9 @@ div.thumbinner {
 @media screen {
   div.thumbinner {
     border: 1px solid #c8ccd1;
-    background-color: #f8f9fa;
     font-size: 94%;
   }
   .thumbimage {
-    background-color: #ffffff;
     border: 1px solid #c8ccd1;
   }
   .thumbcaption {
@@ -2302,8 +2253,6 @@ div.thumbinner {
     display: none;
   }
   .wikitable {
-    background-color: #f8f9fa;
-    color: #202122;
     margin: 1em 0;
     border: 1px solid #a2a9b1;
     border-collapse: collapse;
@@ -2317,7 +2266,6 @@ div.thumbinner {
   }
   .wikitable > tr > th,
   .wikitable > * > tr > th {
-    background-color: #eaecf0;
     text-align: center;
   }
   .wikitable > caption {
@@ -2328,7 +2276,6 @@ div.thumbinner {
   }
   .catlinks {
     border: 1px solid #a2a9b1;
-    background-color: #f8f9fa;
     padding: 5px;
     margin-top: 1em;
     clear: both;
@@ -2419,9 +2366,7 @@ div.thumbinner {
     display: block;
   }
   .usermessage {
-    background-color: #fef6e7;
     border: 1px solid #fc3;
-    color: #000;
     font-weight: bold;
     margin: 2em 0 1em;
     padding: 0.5em 1em;
@@ -2431,6 +2376,11 @@ div.thumbinner {
     text-decoration: none;
     color: #0645ad;
     background: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    a {
+      color: #0e7cdd;
+    }
   }
   a:not([href]) {
     cursor: pointer;
@@ -2468,7 +2418,6 @@ div.thumbinner {
   h4,
   h5,
   h6 {
-    color: #000;
     margin: 0;
     padding-top: 0.5em;
     padding-bottom: 0.17em;
@@ -2545,7 +2494,6 @@ div.thumbinner {
   pre,
   code,
   .mw-code {
-    background-color: #f8f9fa;
     color: #000;
     border: 1px solid #eaecf0;
   }
@@ -2867,7 +2815,6 @@ div.thumbinner {
   .toc,
   .toccolours {
     border: 1px solid #a2a9b1;
-    background-color: #f8f9fa;
     padding: 5px;
     font-size: 95%;
   }
@@ -2906,7 +2853,6 @@ div.thumbinner {
     text-decoration: inherit;
   }
   .tocnumber {
-    color: #202122;
     padding-left: 0;
     padding-right: 0.5em;
   }
@@ -3138,7 +3084,6 @@ div.titleblacklist-warning {
 }
 .mw-contributions-blocked-notice-partial .mw-warning-with-logexcerpt {
   border-color: #fc3;
-  background-color: #fef6e7;
 }
 #wpUploadDescription {
   height: 13em;
@@ -3195,7 +3140,6 @@ span.mwe-math-mathml-inline {
 }
 @media screen {
   #content .gallerybox div.thumb {
-    background-color: #f8f9fa;
   }
   .gallerybox .thumb img {
     background: #fff
@@ -3301,8 +3245,6 @@ span.mwe-math-mathml-inline {
 .infobox {
   border: 1px solid #a2a9b1;
   border-spacing: 3px;
-  background-color: #f8f9fa;
-  color: black;
   margin: 0.5em 0 0.5em 1em;
   padding: 0.2em;
   float: right;
@@ -3481,7 +3423,6 @@ body.skin-vector-legacy .mw-indicators {
   }
   .infobox {
     border: solid 1px #aaa;
-    background-color: #fff;
     border-spacing: 0;
     border-collapse: collapse;
     width: 180pt !important;
