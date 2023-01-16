@@ -36,7 +36,9 @@ const Wiki: Component<{ wiki: any }> = (props) => {
               console.log(targetValue);
               if (targetValue.startsWith("#")) {
                 const yOffset = -218;
-                const element = document.getElementById(targetValue.slice(1));
+                const element = e.target
+                  .getRootNode()
+                  .getElementById(targetValue.slice(1));
                 console.log(element);
                 const y =
                   element.getBoundingClientRect().top +
