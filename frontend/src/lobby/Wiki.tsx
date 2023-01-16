@@ -12,7 +12,7 @@ const Wiki: Component<{ wiki: any }> = (props) => {
   return (
     <div>
       <WikiProvider />
-      <Portal useShadow={true} mount={container()}>
+      <Portal useShadow={false} mount={container()}>
         <div align="left">
           <link rel="stylesheet" type="text/css" href="wiki.css" />
           <h1>{props.wiki()?.title ?? ""}</h1>
