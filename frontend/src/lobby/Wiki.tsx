@@ -12,13 +12,13 @@ const Wiki: Component<{ wiki: any }> = (props) => {
   return (
     <div>
       <WikiProvider />
-      <Portal useShadow={true} mount={container()}>
+      <Portal useShadow={false} mount={container()}>
         <div align="left">
           <link rel="stylesheet" type="text/css" href="wiki.css" />
           <h1>{props.wiki()?.title ?? ""}</h1>
           <div
             onclick={async (e: any) => {
-              let targetValue;
+              let targetValue: string;
               if (!e.target.getAttribute("href")) {
                 targetValue = e?.path
                   ?.find((element) => {
@@ -33,9 +33,19 @@ const Wiki: Component<{ wiki: any }> = (props) => {
                 targetValue = e.target.getAttribute("href");
               }
 
-              if (!targetValue.startsWith("#")) {
-                e.preventDefault();
+              console.log(targetValue);
+              if (targetValue.startsWith("#")) {
+                const yOffset = -218;
+                const element = document.getElementById(targetValue.slice(1));
+                console.log(element);
+                const y =
+                  element.getBoundingClientRect().top +
+                  window.pageYOffset +
+                  yOffset;
+
+                window.scrollTo({ top: y });
               }
+              e.preventDefault();
               if (
                 targetValue?.includes("wiki") &&
                 !targetValue?.includes("wiki/Help") &&
