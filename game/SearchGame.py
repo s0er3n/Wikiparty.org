@@ -399,4 +399,5 @@ class SearchGame(Game):
         current_location = self.rounds[-1].get_current_article(player).url_name
         # links is a list of pretty names and the key of queries is the url name
         # WARNING pretty confusing WARNING
-        return url_name in Query.queries[current_location]["links"]
+
+        return Query().is_link_allowed(current_location, url_name)
