@@ -71,7 +71,7 @@ class Query:
             logging.warning("no query result")
             return None
         query_result = json.loads(query_result)
-        redis_client.incr("article_count:" + move)
+        redis_client.hincrby("count", move)
         thread = Thread(
             target=asyncio.run,
             args=(
