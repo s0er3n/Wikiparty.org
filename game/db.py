@@ -5,6 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-url = os.environ["redis_url"]
+url = os.environ["REDIS_URL"]
 
 client = redis.from_url(url)
