@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import redis
 from threading import Thread
 from typing import Iterator
 import json
@@ -12,14 +11,13 @@ from game.Response import Wiki
 from game.QueryResult import QueryResult
 from game.ConnectionManager import manager
 
+import game.db
+
 
 def _select_and_reduce_links(all_links) -> Iterator[str]:
     for link in all_links:
         if link["href"].startswith("/wiki/") and not link["href"].startswith("/wiki/Help") and not link["href"].startswith("/wiki/File"):
             yield link["href"][6::]
-
-
-redis_client = redis.Redis(host="localhost", port=6379, db=0)
 
 
 class Query:
@@ -50,15 +48,15 @@ class Query:
 
         short_links = list(_select_and_reduce_links(all_links))
 
-        redis_client.set("article:" + move, json.dumps({"links": short_links,
-                                                        "title": str(title),
-                                                       "content_html": str(article),
-                                                        "url_ending": move}), ex=60 * 60 * 24 * 14)
+        game.db.client.set("article:" + move, json.dumps({"links": short_links,
+                                                          "title": str(title),
+                                                          "content_html": str(article),
+                                                          "url_ending": move}), ex=60 * 60 * 24 * 14)
         return move
 
     @classmethod
     def execute(cls, move: str, recipient: Player) -> str | None:
-        if not redis_client.get("article:" + move):
+        if not game.db.client.get("article:" + move):
             logging.warning(f"before try move {move}")
             try:
                 move = cls.query_and_add_to_queries(move)
@@ -67,11 +65,11 @@ class Query:
                 logging.error("could not query wikipedia")
                 return
 
-        if not (query_result := redis_client.get("article:" + move)):
+        if not (query_result := game.db.client.get("article:" + move)):
             logging.warning("no query result")
             return None
         query_result = json.loads(query_result)
-        redis_client.hincrby("count", move)
+        game.db.client.hincrby("count", move)
         thread = Thread(
             target=asyncio.run,
             args=(
@@ -88,10 +86,11 @@ class Query:
 
     @classmethod
     def is_link_allowed(cls, current_location, url_name) -> bool:
-        if not (redis_result := redis_client.get(current_location)):
+        if not (redis_result := game.db.client.get(current_location)):
             # requerying current location in case it was not in redis
             cls.query_and_add_to_queries(current_location)
-            redis_result = redis_client.get("article:" + current_location)
+            redis_result = game.db.client.get(
+                "article:" + current_location)
 
         return url_name in json.loads(redis_result)["links"]
 
@@ -99,4 +98,5 @@ class Query:
 def test_query() -> None:
     target = "berlin"
     Query.query_and_add_to_queries(target)
-    assert json.loads(redis_client.get("article:" + target)) is not None
+    assert json.loads(game.db.client.get(
+        "article:" + target)) is not None
