@@ -50,15 +50,15 @@ class Query:
 
         short_links = list(_select_and_reduce_links(all_links))
 
-        redis_client.set(move, json.dumps({"links": short_links,
-                                           "title": str(title),
-                                           "content_html": str(article),
-                                           "url_ending": move}), ex=60 * 60 * 24 * 14)
+        redis_client.set("article:" + move, json.dumps({"links": short_links,
+                                                        "title": str(title),
+                                                       "content_html": str(article),
+                                                        "url_ending": move}), ex=60 * 60 * 24 * 14)
         return move
 
     @classmethod
     def execute(cls, move: str, recipient: Player) -> str | None:
-        if not redis_client.get(move):
+        if not redis_client.get("article:" + move):
             logging.warning(f"before try move {move}")
             try:
                 move = cls.query_and_add_to_queries(move)
@@ -67,10 +67,11 @@ class Query:
                 logging.error("could not query wikipedia")
                 return
 
-        if not (query_result := redis_client.get(move)):
+        if not (query_result := redis_client.get("article:" + move)):
             logging.warning("no query result")
             return None
         query_result = json.loads(query_result)
+        redis_client.incr("article_count:" + move)
         thread = Thread(
             target=asyncio.run,
             args=(
@@ -90,7 +91,7 @@ class Query:
         if not (redis_result := redis_client.get(current_location)):
             # requerying current location in case it was not in redis
             cls.query_and_add_to_queries(current_location)
-            redis_result = redis_client.get(current_location)
+            redis_result = redis_client.get("article:" + current_location)
 
         return url_name in json.loads(redis_result)["links"]
 
@@ -98,4 +99,4 @@ class Query:
 def test_query() -> None:
     target = "berlin"
     Query.query_and_add_to_queries(target)
-    assert json.loads(redis_client.get(target)) is not None
+    assert json.loads(redis_client.get("article:" + target)) is not None
