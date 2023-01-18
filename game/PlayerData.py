@@ -33,8 +33,6 @@ def sorted_moves_list(node: Node, res: list | None = None) -> list[Node]:
     if res is None:
         res = []
     res.append(node)
-    if not node.children:
-        return res
     for child in node.children:
         if child not in res:
             res = sorted_moves_list(child, res=res)
@@ -48,5 +46,6 @@ class PlayerData:
 
 @dataclasses.dataclass
 class PlayerDataNoNode:
+    current_position: str
     rights: PlayerRights
     moves: list[Article] = dataclasses.field(default_factory=list)

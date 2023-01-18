@@ -48,3 +48,9 @@ class Random(Response):
 @dataclasses.dataclass(kw_only=True)
 class LobbyNotFound(Response):
     method: str = "LobbyNotFound"
+
+
+@dataclasses.dataclass(kw_only=True)
+class SyncMove(Response):
+    method: str = "SyncMove"
+    url_name: str

@@ -61,7 +61,7 @@ const Lobby: Component<{
         <LobbyOverview lobby={local.lobby} id={local.id} />
       </Show>
       <Show when={local.lobby()?.state === "ingame"}>
-        <Wiki wiki={local.wiki} />
+        <Wiki lobby={props.lobby} />
       </Show>
 
       <Show when={local.lobby()?.state === "over"}>

@@ -9,6 +9,7 @@ import { TLobby, TWiki } from "./types";
 import { addRandomArticles } from "./RandomArticle";
 
 import PlayerList from "./lobby/PlayerList";
+import { forceUpdate } from "./lobby/Wiki";
 
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
@@ -31,8 +32,8 @@ export function sendMessage(msg: any) {
 
 // let [players, setPlayers = createSignal([])
 
-let [wiki, setWiki] = createSignal<TWiki>();
 let id = localStorage.getItem("id");
+let [wiki, setWiki] = createSignal<TWiki>();
 
 let setUserNameMsg = {
   type: "player",
@@ -109,6 +110,8 @@ export const startWS = () => {
       addRandomArticles(data.data);
     } else if (data.method === "LobbyNotFound") {
       setLobby(null);
+    } else if (data.method === "SyncMove") {
+      forceUpdate(data.url_name);
     } else if (typeof data.data === "object") {
       console.log(data.data);
       if (!data.data.error) {
