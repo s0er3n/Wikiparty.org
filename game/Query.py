@@ -50,8 +50,7 @@ class Query:
 
         game.db.client.set("article:" + move, json.dumps({"links": short_links,
                                                           "title": str(title),
-                                                          "content_html": str(article),
-                                                          "url_ending": move}), ex=60 * 60 * 24 * 14)
+                                                          "url_ending": move}), ex=60 * 60 * 24)
         return move
 
     @classmethod
@@ -70,18 +69,6 @@ class Query:
             return None
         query_result = json.loads(query_result)
         game.db.client.hincrby("count", move)
-        thread = Thread(
-            target=asyncio.run,
-            args=(
-                manager.send_response(
-                    Wiki(
-                        data=query_result,
-                        _recipients=[recipient],
-                    )
-                ),
-            ),
-        )
-        thread.start()
         return query_result["title"]
 
     @classmethod

@@ -19,8 +19,8 @@ export type TPlayer = [
   },
   {
     rights?: string;
-    state?: string;
     moves?: TArticle[];
+    current_position: string;
   }
 ];
 
