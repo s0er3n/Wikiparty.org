@@ -24,20 +24,11 @@ export interface Text {
   "*": string;
 }
 
-let clicked = false;
-let currTimeout: number;
 const getWiki = async (name: string) => {
   const res = await fetch(
     `https://en.wikipedia.org/w/api.php?action=parse&prop=text&page=${name}&format=json&disableeditsection=1&redirects=true&useskin=minerva&origin=*`
   );
   const data: WikiRes = await res.json();
-  if (currTimeout) {
-    clearTimeout(currTimeout);
-  }
-  currTimeout = setTimeout(() => {
-    // giving server time to update
-    clicked = false;
-  }, 700);
   return {
     html: data.parse.text["*"],
     title: data.parse.title,
@@ -126,7 +117,6 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                 sendMessage(moveMsg);
                 getWiki(url_name).then((res) => {
                   setCurrentWiki(res);
-                  clicked = true;
                 });
               }
             }}
