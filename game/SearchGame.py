@@ -311,15 +311,18 @@ class SearchGame(Game):
 
         url_name: str | None = url_name.split("#")[0]
 
-        url_name = Query.query_and_add_to_queries(url_name)
+        # url_name = Query.query_and_add_to_queries(url_name)
+        if ":" in url_name:
+            return Error(
+                e="pick a different start article pls :)",
+                _recipients=[player]
+            )
+
         if url_name is None:
             return Error(
                 e="couldnt find article",
                 _recipients=[player],
             )
-
-        if not self._check_host(player):
-            return Error(e="you are not allowed to do that", _recipients=[player])
 
         if start:
             self.rounds[-1].start_article = Article(
