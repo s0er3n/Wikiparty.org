@@ -9,7 +9,7 @@ import { TLobby, TWiki } from "./types";
 import { addRandomArticles } from "./RandomArticle";
 
 import PlayerList from "./lobby/PlayerList";
-import { forceUpdate } from "./lobby/Wiki";
+import { updateWiki } from "./lobby/Wiki";
 
 let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUserName, setHasUserName] = createSignal<boolean>(false);
@@ -111,7 +111,7 @@ export const startWS = () => {
     } else if (data.method === "LobbyNotFound") {
       setLobby(null);
     } else if (data.method === "SyncMove") {
-      forceUpdate(data.url_name);
+      updateWiki(data.url_name);
     } else if (typeof data.data === "object") {
       console.log(data.data);
       if (!data.data.error) {

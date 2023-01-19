@@ -44,7 +44,7 @@ const [currentWiki, setCurrentWiki] = createSignal<{
 
 let id = localStorage.getItem("id");
 
-export const forceUpdate = (url: string) => {
+export const updateWiki = (url: string) => {
   getWiki(url).then((res) => {
     setCurrentWiki(res);
   });
@@ -53,9 +53,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   let current_position = props?.lobby()?.players?.find((player) => {
     return player[0].id === id;
   })[1]?.current_position;
-  getWiki(current_position).then((res) => {
-    setCurrentWiki(res);
-  });
+  updateWiki(current_position);
   return (
     <div>
       <WikiProvider />
@@ -115,9 +113,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                 };
 
                 sendMessage(moveMsg);
-                getWiki(url_name).then((res) => {
-                  setCurrentWiki(res);
-                });
+                updateWiki(url_name);
               }
             }}
             innerHTML={currentWiki().html}
