@@ -1,21 +1,66 @@
-import { Component, createSignal } from "solid-js";
+import { Accessor, Component, createEffect, createSignal } from "solid-js";
 import { sendMessage } from "./../App";
 
 import { Portal } from "solid-js/web";
+import { TLobby } from "../types";
 
 const [container, setContainer] = createSignal<HTMLDivElement>();
 const WikiProvider = () => {
   return <div class="m-3" ref={setContainer} id="modal" />;
 };
 
-const Wiki: Component<{ wiki: any }> = (props) => {
+export interface WikiRes {
+  parse: Parse;
+}
+
+export interface Parse {
+  title: string;
+  pageid: number;
+  redirects: any[];
+  text: Text;
+}
+
+export interface Text {
+  "*": string;
+}
+
+const getWiki = async (name: string) => {
+  const res = await fetch(
+    `https://en.wikipedia.org/w/api.php?action=parse&prop=text&page=${name}&format=json&disableeditsection=1&redirects=true&useskin=minerva&origin=*`
+  );
+  const data: WikiRes = await res.json();
+  return {
+    html: data.parse.text["*"],
+    title: data.parse.title,
+    url_name: name,
+  };
+};
+
+const [currentWiki, setCurrentWiki] = createSignal<{
+  title: string;
+  html: string;
+  url_name: string;
+}>({ title: "", html: "", url_name: "" });
+
+let id = localStorage.getItem("id");
+
+export const updateWiki = (url: string) => {
+  getWiki(url).then((res) => {
+    setCurrentWiki(res);
+  });
+};
+const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
+  let current_position = props?.lobby()?.players?.find((player) => {
+    return player[0].id === id;
+  })[1]?.current_position;
+  updateWiki(current_position);
   return (
     <div>
       <WikiProvider />
       <Portal useShadow={false} mount={container()}>
         <div align="left">
           <link rel="stylesheet" type="text/css" href="wiki.css" />
-          <h1>{props.wiki()?.title ?? ""}</h1>
+          <h1>{currentWiki().title}</h1>
           <div
             onclick={async (e: any) => {
               let targetValue: string;
@@ -48,27 +93,30 @@ const Wiki: Component<{ wiki: any }> = (props) => {
                 window.scrollTo({ top: y });
               }
               e.preventDefault();
+
+              if (targetValue.startsWith("http") || targetValue.includes(":")) {
+                return;
+              }
               if (
                 targetValue?.includes("wiki") &&
                 !targetValue?.includes("wiki/Help") &&
                 !targetValue?.includes("wiki/File")
               ) {
+                let url_name = targetValue?.split("wiki/").pop();
+                url_name = url_name?.split("#")[0];
                 let moveMsg = {
                   type: "game",
                   method: "move",
                   args: {
-                    url_name: targetValue?.split("wiki/").pop(),
+                    url_name,
                   },
                 };
+
                 sendMessage(moveMsg);
-              } else if (
-                targetValue?.includes("http") ||
-                targetValue?.includes("wiki")
-              ) {
-                return;
+                updateWiki(url_name);
               }
             }}
-            innerHTML={props.wiki()?.content_html ?? ""}
+            innerHTML={currentWiki().html}
           />
         </div>
       </Portal>

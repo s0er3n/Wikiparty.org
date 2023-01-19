@@ -12,7 +12,7 @@ from game.GameState import State
 from game.Player import Player, PlayerCopy
 from game.PlayerData import PlayerData, PlayerRights,  PlayerDataNoNode, Node, sorted_moves_list
 from game.Query import Query
-from game.Response import Error, LobbyUpdate, Response
+from game.Response import Error, LobbyUpdate, Response, SyncMove
 from dataclasses import dataclass, field
 
 logging.getLogger().setLevel(logging.INFO)
@@ -292,7 +292,9 @@ class SearchGame(Game):
                     ),
                     PlayerDataNoNode(
                         rights=playerData.rights,
-                        moves=self.rounds[-1].get_moves(player)
+                        moves=self.rounds[-1].get_moves(player),
+                        current_position=self.rounds[-1].get_current_article(
+                            player).url_name,
                     ),
                 )
                 for player, playerData in self.players_handler.get_all_players_with_data()
@@ -309,15 +311,18 @@ class SearchGame(Game):
 
         url_name: str | None = url_name.split("#")[0]
 
-        url_name = Query.query_and_add_to_queries(url_name)
+        # url_name = Query.query_and_add_to_queries(url_name)
+        if ":" in url_name:
+            return Error(
+                e="pick a different start article pls :)",
+                _recipients=[player]
+            )
+
         if url_name is None:
             return Error(
                 e="couldnt find article",
                 _recipients=[player],
             )
-
-        if not self._check_host(player):
-            return Error(e="you are not allowed to do that", _recipients=[player])
 
         if start:
             self.rounds[-1].start_article = Article(
@@ -339,10 +344,8 @@ class SearchGame(Game):
 
         if not self._is_move_allowed(url_name=url_name, player=player):
             logging.warning("cheate detected/ or double click")
-            return Error(
-                e="cheater detected/ or double click",
-                _recipients=[player],
-            )
+            # forcing player to reload to correct page
+            return SyncMove(_recipients=[player], url_name=self.rounds[-1].get_current_article(player).url_name)
 
         # needs be after is move allowed otherwise links with # are not allowed bc they are not in the link list
         url_name = url_name.split("#")[0]
@@ -379,7 +382,7 @@ class SearchGame(Game):
 
         Query.execute(move=url_name,
                       recipient=player)
-        return self._make_lobby_update_response()
+        return SyncMove(_recipients=[player], url_name=url_name)
 
     def page_forward(self, player: Player):
         if self.state != State.ingame:
@@ -393,10 +396,11 @@ class SearchGame(Game):
 
         Query.execute(move=url_name,
                       recipient=player)
-        return self._make_lobby_update_response()
+        return SyncMove(_recipients=[player], url_name=url_name)
 
     def _is_move_allowed(self, url_name: str, player: Player) -> bool:
         current_location = self.rounds[-1].get_current_article(player).url_name
         # links is a list of pretty names and the key of queries is the url name
         # WARNING pretty confusing WARNING
-        return url_name in Query.queries[current_location]["links"]
+
+        return Query().is_link_allowed(current_location, url_name)
