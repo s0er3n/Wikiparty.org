@@ -3,6 +3,7 @@ import {
   Component,
   createEffect,
   createSignal,
+  onCleanup,
   Show,
 } from "solid-js";
 import { sendMessage } from "./../App";
@@ -61,9 +62,12 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
     return player[0].id === id;
   })[1]?.current_position;
   updateWiki(current_position);
-  setInterval(() => {
+  let intervall = setInterval(() => {
     setShow(document.hasFocus());
   }, 100);
+  onCleanup(() => {
+    clearInterval(intervall);
+  });
   return (
     <div>
       <WikiProvider />
