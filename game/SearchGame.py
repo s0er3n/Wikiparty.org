@@ -74,7 +74,7 @@ class RoundData:
             self.moves[player].current = self.moves[player].current.add_child(
                 article)
 
-    def get_points(self, player: Player) -> int:
+    def get_current_points(self, player: Player) -> int:
         """Get the points of a player."""
         if player not in self.points:
             return 0
@@ -292,8 +292,9 @@ class SearchGame(Game):
                 (
                     PlayerCopy(
                         id=player.id, name=player.name,
-                        points=self.rounds[-1].get_points(player),
-                        points_current_round=self._calculate_points_total(
+                        points_current_round=self.rounds[-1].get_current_points(
+                            player),
+                        points=self._calculate_points_total(
                             player)
                     ),
                     PlayerDataNoNode(

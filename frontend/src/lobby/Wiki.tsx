@@ -98,7 +98,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
 
                 if (targetValue.startsWith("#")) {
                   console.log("test")
-                  var offsetHeight = document.getElementById('header')?.scrollHeight;
+                  var offsetHeight = document.getElementById('header')?.scrollHeight ?? 0;
                   console.log(offsetHeight);
                   const element = e.target
                     .getRootNode()
