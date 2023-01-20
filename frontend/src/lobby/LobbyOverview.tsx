@@ -88,7 +88,7 @@ const LobbyOverview: Component<any> = (props) => {
           <h3 class="text-xl font-bold">Players in Lobby:</h3>
           <PlayerList
             players={props.lobby()?.players}
-            pointsKey="points_current_round"
+            pointsKey="points"
             id={props.id}
           />
         </div>
