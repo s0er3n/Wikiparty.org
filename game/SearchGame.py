@@ -58,6 +58,9 @@ class RoundData:
     def get_articles_to_find_pretty_name(self) -> set[str]:
         return set(article.pretty_name for article in self.articles_to_find)
 
+    def get_articles_to_find_description(self) -> dict[str, str]:
+        return {article.pretty_name:  article.description for article in self.articles_to_find}
+
     def get_found_articles_pretty_name(self) -> set[str]:
         return set(article.pretty_name for article in self.found_articles)
 
@@ -275,10 +278,13 @@ class SearchGame(Game):
         return LobbyUpdate(
             articles_to_find=list(
                 self.rounds[-1].get_articles_to_find_pretty_name()),
+            articles_to_find_description=self.rounds[-1].get_articles_to_find_description(
+            ),
             end_time=self.rounds[-1].end_time,
             articles_found=list(
                 self.rounds[-1].get_found_articles_pretty_name()),
             start_article=self.rounds[-1].start_article.pretty_name,
+            start_article_description=self.rounds[-1].start_article.description,
             id=self.id,
             state=self.state.value,
             time=self.play_time,
@@ -302,7 +308,7 @@ class SearchGame(Game):
             _recipients=list(self.players_handler.get_all_players()),
         )
 
-    def set_article(self, player: Player, url_name: str, better_name, start=False) -> Response:
+    def set_article(self, player: Player, url_name: str, better_name: str, description: str = "", start=False) -> Response:
         if not self._check_host(player):
             return Error(
                 e="You are not the host",
@@ -326,10 +332,11 @@ class SearchGame(Game):
 
         if start:
             self.rounds[-1].start_article = Article(
-                url_name=url_name, pretty_name=better_name)
+                url_name=url_name, pretty_name=better_name, description=description)
         else:
             self.rounds[-1].articles_to_find.add(
-                Article(url_name=url_name, pretty_name=better_name)
+                Article(url_name=url_name, pretty_name=better_name,
+                        description=description)
             )
 
         return self._make_lobby_update_response()

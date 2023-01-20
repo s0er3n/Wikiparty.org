@@ -18,7 +18,12 @@ const Article: Component<{
       }
     >
       <>
-        <span class="font-black">{props.title}</span>{" "}
+        <span
+          class="tooltip tooltip-bottom"
+          data-tip={props.lobby().articles_to_find_description[props.title]}
+        >
+          <span class="font-black">{props.title}</span>{" "}
+        </span>
         {props.points ? "(" + props.points + ")" : ""}
       </>
     </Show>

@@ -5,3 +5,4 @@ from dataclasses import dataclass
 class Article:
     url_name: str = ""
     pretty_name: str = ""
+    description: str = ""
