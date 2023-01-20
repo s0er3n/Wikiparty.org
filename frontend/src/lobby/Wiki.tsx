@@ -13,7 +13,7 @@ import { TLobby } from "../types";
 
 const [container, setContainer] = createSignal<HTMLDivElement>();
 const WikiProvider = () => {
-  return <div class="m-3" ref={setContainer} id="modal" />;
+  return <div class="m-3 " ref={setContainer} id="modal" />;
 };
 
 export interface WikiRes {
@@ -78,6 +78,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
             <link rel="stylesheet" type="text/css" href="wiki.css" />
             <h1>{currentWiki().title}</h1>
             <div
+              class="w-fit overflow-y"
               onclick={async (e: any) => {
                 let targetValue: string;
                 if (!e.target.getAttribute("href")) {
