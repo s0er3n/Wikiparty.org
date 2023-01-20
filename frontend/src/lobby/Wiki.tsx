@@ -1,4 +1,11 @@
-import { Accessor, Component, createEffect, createSignal } from "solid-js";
+import {
+  Accessor,
+  Component,
+  createEffect,
+  createSignal,
+  onCleanup,
+  Show,
+} from "solid-js";
 import { sendMessage } from "./../App";
 
 import { Portal } from "solid-js/web";
@@ -49,34 +56,43 @@ export const updateWiki = (url: string) => {
     setCurrentWiki(res);
   });
 };
+const [show, setShow] = createSignal(false);
 const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   let current_position = props?.lobby()?.players?.find((player) => {
     return player[0].id === id;
   })[1]?.current_position;
   updateWiki(current_position);
+  let intervall = setInterval(() => {
+    setShow(document.hasFocus());
+  }, 100);
+  onCleanup(() => {
+    clearInterval(intervall);
+  });
   return (
     <div>
       <WikiProvider />
-      <Portal useShadow={false} mount={container()}>
-        <div align="left">
-          <link rel="stylesheet" type="text/css" href="wiki.css" />
-          <h1>{currentWiki().title}</h1>
-          <div
-            onclick={async (e: any) => {
-              let targetValue: string;
-              if (!e.target.getAttribute("href")) {
-                targetValue = e?.path
-                  ?.find((element) => {
-                    return element?.getAttribute("href") !== null;
-                  })
-                  ?.getAttribute("href");
+      <Portal useShadow={true} mount={container()}>
+        <Show when={show()} fallback={<div>CLICK TO SHOW WIKIPEDIA</div>}>
+          <div align="left">
+            <link rel="stylesheet" type="text/css" href="wiki.css" />
+            <h1>{currentWiki().title}</h1>
+            <div
+              onclick={async (e: any) => {
+                let targetValue: string;
+                if (!e.target.getAttribute("href")) {
+                  targetValue = e?.path
+                    ?.find((element) => {
+                      return element?.getAttribute("href") !== null;
+                    })
+                    ?.getAttribute("href");
 
-                if (!targetValue) {
-                  return;
+                  if (!targetValue) {
+                    return;
+                  }
+                } else {
+                  targetValue = e.target.getAttribute("href");
                 }
-              } else {
-                targetValue = e.target.getAttribute("href");
-              }
+
 
               if (targetValue.startsWith("#")) {
                 const yOffset = -218;
@@ -88,35 +104,39 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                   window.pageYOffset +
                   yOffset;
 
-                window.scrollTo({ top: y });
-              }
-              e.preventDefault();
+                  window.scrollTo({ top: y });
+                }
+                e.preventDefault();
 
-              if (targetValue.startsWith("http") || targetValue.includes(":")) {
-                return;
-              }
-              if (
-                targetValue?.includes("wiki") &&
-                !targetValue?.includes("wiki/Help") &&
-                !targetValue?.includes("wiki/File")
-              ) {
-                let url_name = targetValue?.split("wiki/").pop();
-                url_name = url_name?.split("#")[0];
-                let moveMsg = {
-                  type: "game",
-                  method: "move",
-                  args: {
-                    url_name,
-                  },
-                };
+                if (
+                  targetValue.startsWith("http") ||
+                  targetValue.includes(":")
+                ) {
+                  return;
+                }
+                if (
+                  targetValue?.includes("wiki") &&
+                  !targetValue?.includes("wiki/Help") &&
+                  !targetValue?.includes("wiki/File")
+                ) {
+                  let url_name = targetValue?.split("wiki/").pop();
+                  url_name = url_name?.split("#")[0];
+                  let moveMsg = {
+                    type: "game",
+                    method: "move",
+                    args: {
+                      url_name,
+                    },
+                  };
 
-                sendMessage(moveMsg);
-                updateWiki(url_name);
-              }
-            }}
-            innerHTML={currentWiki().html}
-          />
-        </div>
+                  sendMessage(moveMsg);
+                  updateWiki(url_name);
+                }
+              }}
+              innerHTML={currentWiki().html}
+            />
+          </div>
+        </Show>
       </Portal>
     </div>
   );
