@@ -54,6 +54,7 @@ let id = localStorage.getItem("id");
 export const updateWiki = (url: string) => {
   getWiki(url).then((res) => {
     setCurrentWiki(res);
+    window.scrollTo({ top: 0 });
   });
 };
 const [show, setShow] = createSignal(false);
@@ -92,13 +93,14 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                 } else {
                   targetValue = e.target.getAttribute("href");
                 }
-                console.log(targetValue)
+                console.log(targetValue);
 
                 e.preventDefault();
 
                 if (targetValue.startsWith("#")) {
-                  console.log("test")
-                  var offsetHeight = document.getElementById('header')?.scrollHeight ?? 0;
+                  console.log("test");
+                  var offsetHeight =
+                    document.getElementById("header")?.scrollHeight ?? 0;
                   console.log(offsetHeight);
                   const element = e.target
                     .getRootNode()
