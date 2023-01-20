@@ -78,13 +78,11 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                 targetValue = e.target.getAttribute("href");
               }
 
-              console.log(targetValue);
               if (targetValue.startsWith("#")) {
                 const yOffset = -218;
                 const element = e.target
                   .getRootNode()
                   .getElementById(targetValue.slice(1));
-                console.log(element);
                 const y =
                   element.getBoundingClientRect().top +
                   window.pageYOffset +

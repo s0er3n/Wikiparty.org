@@ -49,7 +49,6 @@ const [sugestion, setSugestion] = createSignal<Query>();
 const findArticle = async (name) => {
   let query = await getWiki(name)
   setSugestion(query)
-  console.log(query)
   return query
 }
 
