@@ -71,7 +71,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   return (
     <div>
       <WikiProvider />
-      <Portal useShadow={true} mount={container()}>
+      <Portal useShadow={false} mount={container()}>
         <Show when={show()} fallback={<div>CLICK TO SHOW WIKIPEDIA</div>}>
           <div align="left">
             <link rel="stylesheet" type="text/css" href="wiki.css" />
@@ -93,16 +93,15 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                   targetValue = e.target.getAttribute("href");
                 }
 
-
-              if (targetValue.startsWith("#")) {
-                const yOffset = -218;
-                const element = e.target
-                  .getRootNode()
-                  .getElementById(targetValue.slice(1));
-                const y =
-                  element.getBoundingClientRect().top +
-                  window.pageYOffset +
-                  yOffset;
+                if (targetValue.startsWith("#")) {
+                  const yOffset = -218;
+                  const element = e.target
+                    .getRootNode()
+                    .getElementById(targetValue.slice(1));
+                  const y =
+                    element.getBoundingClientRect().top +
+                    window.pageYOffset +
+                    yOffset;
 
                   window.scrollTo({ top: y });
                 }
