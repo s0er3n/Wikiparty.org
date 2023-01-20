@@ -1,8 +1,55 @@
 import { Accessor, Component, createSignal, For, Show } from "solid-js";
+import { TLobby } from "../types";
 import { sendMessage } from "./../App";
 import RandomArticle from "./../RandomArticle";
 import { isHost, setGoToLobby } from "./Lobby";
 let [article, setArticle] = createSignal("");
+
+export interface SuggestArticle {
+  batchcomplete: string;
+  continue: Continue;
+  query: Query;
+}
+
+export interface Continue {
+  sroffset: number;
+  continue: string;
+}
+
+export interface Query {
+  searchinfo: Searchinfo;
+  search: Search[];
+}
+
+export interface Search {
+  ns: number;
+  title: string;
+  pageid: number;
+  size: number;
+  wordcount: number;
+  snippet: string;
+  timestamp: Date;
+}
+
+export interface Searchinfo {
+  totalhits: number;
+}
+
+const getWiki = async (name: string) => {
+  const res = await fetch(
+    `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${name}&utf8=&format=json&origin=*`
+  );
+  const data: SuggestArticle = await res.json();
+  return data.query;
+};
+
+const [sugestion, setSugestion] = createSignal<Query>();
+
+const findArticle = async (name) => {
+  let query = await getWiki(name);
+  setSugestion(query);
+  return query;
+};
 
 const SetArticle: Component<{
   lobby: Accessor<any>;
@@ -20,14 +67,7 @@ const SetArticle: Component<{
                 clearTimeout(timeout);
               }
               timeout = setTimeout(() => {
-                const searchMsg = {
-                  type: "search",
-                  method: "execute",
-                  args: {
-                    query: e.target.value,
-                  },
-                };
-                sendMessage(searchMsg);
+                findArticle(e.target.value);
 
                 setArticle(e.target.value);
               }, 200);
@@ -35,15 +75,8 @@ const SetArticle: Component<{
             value={article()}
           />
           <RandomArticle
-            setter={(random_article: string) => {
-              const searchMsg = {
-                type: "search",
-                method: "execute",
-                args: {
-                  query: random_article,
-                },
-              };
-              sendMessage(searchMsg);
+            setter={async (random_article: string) => {
+              findArticle(random_article);
               setArticle(random_article);
             }}
           />
@@ -66,7 +99,7 @@ const SetArticle: Component<{
         </div>
         <Show when={article() !== ""}>
           <div class="p-3 space-y-3">
-            <ArticleSuggestionsList search={props.search} lobby={props.lobby} />
+            <ArticleSuggestionsList query={sugestion()} lobby={props.lobby} />
           </div>
         </Show>
       </div>
@@ -75,15 +108,21 @@ const SetArticle: Component<{
 };
 
 const ArticleSuggestionsList: Component<{
-  lobby: Accessor<any>;
-  search: Accessor<Array<Array<string>> | undefined>;
+  query: Query;
+  lobby: TLobby;
 }> = (props) => {
   return (
-    <For each={props.search ? props?.search()?.at(3) ?? [] : []}>
+    <For each={props?.query?.search ?? []}>
       {(result, i) => (
         <div class="flex justify-between space-x-3">
           <div>
-            <span> {props.search()?.at(1)?.at(i())} </span>
+            <span
+              class="tooltip tooltip-bottom"
+              data-tip={result.snippet.replace(/<[^>]+>/g, "") + "..."}
+            >
+              {" "}
+              {result.title}{" "}
+            </span>
           </div>
           <div>
             <button
@@ -92,8 +131,9 @@ const ArticleSuggestionsList: Component<{
                   type: "game",
                   method: "set_article",
                   args: {
-                    url_name: result?.split("wiki/").pop(),
-                    better_name: props.search()?.at(1)?.at(i()),
+                    url_name: result.title,
+                    better_name: result.title,
+                    description: result.snippet.replace(/<[^>]+>/g, "") + "...",
                     start: props.lobby().start_article === "",
                   },
                 };

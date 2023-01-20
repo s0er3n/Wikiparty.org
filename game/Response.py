@@ -28,8 +28,10 @@ class LobbyUpdate(Response):
     id: str
     players: list[tuple[PlayerCopy, PlayerDataNoNode]]
     articles_to_find: list[str]
+    articles_to_find_description: dict[str, str]
     articles_found: list[str]
     start_article: str
+    start_article_description: str
     time: int
 
 

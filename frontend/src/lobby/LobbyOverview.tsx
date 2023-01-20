@@ -1,12 +1,11 @@
-
 import {
   Show,
   Component,
   createEffect,
   createSignal,
   Accessor,
+  For,
 } from "solid-js";
-
 
 import { sendMessage } from "./../App";
 import { isHost } from "./Lobby";
@@ -32,15 +31,36 @@ const LobbyOverview: Component<any> = (props) => {
       <div class="flex flex-col justify-between space-y-3">
         <h3 class="text-xl font-bold">Settings:</h3>
         <div>
-          <b>start:</b> {props.lobby().start_article}
+          <b>start:</b>{" "}
+          <span
+            class="tooltip tooltip-bottom"
+            data-tip={props.lobby().start_article_description}
+          >
+            {props.lobby().start_article}
+          </span>
         </div>
         <div>
-          <b>find:</b> {props.lobby().articles_to_find.join(" | ")}
+          <b>find:</b>
+          <For each={props.lobby().articles_to_find}>
+            {(article, i) => (
+              <>
+                <Show when={i()}>
+                  <span> | </span>
+                </Show>
+                <span
+                  class="tooltip tooltip-bottom"
+                  data-tip={props.lobby().articles_to_find_description[article]}
+                >
+                  {article}
+                </span>
+              </>
+            )}
+          </For>
         </div>
         <div class="flex w-full justify-center items-center">
           <span>max time: </span>
           <SetTime time={props.lobby().time} />
-          <span> seconds</span>
+          <span> minutes</span>
         </div>
         <Show when={isHost(props)} article>
           <p>
@@ -68,10 +88,9 @@ const LobbyOverview: Component<any> = (props) => {
           <h3 class="text-xl font-bold">Players in Lobby:</h3>
           <PlayerList
             players={props.lobby()?.players}
-            pointsKey="points_current_round"
+            pointsKey="points"
             id={props.id}
           />
-
         </div>
       </div>
     </div>
@@ -80,15 +99,16 @@ const LobbyOverview: Component<any> = (props) => {
 
 const setTime = (e: any) => {
   let msg = setTimeMsg;
-  msg.args.time = parseInt(e.target.value);
+  msg.args.time = parseInt(e.target.value * 60);
   sendMessage(msg);
 };
 
-const SetTime: Component<Props> = (props) => {
+const SetTime: Component<any> = (props) => {
+  let time = Math.floor(props.time / 60);
   return (
     <input
       class="w-24"
-      value={props.time}
+      value={time}
       onchange={setTime}
       type="number"
       class="input input-bordered"

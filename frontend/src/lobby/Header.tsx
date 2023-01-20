@@ -29,8 +29,7 @@ const Header: Component<{
       });
   };
   return (
-
-    <div class="bg-base-200 p-3 sticky top-0 z-50 ">
+    <div id="header" class="bg-base-200 p-3 sticky top-0 z-50 ">
       <div>
         <div class="navbar rounded-md shadow-md bg-base-100 mb-3">
           <div class="flex-1">
@@ -89,6 +88,7 @@ const Header: Component<{
                 <Article
                   points={article.points}
                   title={article.title}
+                  lobby={props.lobby}
                   articles_to_find={props.lobby()?.articles_to_find}
                 />
                 <span> </span>

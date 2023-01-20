@@ -38,6 +38,7 @@ const PlayerList: Component<Props> = (props) => {
                     <div class="text-sm font-light">
                       {i() + 1}{" "}
                       <Article
+                        lobby={props.lobby}
                         articles_to_find={props.lobby()?.articles_to_find}
                         title={article}
                       />
