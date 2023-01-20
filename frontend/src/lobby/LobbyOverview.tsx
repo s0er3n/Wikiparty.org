@@ -4,6 +4,7 @@ import {
   createEffect,
   createSignal,
   Accessor,
+  For,
 } from "solid-js";
 
 import { sendMessage } from "./../App";
@@ -30,10 +31,31 @@ const LobbyOverview: Component<any> = (props) => {
       <div class="flex flex-col justify-between space-y-3">
         <h3 class="text-xl font-bold">Settings:</h3>
         <div>
-          <b>start:</b> {props.lobby().start_article}
+          <b>start:</b>{" "}
+          <span
+            class="tooltip tooltip-bottom"
+            data-tip={props.lobby().start_article_description}
+          >
+            {props.lobby().start_article}
+          </span>
         </div>
         <div>
-          <b>find:</b> {props.lobby().articles_to_find.join(" | ")}
+          <b>find:</b>
+          <For each={props.lobby().articles_to_find}>
+            {(article, i) => (
+              <>
+                <Show when={i()}>
+                  <span> | </span>
+                </Show>
+                <span
+                  class="tooltip tooltip-bottom"
+                  data-tip={props.lobby().articles_to_find_description[article]}
+                >
+                  {article}
+                </span>
+              </>
+            )}
+          </For>
         </div>
         <div class="flex w-full justify-center items-center">
           <span>max time: </span>

@@ -40,24 +40,21 @@ const getWiki = async (name: string) => {
     `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${name}&utf8=&format=json&origin=*`
   );
   const data: SuggestArticle = await res.json();
-  return data.query
-
+  return data.query;
 };
 
 const [sugestion, setSugestion] = createSignal<Query>();
 
 const findArticle = async (name) => {
-  let query = await getWiki(name)
-  setSugestion(query)
-  return query
-}
-
+  let query = await getWiki(name);
+  setSugestion(query);
+  return query;
+};
 
 const SetArticle: Component<{
   lobby: Accessor<any>;
   search: Accessor<Array<Array<string>> | undefined>;
 }> = (props) => {
-
   let timeout: any = null;
   return (
     <>
@@ -70,8 +67,7 @@ const SetArticle: Component<{
                 clearTimeout(timeout);
               }
               timeout = setTimeout(() => {
-
-                findArticle(e.target.value)
+                findArticle(e.target.value);
 
                 setArticle(e.target.value);
               }, 200);
@@ -80,7 +76,7 @@ const SetArticle: Component<{
           />
           <RandomArticle
             setter={async (random_article: string) => {
-              findArticle(random_article)
+              findArticle(random_article);
               setArticle(random_article);
             }}
           />
@@ -119,8 +115,14 @@ const ArticleSuggestionsList: Component<{
     <For each={props?.query?.search ?? []}>
       {(result, i) => (
         <div class="flex justify-between space-x-3">
-          <div >
-            <span class="tooltip tooltip-bottom" data-tip={result.snippet.replace(/<[^>]+>/g, '') + '...'}> {result.title} </span>
+          <div>
+            <span
+              class="tooltip tooltip-bottom"
+              data-tip={result.snippet.replace(/<[^>]+>/g, "") + "..."}
+            >
+              {" "}
+              {result.title}{" "}
+            </span>
           </div>
           <div>
             <button
@@ -131,6 +133,7 @@ const ArticleSuggestionsList: Component<{
                   args: {
                     url_name: result.title,
                     better_name: result.title,
+                    description: result.snippet.replace(/<[^>]+>/g, "") + "...",
                     start: props.lobby().start_article === "",
                   },
                 };
