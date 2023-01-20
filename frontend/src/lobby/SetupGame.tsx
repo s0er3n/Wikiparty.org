@@ -22,7 +22,6 @@ const SetupGame: Component<{
   lobby: any;
   search: Accessor<Array<Array<string>> | undefined>;
 }> = (props) => {
-  console.log("SetupGame", props.search());
   return (
     <div class="bg-base-100 shadow-md rounded-md p-3">
       <p>
