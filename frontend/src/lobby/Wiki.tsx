@@ -33,7 +33,7 @@ export interface Text {
 
 const getWiki = async (name: string) => {
   const res = await fetch(
-    `https://en.wikipedia.org/w/api.php?action=parse&prop=text&page=${name}&format=json&disableeditsection=1&redirects=true&useskin=minerva&origin=*`
+    `https://wiki.soeren-michaels.workers.dev/wiki/${name}`
   );
   const data: WikiRes = await res.json();
   return {
