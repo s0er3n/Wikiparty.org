@@ -29,7 +29,7 @@ const Header: Component<{
       });
   };
   return (
-    <div class="bg-base-200 p-3 sticky top-0 z-50 ">
+    <div id="header" class="bg-base-200 p-3 sticky top-0 z-50 ">
       <div>
         <div class="navbar rounded-md shadow-md bg-base-100 mb-3">
           <div class="flex-1">

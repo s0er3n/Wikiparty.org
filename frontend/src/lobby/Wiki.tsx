@@ -92,20 +92,24 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                 } else {
                   targetValue = e.target.getAttribute("href");
                 }
+                console.log(targetValue)
+
+                e.preventDefault();
 
                 if (targetValue.startsWith("#")) {
-                  const yOffset = -218;
+                  console.log("test")
+                  var offsetHeight = document.getElementById('header')?.scrollHeight;
+                  console.log(offsetHeight);
                   const element = e.target
                     .getRootNode()
                     .getElementById(targetValue.slice(1));
                   const y =
                     element.getBoundingClientRect().top +
-                    window.pageYOffset +
-                    yOffset;
+                    window.pageYOffset -
+                    offsetHeight;
 
                   window.scrollTo({ top: y });
                 }
-                e.preventDefault();
 
                 if (
                   targetValue.startsWith("http") ||
