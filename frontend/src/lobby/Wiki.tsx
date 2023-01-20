@@ -1,3 +1,4 @@
+
 import {
   Accessor,
   Component,
@@ -6,6 +7,7 @@ import {
   onCleanup,
   Show,
 } from "solid-js";
+
 import { sendMessage } from "./../App";
 
 import { Portal } from "solid-js/web";
@@ -54,6 +56,7 @@ let id = localStorage.getItem("id");
 export const updateWiki = (url: string) => {
   getWiki(url).then((res) => {
     setCurrentWiki(res);
+
     window.scrollTo({ top: 0 });
   });
 };
@@ -63,12 +66,15 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
     return player[0].id === id;
   })[1]?.current_position;
   updateWiki(current_position);
+
   let intervall = setInterval(() => {
     setShow(document.hasFocus());
   }, 100);
   onCleanup(() => {
     clearInterval(intervall);
   });
+
+
   return (
     <div>
       <WikiProvider />
@@ -143,6 +149,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
             />
           </div>
         </Show>
+
       </Portal>
     </div>
   );
