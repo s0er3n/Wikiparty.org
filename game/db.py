@@ -11,4 +11,4 @@ client = redis.from_url(url)
 
 
 def get_article(move: str) -> bytes | None:
-    return client.get("article:" + move.replace(" ", "_"))
+    return client.get("article:" + move)
