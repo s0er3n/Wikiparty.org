@@ -1,4 +1,3 @@
-
 import {
   Accessor,
   Component,
@@ -74,7 +73,6 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
     clearInterval(intervall);
   });
 
-
   return (
     <div>
       <WikiProvider />
@@ -88,9 +86,10 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
               onclick={async (e: any) => {
                 let targetValue: string;
                 if (!e.target.getAttribute("href")) {
-                  targetValue = e?.path
-                    ?.find((element) => {
-                      return element?.getAttribute("href") !== null;
+                  targetValue = e
+                    ?.composedPath()
+                    ?.find((event) => {
+                      return event?.getAttribute("href") !== null;
                     })
                     ?.getAttribute("href");
 
@@ -149,7 +148,6 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
             />
           </div>
         </Show>
-
       </Portal>
     </div>
   );
