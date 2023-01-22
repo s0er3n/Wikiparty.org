@@ -1,4 +1,3 @@
-
 import {
   Accessor,
   Component,
@@ -60,6 +59,7 @@ export const updateWiki = (url: string) => {
     window.scrollTo({ top: 0 });
   });
 };
+
 const [show, setShow] = createSignal(false);
 const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   let current_position = props?.lobby()?.players?.find((player) => {
@@ -88,9 +88,10 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
               onclick={async (e: any) => {
                 let targetValue: string;
                 if (!e.target.getAttribute("href")) {
-                  targetValue = e?.path
-                    ?.find((element) => {
-                      return element?.getAttribute("href") !== null;
+                  targetValue = e
+                    ?.composedPath()
+                    ?.find((event) => {
+                      return event?.getAttribute("href") !== null;
                     })
                     ?.getAttribute("href");
 
@@ -105,7 +106,6 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                 e.preventDefault();
 
                 if (targetValue.startsWith("#")) {
-                  console.log("test");
                   var offsetHeight =
                     document.getElementById("header")?.scrollHeight ?? 0;
                   console.log(offsetHeight);
@@ -149,7 +149,6 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
             />
           </div>
         </Show>
-
       </Portal>
     </div>
   );
