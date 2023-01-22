@@ -134,69 +134,57 @@ if (localStorage.getItem("username")) {
 const App: Component = () => {
   // derived state if player is host
 
-  if (code() || !localStorage.getItem("pre-alpha"))
-    return (
-      <>
-        <div class="flex flex-col justify-center h-screen items-center">
-          <div class="text-xl font-light">Enter Your Code:</div>
-          <div class="flex space-x-2">
-            <input
-              onchange={(e) => {
-                if (e.target.value === "pre-alpha") {
-                  setCode(true);
-                  localStorage.setItem("pre-alpha", crypto.randomUUID());
-                }
-              }}
-              type="text"
-              placeholder="Code"
-              class="input input-bordered"
-            />
-            <button
-              onclick={() => {
-                if (code()) {
-                  window.location.reload();
-                }
-              }}
-              class="btn"
-            >
-              Join Now
-            </button>
-          </div>
-        </div>
-      </>
-    );
   return (
-    <div class="flex items-stretch min-h-screen">
+    <div class="flex items-stretch min-h-screen bg-base-200">
       <Show when={lobby()?.state === "ingame"}>
-        <aside class="p-3 grow flex flex-col justify-start max-h-screen w-48 m-3 mr-0 bg-base-100 shadow-md rounded-md sticky top-3">
-          <div class="font-bold mb-3">
-            <h3>Players</h3>
-          </div>
-          <PlayerList
-            players={lobby()?.players}
-            pointsKey="points_current_round"
-          />
-        </aside>
+        <div class="hidden md:flex">
+          <aside class="p-3 grow flex flex-col justify-start max-h-screen w-48 m-3 mr-0 bg-base-100 shadow-md rounded-md sticky top-3">
+            <div class="font-bold mb-3">
+              <h3>Players</h3>
+            </div>
+            <PlayerList
+              players={lobby()?.players}
+              pointsKey="points_current_round"
+            />
+          </aside>
+        </div>
       </Show>
       <div style="width: 100%">
-        <Header lobby={lobby} id={id} />
+        <Show when={lobby() && hasUserName()}>
+          <Header lobby={lobby} id={id} />
+        </Show>
 
-        <div class="flex justify-center">
-          <Show when={!hasUserName()}>
-            <SetUserName setHasUserName={setHasUserName} />
-          </Show>
-          <Show when={hasUserName()}>
-            <Show when={connected()} fallback={<>connecting...</>}></Show>
-            <div>
-              <Show when={lobby()}>
-                <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
-              </Show>
-              <Show when={!lobby() && hasUserName()}>
-                <JoinOrCreateLobby />
-              </Show>
+        <Show when={lobby()}>
+          <div class="bg-base-200 flex flex-col items-center justify-center ">
+            <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
+          </div>
+        </Show>
+        <Show when={!lobby()}>
+          <div class="flex flex-col items-center">
+            <div
+              class="hero min-h-screen bg-base-200 object-cover"
+              style="background-image: url(triangles-download (1).png);"
+            >
+              <div class="hero-content text-center flex flex-col">
+                <div class="max-w-xl">
+                  <h1 class="text-5xl font-bold">Welcome to WikiParty</h1>
+                  <p class="py-6">
+                    A game that will take you on a journey through the world of
+                    Wikipedia!
+                  </p>
+                </div>
+                <Show when={!hasUserName()}>
+                  <SetUserName setHasUserName={setHasUserName} />
+                </Show>
+                <Show when={hasUserName()}>
+                  <Show when={!lobby() && hasUserName()}>
+                    <JoinOrCreateLobby />
+                  </Show>
+                </Show>
+              </div>
             </div>
-          </Show>
-        </div>
+          </div>
+        </Show>
       </div>
     </div>
   );
