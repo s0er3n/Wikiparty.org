@@ -137,15 +137,17 @@ const App: Component = () => {
   return (
     <div class="flex items-stretch min-h-screen bg-base-200">
       <Show when={lobby()?.state === "ingame"}>
-        <aside class="p-3 grow flex flex-col justify-start max-h-screen w-48 m-3 mr-0 bg-base-100 shadow-md rounded-md sticky top-3">
-          <div class="font-bold mb-3">
-            <h3>Players</h3>
-          </div>
-          <PlayerList
-            players={lobby()?.players}
-            pointsKey="points_current_round"
-          />
-        </aside>
+        <div class="hidden md:flex">
+          <aside class="p-3 grow flex flex-col justify-start max-h-screen w-48 m-3 mr-0 bg-base-100 shadow-md rounded-md sticky top-3">
+            <div class="font-bold mb-3">
+              <h3>Players</h3>
+            </div>
+            <PlayerList
+              players={lobby()?.players}
+              pointsKey="points_current_round"
+            />
+          </aside>
+        </div>
       </Show>
       <div style="width: 100%">
         <Show when={lobby() && hasUserName()}>

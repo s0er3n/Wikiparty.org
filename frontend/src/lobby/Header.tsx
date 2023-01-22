@@ -43,9 +43,9 @@ const Header: Component<{
                 };
                 sendMessage(leaveMsg);
               }}
-              class="btn btn-ghost normal-case text-xl"
+              class="hidden sm:block btn btn-ghost normal-case text-xl"
             >
-              WikiParty.org (pre-alpha)
+              WikiParty.org (alpha)
             </a>
           </div>
 
