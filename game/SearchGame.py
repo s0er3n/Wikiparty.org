@@ -3,6 +3,7 @@ import logging
 from collections import defaultdict
 from threading import Thread
 from time import sleep
+import requests
 import time
 
 from game.Article import Article
@@ -309,16 +310,23 @@ class SearchGame(Game):
             _recipients=list(self.players_handler.get_all_players()),
         )
 
-    def set_article(self, player: Player, url_name: str, better_name: str, description: str = "", start=False) -> Response:
+    def set_article(self, player: Player, page_id: str, better_name: str, description: str = "", start=False) -> Response:
         if not self._check_host(player):
             return Error(
                 e="You are not the host",
                 _recipients=[player]
             )
 
-        url_name: str | None = url_name.split("#")[0]
-
-        # url_name = Query.query_and_add_to_queries(url_name)
+        r = requests.get(
+            f"https://en.wikipedia.org/w/api.php?action=query&prop=info&pageids={page_id}&inprop=url&format=json")
+        if r.status_code != 200:
+            return Error(
+                e="couldnt find article",
+                _recipients=[player],
+            )
+        data = r.json()
+        url_name = data["query"]["pages"][str(page_id)]["canonicalurl"].split(
+            "/wiki/")[-1]
         if ":" in url_name:
             return Error(
                 e="pick a different start article pls :)",
@@ -349,6 +357,8 @@ class SearchGame(Game):
                 e="not ingame",
                 _recipients=[player],
             )
+
+        print(url_name)
 
         if not self._is_move_allowed(url_name=url_name, player=player):
             logging.warning("cheate detected/ or double click")

@@ -74,7 +74,6 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
     clearInterval(intervall);
   });
 
-
   return (
     <div>
       <WikiProvider />
