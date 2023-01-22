@@ -33,8 +33,8 @@ const Header: Component<{
       <div>
         <div class="navbar rounded-md shadow-md bg-base-100 mb-3">
           <div class="flex-1">
-            <a
-              href="/"
+            <div
+              // href="/"
               onclick={() => {
                 let leaveMsg = {
                   method: "leave_lobby",
@@ -42,11 +42,12 @@ const Header: Component<{
                   args: {},
                 };
                 sendMessage(leaveMsg);
+                window.location.href = "/";
               }}
-              class="hidden text-center sm:block btn btn-ghost normal-case text-xl"
+              class="hidden text-center sm:flex btn btn-ghost normal-case text-xl"
             >
-              WikiParty.org (alpha)
-            </a>
+              <span>WikiParty.org (alpha)</span>
+            </div>
           </div>
 
           <div class="flex-none space-x-3">
@@ -112,7 +113,7 @@ const Header: Component<{
         </div>
       </Show>
       <div class="mt-3" style="display: flex; justify-content: space-between;">
-        <div class="alert alert-warning shadow-lg">
+        <div class="alert alert-warning  dark:alert-info shadow-lg">
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"

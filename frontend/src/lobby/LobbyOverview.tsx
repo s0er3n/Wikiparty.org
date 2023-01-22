@@ -40,7 +40,7 @@ const LobbyOverview: Component<any> = (props) => {
           </span>
         </div>
         <div>
-          <b>find:</b>
+          <b>find: </b>
           <For each={props.lobby().articles_to_find}>
             {(article, i) => (
               <>
@@ -58,14 +58,14 @@ const LobbyOverview: Component<any> = (props) => {
           </For>
         </div>
         <div class="flex w-full justify-center items-center">
-          <span>max time: </span>
+          <span class="mr-2">time: </span>
           <SetTime time={props.lobby().time} />
-          <span> minutes</span>
+          <span class="ml-2"> minutes</span>
         </div>
         <Show when={isHost(props)} article>
           <p>
             <button
-              class="btn"
+              class="btn btn-wide"
               onclick={() => {
                 sendMessage(startGameMsg);
               }}
@@ -109,6 +109,7 @@ const SetTime: Component<any> = (props) => {
     <input
       class="w-24"
       value={time}
+      min="1"
       onchange={setTime}
       type="number"
       class="input input-bordered"
