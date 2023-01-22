@@ -48,9 +48,9 @@ class Query:
 
         short_links = list(_select_and_reduce_links(all_links))
 
-        game.db.client.set("article:" + move.replace(" ", "_"), json.dumps({"links": short_links,
-                                                                            "title": str(title),
-                                                                            "url_ending": move}), ex=60 * 60 * 24)
+        game.db.client.set("article:" + move, json.dumps({"links": short_links,
+                                                          "title": str(title),
+                                                          "url_ending": move}), ex=60 * 60 * 24)
         return move
 
     @classmethod
