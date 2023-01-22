@@ -59,7 +59,8 @@ export const updateWiki = (url: string) => {
     window.scrollTo({ top: 0 });
   });
 };
-const [show, setShow] = createSignal(true);
+
+const [show, setShow] = createSignal(false);
 const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   let current_position = props?.lobby()?.players?.find((player) => {
     return player[0].id === id;
@@ -72,6 +73,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   onCleanup(() => {
     clearInterval(intervall);
   });
+
 
   return (
     <div>
