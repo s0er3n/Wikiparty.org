@@ -131,7 +131,7 @@ const ArticleSuggestionsList: Component<{
                   type: "game",
                   method: "set_article",
                   args: {
-                    url_name: result.title,
+                    page_id: result.pageid,
                     better_name: result.title,
                     description: result.snippet.replace(/<[^>]+>/g, "") + "...",
                     start: props.lobby().start_article === "",

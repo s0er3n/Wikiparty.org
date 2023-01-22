@@ -48,14 +48,14 @@ class Query:
 
         short_links = list(_select_and_reduce_links(all_links))
 
-        game.db.client.set("article:" + move, json.dumps({"links": short_links,
-                                                          "title": str(title),
-                                                          "url_ending": move}), ex=60 * 60 * 24)
+        game.db.client.set("article:" + move.replace(" ", "_"), json.dumps({"links": short_links,
+                                                                            "title": str(title),
+                                                                            "url_ending": move}), ex=60 * 60 * 24)
         return move
 
     @classmethod
     def execute(cls, move: str, recipient: Player) -> str | None:
-        if not game.db.client.get("article:" + move):
+        if not game.db.get_article(move):
             logging.warning(f"before try move {move}")
             try:
                 move = cls.query_and_add_to_queries(move)
@@ -64,7 +64,7 @@ class Query:
                 logging.error("could not query wikipedia")
                 return
 
-        if not (query_result := game.db.client.get("article:" + move)):
+        if not (query_result := game.db.get_article(move)):
             logging.warning("no query result")
             return None
         query_result = json.loads(query_result)
@@ -73,12 +73,16 @@ class Query:
 
     @classmethod
     def is_link_allowed(cls, current_location, url_name) -> bool:
-        if not (redis_result := game.db.client.get(current_location)):
+        redis_result = game.db.get_article(current_location)
+        if not redis_result:
             # requerying current location in case it was not in redis
             cls.query_and_add_to_queries(current_location)
-            redis_result = game.db.client.get(
-                "article:" + current_location)
+            redis_result = game.db.get_article(current_location)
+            print("current location ", current_location)
+            print("not existing", redis_result)
+            return url_name in json.loads(redis_result)["links"]
 
+        print("in db", redis_result)
         return url_name in json.loads(redis_result)["links"]
 
 
