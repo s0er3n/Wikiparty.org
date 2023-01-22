@@ -59,7 +59,7 @@ export const updateWiki = (url: string) => {
     window.scrollTo({ top: 0 });
   });
 };
-const [show, setShow] = createSignal(false);
+const [show, setShow] = createSignal(true);
 const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   let current_position = props?.lobby()?.players?.find((player) => {
     return player[0].id === id;
@@ -104,7 +104,6 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                 e.preventDefault();
 
                 if (targetValue.startsWith("#")) {
-                  console.log("test");
                   var offsetHeight =
                     document.getElementById("header")?.scrollHeight ?? 0;
                   console.log(offsetHeight);
