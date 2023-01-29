@@ -155,9 +155,7 @@ const App: Component = () => {
         </Show>
 
         <Show when={lobby()}>
-          <div class="bg-base-200 flex flex-col items-center justify-center ">
-            <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
-          </div>
+          <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
         </Show>
         <Show when={!lobby()}>
           <div class="flex flex-col items-center">

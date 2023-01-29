@@ -60,19 +60,23 @@ export const updateWiki = (url: string) => {
   });
 };
 
-const [show, setShow] = createSignal(false);
+const [show, setShow] = createSignal(true);
 const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   let current_position = props?.lobby()?.players?.find((player) => {
     return player[0].id === id;
   })[1]?.current_position;
   updateWiki(current_position);
 
-  let intervall = setInterval(() => {
-    setShow(document.hasFocus());
-  }, 100);
+  // let intervall = setInterval(() => {
+  //   setShow(document.hasFocus());
+  // }, 100);
   onCleanup(() => {
     clearInterval(intervall);
   });
+  console.log(screen.width > 480)
+  let mfTempOpenSection = (x) => {
+    console.log("collaps")
+  }
 
   return (
     <div>
@@ -80,76 +84,80 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
       <Portal useShadow={false} mount={container()}>
         <Show when={show()} fallback={<div>CLICK TO SHOW WIKIPEDIA</div>}>
           <div align="left">
-            <link rel="stylesheet" type="text/css" href="wiki.css" />
+            <Show when={screen.width > 480} fallback={<link rel="stylesheet" type="text/css" href="mobileWiki.css" />}>
+              <link rel="stylesheet" type="text/css" href="wiki.css" />
+            </Show>
             <h1>{currentWiki().title}</h1>
-            <div
-              class="w-fit overflow-y"
-              onclick={async (e: any) => {
-                let targetValue: string;
-                if (!e.target.getAttribute("href")) {
-                  targetValue = e
-                    ?.composedPath()
-                    ?.find((event) => {
-                      return event?.getAttribute("href") !== null;
-                    })
-                    ?.getAttribute("href");
+            <div id="bodyContent" class="content">
+              <div
+                id="mw-content-text" class="mw-body-content mw-content-ltr" dir="ltr" lang="en"
+                onclick={async (e: any) => {
+                  let targetValue: string;
+                  if (!e.target.getAttribute("href")) {
+                    targetValue = e
+                      ?.composedPath()
+                      ?.find((event) => {
+                        return event?.getAttribute("href") !== null;
+                      })
+                      ?.getAttribute("href");
 
-                  if (!targetValue) {
+                    if (!targetValue) {
+                      return;
+                    }
+                  } else {
+                    targetValue = e.target.getAttribute("href");
+                  }
+                  console.log(targetValue);
+
+                  e.preventDefault();
+
+                  if (targetValue.startsWith("#")) {
+                    var offsetHeight =
+                      document.getElementById("header")?.scrollHeight ?? 0;
+                    console.log(offsetHeight);
+                    const element = e.target
+                      .getRootNode()
+                      .getElementById(targetValue.slice(1));
+                    const y =
+                      element.getBoundingClientRect().top +
+                      window.pageYOffset -
+                      offsetHeight;
+
+                    window.scrollTo({ top: y });
+                  }
+
+                  if (
+                    targetValue.startsWith("http") ||
+                    targetValue.includes(":")
+                  ) {
                     return;
                   }
-                } else {
-                  targetValue = e.target.getAttribute("href");
-                }
-                console.log(targetValue);
+                  if (
+                    targetValue?.includes("wiki") &&
+                    !targetValue?.includes("wiki/Help") &&
+                    !targetValue?.includes("wiki/File")
+                  ) {
+                    let url_name = targetValue?.split("wiki/").pop();
+                    url_name = url_name?.split("#")[0];
+                    let moveMsg = {
+                      type: "game",
+                      method: "move",
+                      args: {
+                        url_name,
+                      },
+                    };
 
-                e.preventDefault();
-
-                if (targetValue.startsWith("#")) {
-                  var offsetHeight =
-                    document.getElementById("header")?.scrollHeight ?? 0;
-                  console.log(offsetHeight);
-                  const element = e.target
-                    .getRootNode()
-                    .getElementById(targetValue.slice(1));
-                  const y =
-                    element.getBoundingClientRect().top +
-                    window.pageYOffset -
-                    offsetHeight;
-
-                  window.scrollTo({ top: y });
-                }
-
-                if (
-                  targetValue.startsWith("http") ||
-                  targetValue.includes(":")
-                ) {
-                  return;
-                }
-                if (
-                  targetValue?.includes("wiki") &&
-                  !targetValue?.includes("wiki/Help") &&
-                  !targetValue?.includes("wiki/File")
-                ) {
-                  let url_name = targetValue?.split("wiki/").pop();
-                  url_name = url_name?.split("#")[0];
-                  let moveMsg = {
-                    type: "game",
-                    method: "move",
-                    args: {
-                      url_name,
-                    },
-                  };
-
-                  sendMessage(moveMsg);
-                  updateWiki(url_name);
-                }
-              }}
-              innerHTML={currentWiki().html}
-            />
+                    sendMessage(moveMsg);
+                    updateWiki(url_name);
+                  }
+                }}
+                innerHTML={currentWiki().html}
+              />
+            </div>
           </div>
-        </Show>
-      </Portal>
-    </div>
+        </Show >
+      </Portal >
+    </div >
   );
 };
 
