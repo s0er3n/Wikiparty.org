@@ -7,6 +7,10 @@ import {
   Show,
 } from "solid-js";
 
+import {
+  Html, Head, Title, Meta, Link, Body, Routes, FileRoutes, Scripts, ErrorBoundary
+} from "solid-start";
+
 import { sendMessage } from "./../App";
 
 import { Portal } from "solid-js/web";
@@ -55,6 +59,12 @@ let id = localStorage.getItem("id");
 export const updateWiki = (url: string) => {
   getWiki(url).then((res) => {
     setCurrentWiki(res);
+    for (const element of document.getElementsByClassName("collapsible-block")) {
+      element.hidden = true
+    }
+    for (const element of document.getElementsByClassName("mw-editsection")) {
+      element.hidden = true
+    }
 
     window.scrollTo({ top: 0 });
   });
@@ -74,18 +84,21 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
     clearInterval(intervall);
   });
   console.log(screen.width > 480)
-  let mfTempOpenSection = (x) => {
-    console.log("collaps")
-  }
+
+  const script = document.createElement("script");
+  script.src = "../../public/MobileJS.js";
+  script.async = true;
+  document.body.appendChild(script);
 
   return (
     <div>
+      <script>{"function mfTempOpenSection(number){let el = document.getElementById('mf-section-'+number); console.log(el)}"} </script>
       <WikiProvider />
       <Portal useShadow={false} mount={container()}>
         <Show when={show()} fallback={<div>CLICK TO SHOW WIKIPEDIA</div>}>
           <div align="left">
-            <Show when={screen.width > 480} fallback={<link rel="stylesheet" type="text/css" href="mobileWiki.css" />}>
-              <link rel="stylesheet" type="text/css" href="wiki.css" />
+            <Show when={screen.width <= 480} fallback={<link rel="stylesheet" type="text/css" href="Wiki.css" />}>
+              <link rel="stylesheet" type="text/css" href="mobileWiki.css" />
             </Show>
             <h1>{currentWiki().title}</h1>
             <div id="bodyContent" class="content">
