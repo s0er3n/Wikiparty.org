@@ -65,6 +65,19 @@ export const updateWiki = (url: string) => {
     for (const element of document.getElementsByClassName("mw-editsection")) {
       element.hidden = true
     }
+    for (const element of document.getElementsByClassName("lazy-image-placeholder")) {
+      console.log(element)
+      let image_el = document.createElement('img');
+      for (const attr of element.attributes) {
+        if (attr.name == "data-src") {
+          image_el.setAttribute("src", attr.value)
+          continue
+        }
+        image_el.setAttribute(attr.name, attr.value)
+      }
+      console.log(image_el)
+      element.replaceWith(image_el)
+    }
 
     window.scrollTo({ top: 0 });
   });
