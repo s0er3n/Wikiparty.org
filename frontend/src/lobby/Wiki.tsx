@@ -102,7 +102,6 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
 
   return (
     <div>
-      <script>{"function mfTempOpenSection(number){let el = document.getElementById('mf-section-'+number); console.log(el)}"} </script>
       <WikiProvider />
       <Portal useShadow={false} mount={container()}>
         <Show when={show()} fallback={<div>CLICK TO SHOW WIKIPEDIA</div>}>
@@ -131,13 +130,11 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                     targetValue = e.target.getAttribute("href");
                   }
                   console.log(targetValue);
-
                   e.preventDefault();
 
                   if (targetValue.startsWith("#")) {
                     var offsetHeight =
                       document.getElementById("header")?.scrollHeight ?? 0;
-                    console.log(offsetHeight);
                     const element = e.target
                       .getRootNode()
                       .getElementById(targetValue.slice(1));
