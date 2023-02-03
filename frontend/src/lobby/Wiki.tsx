@@ -105,8 +105,6 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
 
   })
 
-
-
   return (
     <div>
       <WikiProvider />
