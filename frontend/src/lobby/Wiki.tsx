@@ -59,44 +59,41 @@ let id = localStorage.getItem("id");
 export const updateWiki = (url: string) => {
   getWiki(url).then((res) => {
     setCurrentWiki(res);
-    for (const element of document.getElementsByClassName("collapsible-block")) {
-      element.hidden = true
+    for (const collapsible_section of document.getElementsByClassName("collapsible-block")) {
+      collapsible_section.hidden = true
     }
-    for (const element of document.getElementsByClassName("mw-editsection")) {
-      element.hidden = true
+    for (const edit_button of document.getElementsByClassName("mw-editsection")) {
+      edit_button.hidden = true
     }
-    for (const element of document.getElementsByClassName("lazy-image-placeholder")) {
-      console.log(element)
-      let image_el = document.createElement('img');
-      for (const attr of element.attributes) {
+    for (const unloaded_img of document.getElementsByClassName("lazy-image-placeholder")) {
+      let image = document.createElement('img');
+      for (const attr of unloaded_img.attributes) {
         if (attr.name == "data-src") {
-          image_el.setAttribute("src", attr.value)
+          image.setAttribute("src", attr.value)
           continue
         }
-        image_el.setAttribute(attr.name, attr.value)
+        image.setAttribute(attr.name, attr.value)
       }
-      console.log(image_el)
-      element.replaceWith(image_el)
+      unloaded_img.replaceWith(image)
     }
 
     window.scrollTo({ top: 0 });
   });
 };
 
-const [show, setShow] = createSignal(true);
+const [show, setShow] = createSignal(false);
 const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   let current_position = props?.lobby()?.players?.find((player) => {
     return player[0].id === id;
   })[1]?.current_position;
   updateWiki(current_position);
 
-  // let intervall = setInterval(() => {
-  //   setShow(document.hasFocus());
-  // }, 100);
+  let intervall = setInterval(() => {
+    setShow(document.hasFocus());
+  }, 100);
   onCleanup(() => {
     clearInterval(intervall);
   });
-  console.log(screen.width > 480)
 
   const script = document.createElement("script");
   script.src = "../../public/MobileJS.js";
@@ -110,7 +107,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
       <Portal useShadow={false} mount={container()}>
         <Show when={show()} fallback={<div>CLICK TO SHOW WIKIPEDIA</div>}>
           <div align="left">
-            <Show when={screen.width <= 480} fallback={<link rel="stylesheet" type="text/css" href="Wiki.css" />}>
+            <Show when={screen.width < 640} fallback={<link rel="stylesheet" type="text/css" href="Wiki.css" />}>
               <link rel="stylesheet" type="text/css" href="mobileWiki.css" />
             </Show>
             <h1>{currentWiki().title}</h1>

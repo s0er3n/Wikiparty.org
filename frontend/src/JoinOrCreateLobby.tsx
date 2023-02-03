@@ -22,21 +22,24 @@ let newLobbyMsg = { type: "lobby", method: "new_lobby", args: {} };
 const JoinOrCreateLobby: Component = () => {
   return (
     <div class="bg-base-100 shadow-md rounded-md p-3">
-      <div class="flex space-x-3">
-        <input
-          onchange={(e) => setIdToJoin(e.target.value)}
-          type="text"
-          placeholder="type in the code…"
-          class="input input-bordered"
-        />
-        <button
-          class="btn "
-          onclick={() => {
-            sendMessage(joinLobbyMsg);
-          }}
-        >
-          join lobby
-        </button>
+      <div class="md:flex ">
+        <div class="flex space-x-3">
+          <input
+            onchange={(e) => setIdToJoin(e.target.value)}
+            type="text"
+            placeholder="paste lobby id…"
+            class="input input-bordered w-3/5"
+          />
+          <button
+            class="btn "
+            onclick={() => {
+              sendMessage(joinLobbyMsg);
+            }}
+          >
+            join lobby
+          </button>
+        </div>
+        <br />
         <button
           class="btn"
           onclick={() => {
@@ -46,7 +49,7 @@ const JoinOrCreateLobby: Component = () => {
           create a new lobby
         </button>
       </div>
-    </div>
+    </div >
   );
 };
 

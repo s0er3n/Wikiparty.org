@@ -40,7 +40,7 @@ const Lobby: Component<{
   ]);
 
   return (
-    <div class="bg-base-200 md:flex md:flex-col items-center justify-center ">
+    <div class="bg-base-200 md:flex md:flex-col md:items-center ">
       <div align="center">
         <Show
           when={
