@@ -7,9 +7,6 @@ import {
   Show,
 } from "solid-js";
 
-import {
-  Html, Head, Title, Meta, Link, Body, Routes, FileRoutes, Scripts, ErrorBoundary
-} from "solid-start";
 
 import { sendMessage } from "./../App";
 
@@ -56,27 +53,31 @@ const [currentWiki, setCurrentWiki] = createSignal<{
 
 let id = localStorage.getItem("id");
 
+function fixMobileView() {
+  for (const collapsible_section of document.getElementsByClassName("collapsible-block")) {
+    collapsible_section.hidden = true
+  }
+  for (const edit_button of document.getElementsByClassName("mw-editsection")) {
+    edit_button.hidden = true
+  }
+  for (const unloaded_img of document.getElementsByClassName("lazy-image-placeholder")) {
+    let image = document.createElement('img');
+    for (const attr of unloaded_img.attributes) {
+      if (attr.name == "data-src") {
+        image.setAttribute("src", attr.value)
+        continue
+      }
+      image.setAttribute(attr.name, attr.value)
+    }
+    unloaded_img.replaceWith(image)
+  }
+
+}
+
 export const updateWiki = (url: string) => {
   getWiki(url).then((res) => {
     setCurrentWiki(res);
-    for (const collapsible_section of document.getElementsByClassName("collapsible-block")) {
-      collapsible_section.hidden = true
-    }
-    for (const edit_button of document.getElementsByClassName("mw-editsection")) {
-      edit_button.hidden = true
-    }
-    for (const unloaded_img of document.getElementsByClassName("lazy-image-placeholder")) {
-      let image = document.createElement('img');
-      for (const attr of unloaded_img.attributes) {
-        if (attr.name == "data-src") {
-          image.setAttribute("src", attr.value)
-          continue
-        }
-        image.setAttribute(attr.name, attr.value)
-      }
-      unloaded_img.replaceWith(image)
-    }
-
+    fixMobileView()
     window.scrollTo({ top: 0 });
   });
 };
@@ -95,10 +96,16 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
     clearInterval(intervall);
   });
 
-  const script = document.createElement("script");
-  script.src = "../../public/MobileJS.js";
-  script.async = true;
-  document.body.appendChild(script);
+  createEffect(() => {
+    if (show()) {
+      fixMobileView()
+
+
+    }
+
+  })
+
+
 
   return (
     <div>
