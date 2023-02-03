@@ -74,12 +74,11 @@ function fixMobileView() {
 
 }
 
-export const updateWiki = (url: string) => {
-  getWiki(url).then((res) => {
-    setCurrentWiki(res);
-    fixMobileView()
-    window.scrollTo({ top: 0 });
-  });
+export const updateWiki = async (url: string) => {
+  let res = await getWiki(url)
+  setCurrentWiki(res);
+  fixMobileView()
+  window.scrollTo({ top: 0 });
 };
 
 const [show, setShow] = createSignal(false);
@@ -172,8 +171,9 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                       },
                     };
 
+                    // awaiting it here so that the sync move happens after you click and not before
+                    await updateWiki(url_name);
                     sendMessage(moveMsg);
-                    updateWiki(url_name);
                   }
                 }}
                 innerHTML={currentWiki().html}
