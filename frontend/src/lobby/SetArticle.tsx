@@ -59,7 +59,7 @@ const SetArticle: Component<{
   return (
     <>
       <div class="bg-base-100 shadow-md rounded-md p-3">
-        <div class="flex space-x-3">
+        <div class="flex flex-col md:flex-row space-y-2 md:space-y-0  md:space-x-3">
           <input
             class="input input-bordered"
             onkeyup={(e: any) => {

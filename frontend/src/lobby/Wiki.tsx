@@ -7,6 +7,7 @@ import {
   Show,
 } from "solid-js";
 
+
 import { sendMessage } from "./../App";
 
 import { Portal } from "solid-js/web";
@@ -52,10 +53,31 @@ const [currentWiki, setCurrentWiki] = createSignal<{
 
 let id = localStorage.getItem("id");
 
+function fixMobileView() {
+  for (const collapsible_section of document.getElementsByClassName("collapsible-block")) {
+    collapsible_section.hidden = true
+  }
+  for (const edit_button of document.getElementsByClassName("mw-editsection")) {
+    edit_button.hidden = true
+  }
+  for (const unloaded_img of document.getElementsByClassName("lazy-image-placeholder")) {
+    let image = document.createElement('img');
+    for (const attr of unloaded_img.attributes) {
+      if (attr.name == "data-src") {
+        image.setAttribute("src", attr.value)
+        continue
+      }
+      image.setAttribute(attr.name, attr.value)
+    }
+    unloaded_img.replaceWith(image)
+  }
+
+}
+
 export const updateWiki = (url: string) => {
   getWiki(url).then((res) => {
     setCurrentWiki(res);
-
+    fixMobileView()
     window.scrollTo({ top: 0 });
   });
 };
@@ -74,82 +96,93 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
     clearInterval(intervall);
   });
 
+  createEffect(() => {
+    if (show()) {
+      fixMobileView()
+
+
+    }
+
+  })
+
   return (
     <div>
       <WikiProvider />
       <Portal useShadow={false} mount={container()}>
         <Show when={show()} fallback={<div>CLICK TO SHOW WIKIPEDIA</div>}>
           <div align="left">
-            <link rel="stylesheet" type="text/css" href="wiki.css" />
+            <Show when={screen.width < 640} fallback={<link rel="stylesheet" type="text/css" href="Wiki.css" />}>
+              <link rel="stylesheet" type="text/css" href="mobileWiki.css" />
+            </Show>
             <h1>{currentWiki().title}</h1>
-            <div
-              class="w-fit overflow-y"
-              onclick={async (e: any) => {
-                let targetValue: string;
-                if (!e.target.getAttribute("href")) {
-                  targetValue = e
-                    ?.composedPath()
-                    ?.find((event) => {
-                      return event?.getAttribute("href") !== null;
-                    })
-                    ?.getAttribute("href");
+            <div id="bodyContent" class="content">
+              <div
+                id="mw-content-text" class="mw-body-content mw-content-ltr" dir="ltr" lang="en"
+                onclick={async (e: any) => {
+                  let targetValue: string;
+                  if (!e.target.getAttribute("href")) {
+                    targetValue = e
+                      ?.composedPath()
+                      ?.find((event) => {
+                        return event?.getAttribute("href") !== null;
+                      })
+                      ?.getAttribute("href");
 
-                  if (!targetValue) {
+                    if (!targetValue) {
+                      return;
+                    }
+                  } else {
+                    targetValue = e.target.getAttribute("href");
+                  }
+                  console.log(targetValue);
+                  e.preventDefault();
+
+                  if (targetValue.startsWith("#")) {
+                    var offsetHeight =
+                      document.getElementById("header")?.scrollHeight ?? 0;
+                    const element = e.target
+                      .getRootNode()
+                      .getElementById(targetValue.slice(1));
+                    const y =
+                      element.getBoundingClientRect().top +
+                      window.pageYOffset -
+                      offsetHeight;
+
+                    window.scrollTo({ top: y });
+                  }
+
+                  if (
+                    targetValue.startsWith("http") ||
+                    targetValue.includes(":")
+                  ) {
                     return;
                   }
-                } else {
-                  targetValue = e.target.getAttribute("href");
-                }
-                console.log(targetValue);
+                  if (
+                    targetValue?.includes("wiki") &&
+                    !targetValue?.includes("wiki/Help") &&
+                    !targetValue?.includes("wiki/File")
+                  ) {
+                    let url_name = targetValue?.split("wiki/").pop();
+                    url_name = url_name?.split("#")[0];
+                    let moveMsg = {
+                      type: "game",
+                      method: "move",
+                      args: {
+                        url_name,
+                      },
+                    };
 
-                e.preventDefault();
-
-                if (targetValue.startsWith("#")) {
-                  var offsetHeight =
-                    document.getElementById("header")?.scrollHeight ?? 0;
-                  console.log(offsetHeight);
-                  const element = e.target
-                    .getRootNode()
-                    .getElementById(targetValue.slice(1));
-                  const y =
-                    element.getBoundingClientRect().top +
-                    window.pageYOffset -
-                    offsetHeight;
-
-                  window.scrollTo({ top: y });
-                }
-
-                if (
-                  targetValue.startsWith("http") ||
-                  targetValue.includes(":")
-                ) {
-                  return;
-                }
-                if (
-                  targetValue?.includes("wiki") &&
-                  !targetValue?.includes("wiki/Help") &&
-                  !targetValue?.includes("wiki/File")
-                ) {
-                  let url_name = targetValue?.split("wiki/").pop();
-                  url_name = url_name?.split("#")[0];
-                  let moveMsg = {
-                    type: "game",
-                    method: "move",
-                    args: {
-                      url_name,
-                    },
-                  };
-
-                  sendMessage(moveMsg);
-                  updateWiki(url_name);
-                }
-              }}
-              innerHTML={currentWiki().html}
-            />
+                    sendMessage(moveMsg);
+                    updateWiki(url_name);
+                  }
+                }}
+                innerHTML={currentWiki().html}
+              />
+            </div>
           </div>
-        </Show>
-      </Portal>
-    </div>
+        </Show >
+      </Portal >
+    </div >
   );
 };
 

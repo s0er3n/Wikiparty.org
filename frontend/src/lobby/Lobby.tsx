@@ -40,37 +40,39 @@ const Lobby: Component<{
   ]);
 
   return (
-    <div align="center">
-      <Show
-        when={
-          props?.lobby()?.state === "idle" &&
-          !goToLobby() &&
-          isHost({ lobby: props.lobby, id: props.id })
-        }
-      >
-        <SetupGame id={local.id} lobby={local.lobby} search={local.search} />
-      </Show>
-      <Show
-        when={
-          (local.lobby()?.state === "idle" &&
-            local.lobby()?.start_article &&
-            goToLobby()) ||
-          (!isHost(local) && local.lobby()?.state === "idle")
-        }
-      >
-        <LobbyOverview lobby={local.lobby} id={local.id} />
-      </Show>
-      <Show when={local.lobby()?.state === "ingame"}>
-        <Wiki lobby={props.lobby} />
-      </Show>
+    <div class="bg-base-200 md:flex md:flex-col md:items-center ">
+      <div align="center">
+        <Show
+          when={
+            props?.lobby()?.state === "idle" &&
+            !goToLobby() &&
+            isHost({ lobby: props.lobby, id: props.id })
+          }
+        >
+          <SetupGame id={local.id} lobby={local.lobby} search={local.search} />
+        </Show>
+        <Show
+          when={
+            (local.lobby()?.state === "idle" &&
+              local.lobby()?.start_article &&
+              goToLobby()) ||
+            (!isHost(local) && local.lobby()?.state === "idle")
+          }
+        >
+          <LobbyOverview lobby={local.lobby} id={local.id} />
+        </Show>
+        <Show when={local.lobby()?.state === "ingame"}>
+          <Wiki lobby={props.lobby} />
+        </Show>
 
-      <Show when={local.lobby()?.state === "over"}>
-        <GameOver
-          lobby={local.lobby}
-          id={local.id}
-          players={local.lobby()?.players}
-        />
-      </Show>
+        <Show when={local.lobby()?.state === "over"}>
+          <GameOver
+            lobby={local.lobby}
+            id={local.id}
+            players={local.lobby()?.players}
+          />
+        </Show>
+      </div>
     </div>
   );
 };
