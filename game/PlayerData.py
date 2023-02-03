@@ -31,8 +31,7 @@ def sorted_moves_list(node: Node, res: list | None = None) -> list[Node]:
         logging.info("sorted_moves_list got object None")
         return []
     if res is None:
-        res = []
-    res.append(node)
+        res = [node]
     for child in node.children:
         if child not in res:
             res = sorted_moves_list(child, res=res)
