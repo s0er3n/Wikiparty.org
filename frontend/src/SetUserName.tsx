@@ -20,7 +20,7 @@ const SetUserNameComponent: Component<any> = (props) => {
             minlength="2"
             maxlength="12"
             type="text"
-            class="input input-bordered"
+            class="input input-bordered w-3/4"
           />
           <button
             class="btn "
