@@ -22,7 +22,11 @@ export function sendMessage(msg: any) {
       ws.send(JSON.stringify(msg));
     } catch (e) {
       console.error(e);
-      ws.close()
+      try {
+        ws?.close()
+      } catch {
+        console.log("websocket already in closed state")
+      }
       missedMessages.push(JSON.stringify(msg));
     }
   } else {
