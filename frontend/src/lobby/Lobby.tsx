@@ -41,7 +41,7 @@ const Lobby: Component<{
 
   return (
     <div class="bg-base-200 md:flex md:flex-col md:items-center ">
-      <div align="center">
+      <div class="w-full" align="center">
         <Show
           when={
             props?.lobby()?.state === "idle" &&

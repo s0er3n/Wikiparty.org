@@ -142,7 +142,7 @@ const App: Component = () => {
   return (
     <div class="flex items-stretch min-h-screen bg-base-200">
       <Show when={lobby()?.state === "ingame"}>
-        <div class="hidden md:flex">
+        <div class="hidden lg:flex">
           <aside class="p-3 grow flex flex-col justify-start max-h-screen w-48 m-3 mr-0 bg-base-100 shadow-md rounded-md sticky top-3">
             <div class="font-bold mb-3">
               <h3>Players</h3>
@@ -154,7 +154,7 @@ const App: Component = () => {
           </aside>
         </div>
       </Show>
-      <div style="width: 100%">
+      <div class="w-full">
         <Show when={lobby() && hasUserName()}>
           <Header lobby={lobby} id={id} />
         </Show>

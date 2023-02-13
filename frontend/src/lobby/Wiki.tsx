@@ -88,21 +88,24 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   })[1]?.current_position;
   updateWiki(current_position);
 
-  let intervall = setInterval(() => {
-    setShow(document.hasFocus());
-  }, 100);
-  onCleanup(() => {
-    clearInterval(intervall);
-  });
+  if (import.meta.env.DEV) {
+    setShow(true)
+  }
 
-  createEffect(() => {
-    if (show()) {
-      fixMobileView()
+  if (import.meta.env.PROD) {
+    let intervall = setInterval(() => {
+      setShow(document.hasFocus());
+    }, 100);
+    onCleanup(() => {
+      clearInterval(intervall);
+    });
 
-
-    }
-
-  })
+    createEffect(() => {
+      if (show()) {
+        fixMobileView()
+      }
+    })
+  }
 
   return (
     <div>
