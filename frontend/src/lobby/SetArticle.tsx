@@ -56,20 +56,28 @@ const SetArticle: Component<{
   search: Accessor<Array<Array<string>> | undefined>;
 }> = (props) => {
   let timeout: any = null;
+  const regex_slash = new RegExp('[/]')
   return (
     <>
       <div class="bg-base-100 shadow-md rounded-md p-3">
         <div class="flex flex-col justify-center md:flex-row space-y-2 md:space-y-0  md:space-x-3">
           <input
             class="input input-bordered"
+            type="text"
+            pattern="[^/]+"
             onkeyup={(e: any) => {
               if (timeout != null) {
                 clearTimeout(timeout);
               }
               timeout = setTimeout(() => {
-                findArticle(e.target.value);
+                if (!regex_slash.exec(e.target.value)) {
+                  findArticle(e.target.value);
 
-                setArticle(e.target.value);
+                  setArticle(e.target.value);
+                }
+                else {
+                  console.log("dont use /")
+                }
               }, 200);
             }}
             value={article()}
