@@ -162,9 +162,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                   if (
                     targetValue?.includes("wiki") &&
                     !targetValue?.includes("wiki/Help") &&
-                    !targetValue?.includes("wiki/File") &&
-                    !targetValue?.split("wiki/").pop()?.includes("/")
-
+                    !targetValue?.includes("wiki/File")
                   ) {
                     let url_name = targetValue?.split("wiki/").pop();
                     url_name = url_name?.split("#")[0];
