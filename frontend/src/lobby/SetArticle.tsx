@@ -76,6 +76,7 @@ const SetArticle: Component<{
                   setArticle(e.target.value);
                 }
                 else {
+                  findArticle("")
                   console.log("dont use /")
                 }
               }, 200);
