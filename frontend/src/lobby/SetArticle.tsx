@@ -65,7 +65,6 @@ const SetArticle: Component<{
             class="input input-bordered"
             type="text"
             pattern="[^/]+"
-            dark
             onkeyup={(e: any) => {
               if (timeout != null) {
                 clearTimeout(timeout);
