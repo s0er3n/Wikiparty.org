@@ -60,51 +60,55 @@ const SetArticle: Component<{
   return (
     <>
       <div class="bg-base-100 shadow-md rounded-md p-3">
-        <div class="flex flex-col justify-center md:flex-row space-y-2 md:space-y-0  md:space-x-3">
-          <input
-            class="input input-bordered"
-            type="text"
-            pattern="[^/]+"
-            onkeyup={(e: any) => {
-              if (timeout != null) {
-                clearTimeout(timeout);
-              }
-              timeout = setTimeout(() => {
-                if (!regex_slash.exec(e.target.value)) {
-                  findArticle(e.target.value);
+        <div class="flex flex-col justify-center md:flex-row space-y-2 md:space-y-0  md:space-x-3 ">
+          <div class="w-1/2 flex justify-end">
+            <input
+              class="input input-bordered space-x-3"
+              type="text"
+              pattern="[^/]+"
+              onkeyup={(e: any) => {
+                if (timeout != null) {
+                  clearTimeout(timeout);
+                }
+                timeout = setTimeout(() => {
+                  if (!regex_slash.exec(e.target.value)) {
+                    findArticle(e.target.value);
 
-                  setArticle(e.target.value);
-                }
-                else {
-                  findArticle("")
-                  console.log("dont use /")
-                }
-              }, 200);
-            }}
-            value={article()}
-          />
-          <RandomArticle
-            setter={async (random_article: string) => {
-              findArticle(random_article);
-              setArticle(random_article);
-            }}
-          />
-          <Show
-            when={
-              props.lobby().state === "idle" &&
-              props.lobby().articles_to_find.length &&
-              props.lobby().start_article
-            }
-          >
-            <button
-              class="btn "
-              onclick={() => {
-                setGoToLobby(true);
+                    setArticle(e.target.value);
+                  }
+                  else {
+                    findArticle("")
+                    console.log("dont use /")
+                  }
+                }, 200);
               }}
+              value={article()}
+            />
+          </div>
+          <div class="w-1/2 flex justify-start">
+            <RandomArticle
+              setter={async (random_article: string) => {
+                findArticle(random_article);
+                setArticle(random_article);
+              }}
+            />
+            <Show
+              when={
+                props.lobby().state === "idle" &&
+                props.lobby().articles_to_find.length &&
+                props.lobby().start_article
+              }
             >
-              go to lobby
-            </button>
-          </Show>
+              <button
+                class="btn mx-3"
+                onclick={() => {
+                  setGoToLobby(true);
+                }}
+              >
+                go to lobby
+              </button>
+            </Show>
+          </div>
         </div>
         <Show when={article() !== ""}>
           <div class="p-3 space-y-3">
@@ -124,16 +128,18 @@ const ArticleSuggestionsList: Component<{
     <For each={props?.query?.search ?? []}>
       {(result, i) => (
         <div class="flex justify-center space-x-3">
-          <div>
-            <span
-              class="tooltip tooltip-bottom"
-              data-tip={result.snippet.replace(/<[^>]+>/g, "") + "..."}
-            >
-              {" "}
-              {result.title}{" "}
-            </span>
+          <div class="w-1/2 flex justify-end">
+            <div >
+              <span
+                class="tooltip tooltip-bottom"
+                data-tip={result.snippet.replace(/<[^>]+>/g, "") + "..."}
+              >
+                {" "}
+                {result.title}{" "}
+              </span>
+            </div>
           </div>
-          <div>
+          <div class="w-1/2 flex justify-start">
             <button
               onclick={() => {
                 let setArticleMsg = {
