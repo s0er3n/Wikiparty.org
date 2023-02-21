@@ -3,8 +3,13 @@
 @tailwind utilities;
 input:invalid {
   background-color: #ffdddd;
+
+}
+@media (prefers-color-scheme: dark) {
+
+input:invalid {
+  background-color:  #8B0000 ;
+
+}
 }
 
-input:valid {
-  background-color: #fff;
-}
