@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+input:invalid {
+  background-color: #ffdddd;
+}
+
+input:valid {
+  background-color: #fff;
+}
