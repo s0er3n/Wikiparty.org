@@ -1,5 +1,5 @@
 import asyncio
-import logging
+from .logsetup import logger
 from threading import Thread
 from typing import Iterator
 import json
@@ -24,7 +24,7 @@ class Query:
 
     @classmethod
     def query_and_add_to_queries(cls, move: str) -> str | None:
-        logging.warning(f"add move to query {move}")
+        logger.warning(f"add move to query {move}")
         resp = requests.get(
             f"https://en.wikipedia.org/wiki/{move}"
         )
@@ -36,7 +36,7 @@ class Query:
         soup = BeautifulSoup(resp_text, "lxml")
 
         if not (h1 := soup.find("h1")):
-            logging.warning("no h1")
+            logger.warning("no h1")
             return None
         title = h1.text
 
@@ -56,16 +56,16 @@ class Query:
     @classmethod
     def execute(cls, move: str, recipient: Player) -> str | None:
         if not game.db.get_article(move):
-            logging.warning(f"before try move {move}")
+            logger.warning(f"before try move {move}")
             try:
                 move = cls.query_and_add_to_queries(move)
                 assert move is not None
             except:
-                logging.error("could not query wikipedia")
+                logger.error("could not query wikipedia")
                 return
 
         if not (query_result := game.db.get_article(move)):
-            logging.warning("no query result")
+            logger.warning("no query result")
             return None
         query_result = json.loads(query_result)
         game.db.client.hincrby("count", move)
@@ -82,7 +82,6 @@ class Query:
             print("not existing", redis_result)
             return url_name in json.loads(redis_result)["links"]
 
-        print("in db", redis_result)
         return url_name in json.loads(redis_result)["links"]
 
 

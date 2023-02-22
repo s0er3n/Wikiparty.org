@@ -1,7 +1,9 @@
 
+import logging
 from fastapi import FastAPI, WebSocket
 from starlette.websockets import WebSocketDisconnect
-import logging
+from .logsetup import logger
+from time import sleep
 
 from game.ConnectionManager import manager
 from game.LobbyServer import LobbyServer
@@ -15,6 +17,8 @@ app = FastAPI()
 
 lobbyServer = LobbyServer()
 
+logger.setLevel(logging.INFO)
+
 
 @app.get("/")
 def index() -> str:
@@ -27,7 +31,9 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     try:
         while True:
             data = await websocket.receive_json()
-            logging.info(data)
+            # await loggign_test()
+
+            logger.info(data)
 
             match data:
 

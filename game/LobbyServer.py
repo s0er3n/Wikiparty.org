@@ -1,4 +1,4 @@
-import logging
+from .logsetup import logger
 import uuid
 
 from game.Lobby import Lobby
@@ -40,11 +40,11 @@ class LobbyServer:
             lobby = self.id_lobbies.get(id)
 
         if not lobby:
-            logging.warning("lobby with that id not found")
+            logger.warning("lobby with that id not found")
             return LobbyNotFound(_recipients=[player])
 
         # if player in lobby.players:
-        #     logging.warning("player already in lobby doing nothing")
+        #     logger.warning("player already in lobby doing nothing")
         #     return None
 
         self.players_lobbies[player] = lobby
@@ -58,7 +58,7 @@ class LobbyServer:
     def leave_lobby(self, player: Player) -> None:
         lobby = self.players_lobbies.get(player)
         if player not in lobby.players:
-            logging.warning("player not in lobby doing nothing")
+            logger.warning("player not in lobby doing nothing")
             return
         if lobby:
             lobby.leave(player)

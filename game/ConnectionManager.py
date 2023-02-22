@@ -1,4 +1,4 @@
-import logging
+from .logsetup import logger
 from dataclasses import asdict
 
 from fastapi import WebSocket
@@ -26,20 +26,20 @@ class ConnectionManager:
         try:
             del self.active_connections[player]
         except KeyError:
-            logging.warning(
+            logger.warning(
                 "could not disconnect player he is not in the active connections"
             )
 
     async def send_response(self, message: Response | None) -> None:
         if not message:
-            logging.warning("no response")
+            logger.warning("no response")
             return
         if message.method == "Error":
-            logging.warning(message.e)
+            logger.warning(message.e)
 
         for player in message._recipients:
             if player not in self.active_connections:
-                logging.warning("player not in active connections")
+                logger.warning("player not in active connections")
                 continue
             try:
                 message._recipients = []
