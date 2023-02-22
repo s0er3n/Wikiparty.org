@@ -36,7 +36,7 @@ class Query:
         soup = BeautifulSoup(resp_text, "lxml")
 
         if not (h1 := soup.find("h1")):
-            logger.warning("no h1")
+            logger.warning("no h1 in wikipedia response")
             return None
         title = h1.text
 
@@ -56,7 +56,6 @@ class Query:
     @classmethod
     def execute(cls, move: str, recipient: Player) -> str | None:
         if not game.db.get_article(move):
-            logger.warning(f"before try move {move}")
             try:
                 move = cls.query_and_add_to_queries(move)
                 assert move is not None
