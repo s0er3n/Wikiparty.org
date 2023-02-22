@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 URL = os.environ["LOGGING_SERVER_URL"]
-DEV = os.environ.get("DEV", False)
+DEV = os.environ.get("DEV", "False") == "True"
+LOGGING_TOKEN = os.environ.get("LOGGING_SERVER_TOKEN")
 
 formatter = logging.Formatter(
     '{"time": "%(asctime)s", "filename": "%(filename)s", "level": "%(levelname)s", "message": "%(message)s"}')
@@ -23,12 +24,19 @@ class CustomHandler(logging.Handler):
 
     def emit(self, record):
         log_entry = self.format(record).encode('utf-8')
-        requests.post(URL, log_entry, headers={
-                      "Content-type": "application/json"}).content
         executor.submit(requests.post, [], {"url": URL,
-                                            "log_entry": log_entry,
+                                            "json": log_entry,
+                                            # "json": {"s": "jy"},
                                             "headers": {
-                                                "Content-type": "application/json"}})
+                                                "Authorization": ("Bearer " + LOGGING_TOKEN),
+                                                "Content-type": "application/x-ndjson"}})
+        resp = requests.post(**{"url": URL,
+                                "json": log_entry,
+                                # "json": {"s": "jy"},
+                                "headers": {
+                                    "Authorization": ("Bearer " + LOGGING_TOKEN),
+                                    "Content-type": "application/x-ndjson"}})
+        print(resp)
 
 
 logger = logging.getLogger()
