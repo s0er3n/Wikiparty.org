@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from collections import defaultdict
 from threading import Thread
 from time import sleep
@@ -16,7 +15,7 @@ from game.Query import Query
 from game.Response import Error, LobbyUpdate, Response, SyncMove
 from dataclasses import dataclass, field
 
-logging.getLogger().setLevel(logging.INFO)
+from game.logsetup import logger
 
 
 @dataclass
@@ -120,12 +119,12 @@ class PointsCounter:
             if not self.round_data.points.get(player):
                 self.round_data.points[player] = 0
             self.round_data.points[player] += 10
-            logging.info(
+            logger.info(
                 f"Player {player.name} found article {article.pretty_name} + 10 points")
             if article.pretty_name not in self.round_data.get_found_articles_pretty_name():
                 self.round_data.points[player] += 5
                 self.round_data.found_articles.add(article)
-                logging.info(
+                logger.info(
                     f"Player {player.name} found article {article.pretty_name} + 5 points")
 
 
@@ -225,6 +224,7 @@ class SearchGame(Game):
         return self.players_handler.get_player_data(host).rights == PlayerRights.host
 
     def start(self, host: Player) -> Response | None:
+
         if not self._check_host(host):
             return
 
@@ -361,19 +361,19 @@ class SearchGame(Game):
         print(url_name)
 
         if not self._is_move_allowed(url_name=url_name, player=player):
-            logging.warning("cheate detected/ or double click")
+            logger.warning("cheate detected/ or double click")
             # forcing player to reload to correct page
             return SyncMove(_recipients=[player], url_name=self.rounds[-1].get_current_article(player).url_name)
 
         # needs be after is move allowed otherwise links with # are not allowed bc they are not in the link list
         url_name = url_name.split("#")[0]
 
-        logging.info("move to " + url_name)
+        logger.info("move to " + url_name)
 
         pretty_name = Query.execute(move=url_name, recipient=player)
 
         if pretty_name is None:
-            logging.warning("move failed")
+            logger.warning("move failed")
             return None
 
         article = Article(pretty_name=pretty_name, url_name=url_name)

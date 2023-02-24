@@ -1,5 +1,5 @@
 from __future__ import annotations
-import logging
+from game.logsetup import logger
 
 import dataclasses
 from enum import Enum
@@ -28,7 +28,7 @@ class Node:
 
 def sorted_moves_list(node: Node, res: list | None = None) -> list[Node]:
     if node is None:
-        logging.info("sorted_moves_list got object None")
+        logger.info("sorted_moves_list got object None")
         return []
     if res is None:
         res = []
