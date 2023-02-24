@@ -5,7 +5,7 @@ import random
 import requests
 
 from game.ConnectionManager import manager
-from game.Player import Player
+from game.Player.Player import Player
 from game.Response import Random
 import game.db
 
