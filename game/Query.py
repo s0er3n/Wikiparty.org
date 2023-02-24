@@ -1,5 +1,5 @@
 import asyncio
-from .logsetup import logger
+from game.logsetup import logger
 from threading import Thread
 from typing import Iterator
 import json

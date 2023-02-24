@@ -15,7 +15,7 @@ from game.Query import Query
 from game.Response import Error, LobbyUpdate, Response, SyncMove
 from dataclasses import dataclass, field
 
-from .logsetup import logger
+from game.logsetup import logger
 
 
 @dataclass

@@ -1,4 +1,4 @@
-from .logsetup import logger
+from game.logsetup import logger
 import uuid
 
 from game.Lobby import Lobby

@@ -2,7 +2,7 @@
 import logging
 from fastapi import FastAPI, WebSocket
 from starlette.websockets import WebSocketDisconnect
-from .logsetup import logger
+from game.logsetup import logger
 from time import sleep
 
 from game.ConnectionManager import manager
@@ -31,7 +31,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     try:
         while True:
             data = await websocket.receive_json()
-            # await loggign_test()
 
             logger.info(data)
 

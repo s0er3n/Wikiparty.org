@@ -1,5 +1,5 @@
 from __future__ import annotations
-from .logsetup import logger
+from game.logsetup import logger
 
 import dataclasses
 from enum import Enum

@@ -27,17 +27,9 @@ class CustomHandler(logging.Handler):
         body = {"time": record.asctime, "warning": record.levelname}
         executor.submit(requests.post, [], {"url": URL,
                                             "json": body,
-                                            # "json": {"s": "jy"},
                                             "headers": {
                                                 "Authorization": ("Bearer " + LOGGING_TOKEN),
                                                 "Content-type": "application/x-ndjson"}})
-        resp = requests.post(**{"url": URL,
-                                "json": body,
-                                # "json": {"s": "jy"},
-                                "headers": {
-                                    "Authorization": ("Bearer " + LOGGING_TOKEN),
-                                    "Content-type": "application/x-ndjson"}})
-        print(resp)
 
 
 logger = logging.getLogger()
