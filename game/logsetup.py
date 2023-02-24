@@ -25,11 +25,11 @@ class CustomHandler(logging.Handler):
     def emit(self, record):
         log_entry = self.format(record).encode('utf-8')
         body = {"time": record.asctime, "warning": record.levelname}
-        executor.submit(requests.post, [], {"url": URL,
-                                            "json": body,
-                                            "headers": {
-                                                "Authorization": ("Bearer " + LOGGING_TOKEN),
-                                                "Content-type": "application/x-ndjson"}})
+        executor.submit(requests.post, **{"url": URL,
+                                          "json": body,
+                                          "headers": {
+                                              "Authorization": ("Bearer " + LOGGING_TOKEN),
+                                              "Content-type": "application/x-ndjson"}})
 
 
 logger = logging.getLogger()
