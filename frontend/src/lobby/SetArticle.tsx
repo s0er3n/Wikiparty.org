@@ -59,39 +59,41 @@ const SetArticle: Component<{
   const regex_slash = new RegExp('[/]')
   return (
     <>
-      <div class="bg-base-100 shadow-md rounded-md p-3">
-        <div class="flex flex-col justify-center md:flex-row space-y-2 md:space-y-0  md:space-x-3 ">
-          <div class="w-1/2 flex justify-end">
-            <input
-              class="input input-bordered space-x-3"
-              type="text"
-              pattern="[^/]+"
-              onkeyup={(e: any) => {
-                if (timeout != null) {
-                  clearTimeout(timeout);
-                }
-                timeout = setTimeout(() => {
-                  if (!regex_slash.exec(e.target.value)) {
-                    findArticle(e.target.value);
+      <div class="flex justify-center w-full mt-2">
+        <div class="flex flex-col space-y-2 w-96" >
+          <div class="flex w-full ">
+            <div class="w-2/3 flex justify-center">
+              <input
+                class="input input-bordered  text-center"
+                type="text"
+                pattern="[^/]+"
+                onkeyup={(e: any) => {
+                  if (timeout != null) {
+                    clearTimeout(timeout);
+                  }
+                  timeout = setTimeout(() => {
+                    if (!regex_slash.exec(e.target.value)) {
+                      findArticle(e.target.value);
 
-                    setArticle(e.target.value);
-                  }
-                  else {
-                    findArticle("")
-                    console.log("dont use /")
-                  }
-                }, 200);
-              }}
-              value={article()}
-            />
-          </div>
-          <div class="w-1/2 flex justify-start">
-            <RandomArticle
-              setter={async (random_article: string) => {
-                findArticle(random_article);
-                setArticle(random_article);
-              }}
-            />
+                      setArticle(e.target.value);
+                    }
+                    else {
+                      findArticle("")
+                      console.log("dont use /")
+                    }
+                  }, 200);
+                }}
+                value={article()}
+              />
+            </div>
+            <div class="w-1/3 flex justify-center ml-2">
+              <RandomArticle
+                setter={async (random_article: string) => {
+                  findArticle(random_article);
+                  setArticle(random_article);
+                }}
+              />
+            </div>
             <Show
               when={
                 props.lobby().state === "idle" &&
@@ -99,23 +101,23 @@ const SetArticle: Component<{
                 props.lobby().start_article
               }
             >
-              <button
-                class="btn mx-3"
-                onclick={() => {
-                  setGoToLobby(true);
-                }}
-              >
-                go to lobby
-              </button>
+              <div>
+                <button
+                  class="btn mx-3"
+                  onclick={() => {
+                    setGoToLobby(true);
+                  }}
+                >
+                  go to lobby
+                </button>
+              </div>
             </Show>
           </div>
-        </div>
-        <Show when={article() !== ""}>
-          <div class="p-3 space-y-3">
+          <Show when={article() !== ""}>
             <ArticleSuggestionsList query={sugestion()} lobby={props.lobby} />
-          </div>
-        </Show>
-      </div>
+          </Show>
+        </div>
+      </div >
     </>
   );
 };
@@ -127,9 +129,9 @@ const ArticleSuggestionsList: Component<{
   return (
     <For each={props?.query?.search ?? []}>
       {(result, i) => (
-        <div class="flex justify-center space-x-3">
-          <div class="w-1/2 flex justify-end">
-            <div >
+        <div class="flex w-96">
+          <div class="w-2/3 flex justify-center">
+            <div class="flex items-center">
               <span
                 class="tooltip tooltip-bottom"
                 data-tip={result.snippet.replace(/<[^>]+>/g, "") + "..."}
@@ -139,7 +141,7 @@ const ArticleSuggestionsList: Component<{
               </span>
             </div>
           </div>
-          <div class="w-1/2 flex justify-start">
+          <div class="w-1/3 flex justify-center">
             <button
               onclick={() => {
                 let setArticleMsg = {
