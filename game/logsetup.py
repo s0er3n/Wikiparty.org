@@ -23,8 +23,7 @@ executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
 class CustomHandler(logging.Handler):
 
     def emit(self, record):
-        log_entry = self.format(record).encode('utf-8')
-        body = {"time": record.asctime, "warning": record.levelname}
+        body = {"time": record.asctime, "log_level": record.levelname}
         executor.submit(requests.post, **{"url": URL,
                                           "json": body,
                                           "headers": {
