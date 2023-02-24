@@ -7,7 +7,7 @@ import time
 from game.Article import Article
 from game.ConnectionManager import manager
 from game.Game import Game
-from game.GameState import State
+from game.Game import GameState
 from game.Player.Player import Player, PlayerCopy
 from game.Player.PlayerData import PlayerData, PlayerRights,  PlayerDataNoNode
 from game.Player.PlayersHandler import PlayersHandler
@@ -17,7 +17,7 @@ from game.PointsCounter import PointsCounter
 from game.RoundData import RoundData
 
 
-from game.logsetup import logger
+from game.settings.logsetup import logger
 
 
 class RoundEndChecker:
@@ -29,7 +29,7 @@ class RoundEndChecker:
 class SearchGame(Game):
     """handles all the game related stuff"""
 
-    state: State = State.idle
+    state: GameState = GameState.idle
 
     host: Player
 
@@ -68,7 +68,7 @@ class SearchGame(Game):
                 rights=PlayerRights.normal,
             ))
 
-        if self.state == State.ingame:
+        if self.state == GameState.ingame:
 
             next_move = self.rounds[-1].get_current_article(player)
             Query.execute(
@@ -88,7 +88,7 @@ class SearchGame(Game):
             return
 
         self.round += 1
-        self.state = State.ingame
+        self.state = GameState.ingame
 
         self._round_timer()
         self.set_starting_position()
@@ -102,7 +102,7 @@ class SearchGame(Game):
         if not self._check_host(host):
             return
 
-        self.state = State.idle
+        self.state = GameState.idle
 
         self.rounds.append(RoundData())
         self.points_counter.set_new_round(self.rounds[-1])
@@ -112,9 +112,9 @@ class SearchGame(Game):
     def _round_timer(self) -> None:
         async def update_state(round: int):
             sleep(self.play_time)
-            if not (self.state == State.ingame and round == self.round):
+            if not (self.state == GameState.ingame and round == self.round):
                 return
-            self.state = State.over
+            self.state = GameState.over
             update_response = self._make_lobby_update_response()
             await manager.send_response(update_response)
 
@@ -211,7 +211,7 @@ class SearchGame(Game):
 
     def move(self, player: Player, url_name: str) -> Response | None:
         """when you click on a new link in wikipedia and move to the next page"""
-        if self.state != State.ingame:
+        if self.state != GameState.ingame:
             return Error(
                 e="not ingame",
                 _recipients=[player],
@@ -242,12 +242,12 @@ class SearchGame(Game):
         self.rounds[-1].add_move(player, article)
 
         if self.round_end_checker.check_for_end(player, self.rounds[-1]):
-            self.state = State.over
+            self.state = GameState.over
 
         return self._make_lobby_update_response()
 
     def page_back(self, player: Player):
-        if self.state != State.ingame:
+        if self.state != GameState.ingame:
             return Error(
                 e="not ingame",
                 _recipients=[player],
@@ -262,7 +262,7 @@ class SearchGame(Game):
         return SyncMove(_recipients=[player], url_name=url_name)
 
     def page_forward(self, player: Player):
-        if self.state != State.ingame:
+        if self.state != GameState.ingame:
             return Error(
                 e="not ingame",
                 _recipients=[player],

@@ -1,7 +1,7 @@
 from game.Article import Article
 from game.Player.PlayerData import Node, sorted_moves_list
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass

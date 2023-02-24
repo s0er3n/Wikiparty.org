@@ -1,4 +1,4 @@
-from .logsetup import logger
+from game.settings.logsetup import logger
 from dataclasses import asdict
 
 from fastapi import WebSocket

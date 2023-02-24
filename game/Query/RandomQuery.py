@@ -7,7 +7,7 @@ import requests
 from game.ConnectionManager import manager
 from game.Player.Player import Player
 from game.Response import Random
-import game.db
+from game.settings import db
 
 
 from typing import List, TypedDict
@@ -42,7 +42,7 @@ class RandomQuery:
     def execute(player: Player):
         # querying 100K pages
 
-        if not game.db.client.exists("randomwords"):
+        if not db.client.exists("randomwords"):
 
             r = requests.get(
                 f"http://wikirank-2022.di.unimi.it/Q/?filter%5Btext%5D=Harmonic+centrality&filter%5Bselected%5D=true&filter%5Bvalue%5D=harmonic&view=list&pageSize=100000&pageIndex=0&type=harmonic&score=false"
@@ -55,10 +55,10 @@ class RandomQuery:
                 ">")[1].split("<")[0] for article in data["items"]]
 
             if r.status_code == 200:
-                game.db.client.sadd(
+                db.client.sadd(
                     "randomwords", *article_names)
 
-        random_words = game.db.client.srandmember(
+        random_words = db.client.srandmember(
             "randomwords", 10)
         random_words = [word.decode("utf-8") for word in random_words]
         thread = Thread(

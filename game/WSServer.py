@@ -2,7 +2,7 @@
 import logging
 from fastapi import FastAPI, WebSocket
 from starlette.websockets import WebSocketDisconnect
-from game.logsetup import logger
+from game.settings.logsetup import logger
 from time import sleep
 
 from game.ConnectionManager import manager
