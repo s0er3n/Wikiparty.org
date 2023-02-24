@@ -30,7 +30,15 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     player = await manager.connect(websocket, id=client_id)
     try:
         while True:
-            data = await websocket.receive_json()
+            try:
+                data = await websocket.receive_json()
+            except Exception as e:
+                logger.error(f"stupid websocket library {e}")
+                try:
+                    await websocket.close()
+                except:
+                    pass
+                break
 
             logger.info(data)
 
