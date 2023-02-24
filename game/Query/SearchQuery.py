@@ -4,7 +4,7 @@ from threading import Thread
 import requests
 
 from game.ConnectionManager import manager
-from game.Player import Player
+from game.Player.Player import Player
 from game.Response import Wiki
 
 # from collections import defaultdict

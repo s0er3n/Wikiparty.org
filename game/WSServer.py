@@ -7,8 +7,8 @@ from game.ConnectionManager import manager
 from game.LobbyServer import LobbyServer
 from game.Response import Error
 from game.SearchGame import Player, SearchGame
-from game.SearchQuery import SearchQuery
-from game.RandomQuery import RandomQuery
+from game.Query.SearchQuery import SearchQuery
+from game.Query.RandomQuery import RandomQuery
 
 app = FastAPI()
 

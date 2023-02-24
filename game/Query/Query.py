@@ -6,9 +6,9 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
-from game.Player import Player
+from game.Player.Player import Player
 from game.Response import Wiki
-from game.QueryResult import QueryResult
+from game.Query.QueryResult import QueryResult
 from game.ConnectionManager import manager
 
 import game.db

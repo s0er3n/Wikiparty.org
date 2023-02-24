@@ -3,7 +3,7 @@ from dataclasses import asdict
 
 from fastapi import WebSocket
 
-from game.Player import Player
+from game.Player.Player import Player
 from game.Response import Response
 
 

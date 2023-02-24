@@ -10,10 +10,11 @@ from game.Article import Article
 from game.ConnectionManager import manager
 from game.Game import Game
 from game.GameState import State
-from game.Player import Player, PlayerCopy
-from game.PlayerData import PlayerData, PlayerRights,  PlayerDataNoNode, Node, sorted_moves_list
-from game.Query import Query
+from game.Player.Player import Player, PlayerCopy
+from game.Player.PlayerData import PlayerData, PlayerRights,  PlayerDataNoNode, Node, sorted_moves_list
+from game.Query.Query import Query
 from game.Response import Error, LobbyUpdate, Response, SyncMove
+from game.Player.PlayersHandler import PlayersHandler
 from dataclasses import dataclass, field
 
 logging.getLogger().setLevel(logging.INFO)
@@ -133,39 +134,6 @@ class RoundEndChecker:
 
     def check_for_end(self, player: Player, round_data: RoundData) -> bool:
         return set(article.pretty_name for article in round_data.get_moves(player)).issuperset(round_data.get_articles_to_find_pretty_name())
-
-
-class PlayersHandler:
-
-    players: dict[Player, PlayerData]
-
-    players_offline: dict[Player, PlayerData]
-
-    def __init__(self) -> None:
-        self.players = {}
-        self.players_offline = {}
-
-    def add_player(self, player: Player, player_data: PlayerData) -> None:
-        if player not in self.players and player not in self.players_offline:
-            self.players[player] = player_data
-        if self.players_offline.get(player):
-            self.players[player] = self.players_offline[player]
-            del self.players_offline[player]
-
-    def get_player_data(self, player: Player) -> PlayerData | None:
-        return self.players.get(player)
-
-    def get_all_players_with_data(self):
-        return self.players.items()
-
-    def get_all_players(self):
-        return self.players.keys()
-
-    def go_offline(self, player: Player) -> None:
-        player_data = self.players.get(player)
-        if player_data:
-            self.players_offline[player] = player_data
-            del self.players[player]
 
 
 class SearchGame(Game):
