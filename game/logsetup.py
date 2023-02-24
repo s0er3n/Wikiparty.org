@@ -23,6 +23,9 @@ executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
 class CustomHandler(logging.Handler):
 
     def emit(self, record):
+        ################### DO NOT DELETE ########################
+        log_entry = self.format(record).encode('utf-8')
+        ################### DO NOT DELETE ########################
         body = {"time": record.asctime, "log_level": record.levelname}
         executor.submit(requests.post, **{"url": URL,
                                           "json": body,
