@@ -26,7 +26,9 @@ class CustomHandler(logging.Handler):
         ################### DO NOT DELETE ########################
         log_entry = self.format(record).encode('utf-8')
         ################### DO NOT DELETE ########################
-        body = {"time": record.asctime, "log_level": record.levelname}
+
+        body = {"time": record.asctime,
+                "log_level": record.levelname, "msg": record.msg}
         executor.submit(requests.post, **{"url": URL,
                                           "json": body,
                                           "headers": {
