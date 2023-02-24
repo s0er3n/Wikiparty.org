@@ -1,6 +1,7 @@
 from game.RoundData import RoundData
 from game.Player.Player import Player
 from game.Article import Article
+from game.logsetup import logger
 
 
 class PointsCounter:

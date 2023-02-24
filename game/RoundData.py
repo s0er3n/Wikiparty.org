@@ -1,6 +1,7 @@
 from game.Player.Player import Player
 from game.Moves import Moves
 from game.Article import Article
+from game.Player.PlayerData import Node
 
 from dataclasses import dataclass, field
 from collections import defaultdict
