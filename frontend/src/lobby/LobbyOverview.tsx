@@ -59,7 +59,7 @@ const LobbyOverview: Component<any> = (props) => {
         </div>
         <div class="flex w-full justify-center items-center">
           <span class="mr-2">time: </span>
-          <SetTime time={props.lobby().time} />
+          <SetTime time={props.lobby().time} id={props.id} lobby={props.lobby} />
           <span class="ml-2"> minutes</span>
         </div>
         <Show when={isHost(props)} article>
@@ -106,14 +106,25 @@ const setTime = (e: any) => {
 const SetTime: Component<any> = (props) => {
   let time = Math.floor(props.time / 60);
   return (
-    <input
-      class="w-24"
-      value={time}
-      min="1"
-      onchange={setTime}
-      type="number"
-      class="input input-bordered"
-    />
+    <Show when={isHost({ lobby: props.lobby, id: props.id })} fallback={
+      <input
+        class="w-24"
+        value={time}
+        min="1"
+        disabled
+        type="number"
+        class="input input-bordered"
+      />
+    }>
+      <input
+        class="w-24"
+        value={time}
+        min="1"
+        onchange={setTime}
+        type="number"
+        class="input input-bordered"
+      />
+    </Show>
   );
 };
 

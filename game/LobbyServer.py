@@ -1,8 +1,8 @@
-from game.logsetup import logger
+from game.settings.logsetup import logger
 import uuid
 
 from game.Lobby import Lobby
-from game.Player import Player
+from game.Player.Player import Player
 from game.Response import Response, LobbyNotFound
 
 

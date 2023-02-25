@@ -1,17 +1,12 @@
-import asyncio
-from game.logsetup import logger
-from threading import Thread
+from game.settings.logsetup import logger
 from typing import Iterator
 import json
 import requests
 from bs4 import BeautifulSoup
 
-from game.Player import Player
-from game.Response import Wiki
-from game.QueryResult import QueryResult
-from game.ConnectionManager import manager
+from game.Player.Player import Player
 
-import game.db
+from game.settings import db
 
 
 def _select_and_reduce_links(all_links) -> Iterator[str]:
@@ -48,14 +43,14 @@ class Query:
 
         short_links = list(_select_and_reduce_links(all_links))
 
-        game.db.client.set("article:" + move, json.dumps({"links": short_links,
-                                                          "title": str(title),
-                                                          "url_ending": move}), ex=60 * 60 * 24)
+        db.client.set("article:" + move, json.dumps({"links": short_links,
+                                                     "title": str(title),
+                                                     "url_ending": move}), ex=60 * 60 * 24)
         return move
 
     @classmethod
     def execute(cls, move: str, recipient: Player) -> str | None:
-        if not game.db.get_article(move):
+        if not db.get_article(move):
             try:
                 move = cls.query_and_add_to_queries(move)
                 assert move is not None
@@ -63,20 +58,20 @@ class Query:
                 logger.error("could not query wikipedia")
                 return
 
-        if not (query_result := game.db.get_article(move)):
+        if not (query_result := db.get_article(move)):
             logger.warning("no query result")
             return None
         query_result = json.loads(query_result)
-        game.db.client.hincrby("count", move)
+        db.client.hincrby("count", move)
         return query_result["title"]
 
     @classmethod
     def is_link_allowed(cls, current_location, url_name) -> bool:
-        redis_result = game.db.get_article(current_location)
+        redis_result = db.get_article(current_location)
         if not redis_result:
             # requerying current location in case it was not in redis
             cls.query_and_add_to_queries(current_location)
-            redis_result = game.db.get_article(current_location)
+            redis_result = db.get_article(current_location)
             print("current location ", current_location)
             print("not existing", redis_result)
             return url_name in json.loads(redis_result)["links"]
@@ -87,5 +82,5 @@ class Query:
 def test_query() -> None:
     target = "berlin"
     Query.query_and_add_to_queries(target)
-    assert json.loads(game.db.client.get(
+    assert json.loads(db.client.get(
         "article:" + target)) is not None
