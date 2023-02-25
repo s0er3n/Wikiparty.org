@@ -35,15 +35,13 @@ export interface Searchinfo {
   totalhits: number;
 }
 
-
 const getWikiPreview = async (name: string) => {
   const res = await fetch(
     `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${name}&utf8=&format=json&origin=*`
   );
   const data: SuggestArticle = await res.json();
-  console.log(data)
+
   const query_without_referencepages = data.query.search.filter(article => article.size > 3000)
-  console.log(query_without_referencepages)
 
   return query_without_referencepages;
 };
@@ -139,7 +137,7 @@ const ArticleSuggestionsList: Component<{
             <div class="flex items-center">
               <span
                 class="tooltip tooltip-bottom"
-                data-tip={result.snippet.replace(/<[^>]+>/g, "") + "..."}
+                data-tip={result.snippet.replace(/<[^>]+>/g, "").replaceAll("&quot;", "'") + "..."}
               >
                 {" "}
                 {result.title}{" "}
