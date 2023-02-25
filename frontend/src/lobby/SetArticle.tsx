@@ -35,18 +35,21 @@ export interface Searchinfo {
   totalhits: number;
 }
 
-const getWiki = async (name: string) => {
+const getWikiPreview = async (name: string) => {
   const res = await fetch(
     `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${name}&utf8=&format=json&origin=*`
   );
   const data: SuggestArticle = await res.json();
-  return data.query;
+
+  const query_without_referencepages = data.query.search.filter(article => article.size > 3000)
+
+  return query_without_referencepages;
 };
 
-const [sugestion, setSugestion] = createSignal<Query>();
+const [sugestion, setSugestion] = createSignal<Array<Search>>();
 
 const findArticle = async (name) => {
-  let query = await getWiki(name);
+  let query = await getWikiPreview(name);
   setSugestion(query);
   return query;
 };
@@ -123,18 +126,18 @@ const SetArticle: Component<{
 };
 
 const ArticleSuggestionsList: Component<{
-  query: Query;
+  query: Accessor<Array<Search>>;
   lobby: TLobby;
 }> = (props) => {
   return (
-    <For each={props?.query?.search ?? []}>
+    <For each={props?.query ?? []}>
       {(result, i) => (
         <div class="flex w-96">
           <div class="w-2/3 flex justify-center">
             <div class="flex items-center">
               <span
                 class="tooltip tooltip-bottom"
-                data-tip={result.snippet.replace(/<[^>]+>/g, "") + "..."}
+                data-tip={result.snippet.replace(/<[^>]+>/g, "").replaceAll("&quot;", "'") + "..."}
               >
                 {" "}
                 {result.title}{" "}
