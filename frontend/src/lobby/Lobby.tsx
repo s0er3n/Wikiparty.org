@@ -10,7 +10,7 @@ import LobbyOverview from "./LobbyOverview";
 import GameOver from "./GameOver";
 import Wiki from "./Wiki";
 import SetupGame from "./SetupGame";
-import type { TLobby } from "../types";
+import type { TLobby, TPlayer } from "../types";
 
 export const [goToLobby, setGoToLobby] = createSignal(false);
 
@@ -25,6 +25,7 @@ export const isHost = (props: {
 };
 
 const Lobby: Component<{
+  players: Accessor<TPlayer | null>
   setGoToLobby: Setter<boolean>;
   search: any;
   id: string | undefined;
@@ -59,7 +60,7 @@ const Lobby: Component<{
             (!isHost(local) && local.lobby()?.state === "idle")
           }
         >
-          <LobbyOverview lobby={local.lobby} id={local.id} />
+          <LobbyOverview players={props.players} lobby={local.lobby} id={local.id} />
         </Show>
         <Show when={local.lobby()?.state === "ingame"}>
           <Wiki lobby={props.lobby} />
