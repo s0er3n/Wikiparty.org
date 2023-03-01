@@ -144,58 +144,56 @@ const App: Component = () => {
   // derived state if player is host
 
   return (
-    <>
-      <div class="flex items-stretch min-h-screen bg-base-200">
-        <Show when={lobby()?.state === "ingame"}>
-          <div class="hidden lg:flex">
-            <aside class="p-3 grow flex flex-col justify-start max-h-screen w-48 m-3 mr-0 bg-base-100 shadow-md rounded-md sticky top-3">
-              <div class="font-bold mb-3">
-                <h3>Players</h3>
-              </div>
-              <PlayerList
-                players={players}
-                pointsKey="points_current_round"
-              />
-            </aside>
-          </div>
+    <div class="flex items-stretch min-h-screen bg-base-200">
+      <Show when={lobby()?.state === "ingame"}>
+        <div class="hidden lg:flex">
+          <aside class="p-3 grow flex flex-col justify-start max-h-screen w-48 m-3 mr-0 bg-base-100 shadow-md rounded-md sticky top-3">
+            <div class="font-bold mb-3">
+              <h3>Players</h3>
+            </div>
+            <PlayerList
+              players={players}
+              pointsKey="points_current_round"
+            />
+          </aside>
+        </div>
+      </Show>
+      <div class="w-full">
+        <Show when={lobby() && hasUserName()}>
+          <Header lobby={lobby} id={id} />
         </Show>
-        <div class="w-full">
-          <Show when={lobby() && hasUserName()}>
-            <Header lobby={lobby} id={id} />
-          </Show>
 
-          <Show when={lobby()}>
-            <Lobby players={players} wiki={wiki} id={id} lobby={lobby} search={search} />
-          </Show>
-          <Show when={!lobby()}>
-            <div class="flex flex-col items-center">
-              <div
-                class="hero min-h-screen bg-base-200 object-cover"
-                style="background-image: url(triangles-download (1).png);"
-              >
-                <div class="hero-content text-center flex flex-col">
-                  <div class="max-w-xl">
-                    <h1 class="text-5xl font-bold">Welcome to WikiParty</h1>
-                    <p class="py-6">
-                      A game that will take you on a journey through the world of
-                      Wikipedia!
-                    </p>
-                  </div>
-                  <Show when={!hasUserName()}>
-                    <SetUserName setHasUserName={setHasUserName} />
-                  </Show>
-                  <Show when={hasUserName()}>
-                    <Show when={!lobby() && hasUserName()}>
-                      <JoinOrCreateLobby />
-                    </Show>
-                  </Show>
+        <Show when={lobby()}>
+          <Lobby players={players} wiki={wiki} id={id} lobby={lobby} search={search} />
+        </Show>
+        <Show when={!lobby()}>
+          <div class="flex flex-col items-center">
+            <div
+              class="hero min-h-screen bg-base-200 object-cover"
+              style="background-image: url(triangles-download (1).png);"
+            >
+              <div class="hero-content text-center flex flex-col">
+                <div class="max-w-xl">
+                  <h1 class="text-5xl font-bold">Welcome to WikiParty</h1>
+                  <p class="py-6">
+                    A game that will take you on a journey through the world of
+                    Wikipedia!
+                  </p>
                 </div>
+                <Show when={!hasUserName()}>
+                  <SetUserName setHasUserName={setHasUserName} />
+                </Show>
+                <Show when={hasUserName()}>
+                  <Show when={!lobby() && hasUserName()}>
+                    <JoinOrCreateLobby />
+                  </Show>
+                </Show>
               </div>
             </div>
-          </Show>
-        </div>
+          </div>
+        </Show>
       </div>
-    </>
+    </div>
   );
 };
 

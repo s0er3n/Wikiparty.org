@@ -1,4 +1,4 @@
-import { Component, For, Show } from "solid-js";
+import { Component } from "solid-js";
 import { sendMessage } from "./../App";
 
 let back_page_msg = { type: "game", method: "page_back", args: {} };
