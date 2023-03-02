@@ -60,9 +60,10 @@ if (!password) {
 const [search, setSearch] = createSignal([]);
 
 export const startWS = () => {
-  ws = new WebSocket(`${import.meta.env.VITE_backend_url}/ws/${id}/${password}`);
+  ws = new WebSocket(`${import.meta.env.VITE_backend_url}/ws/${id}`);
 
   ws.onopen = (_) => {
+    ws?.send(password)
     setConnection(true);
     let username = localStorage.getItem("username");
     if (username) {
