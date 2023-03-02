@@ -18,7 +18,7 @@ class ConnectionManager:
 
         if self.password_dict.get(id) == password:
             player = self.players.get(id)
-        else:
+        elif not self.password_dict.get(id):
             player = Player(id=id)
             self.players[id] = player
             self.password_dict[id] = password
