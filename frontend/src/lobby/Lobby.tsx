@@ -25,7 +25,7 @@ export const isHost = (props: {
 };
 
 const Lobby: Component<{
-  players: Accessor<TPlayer | null>
+  players: Accessor<TPlayer[] | null>
   setGoToLobby: Setter<boolean>;
   search: any;
   id: string | undefined;
