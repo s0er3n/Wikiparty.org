@@ -38,7 +38,7 @@ export function sendMessage(msg: any) {
 // let [players, setPlayers = createSignal([])
 
 let id = localStorage.getItem("id");
-let password = localStorage.getItem("privacy_key");
+let password = localStorage.getItem("private_key");
 let [wiki, setWiki] = createSignal<TWiki>();
 
 let setUsernameMsg = {
@@ -54,7 +54,7 @@ if (!id) {
 
 if (!password) {
   password = self.crypto.randomUUID();
-  localStorage.setItem("privacy_key", password);
+  localStorage.setItem("private_key", password);
 }
 
 const [search, setSearch] = createSignal([]);
@@ -78,7 +78,7 @@ export const startWS = () => {
       let joinLobbyMsg = {
         type: "lobby",
         method: "join_lobby",
-        args: { id: urlSearchParams.get("code"), password: localStorage.getItem("privacy_key") },
+        args: { id: urlSearchParams.get("code"), password: localStorage.getItem("private_key") },
       };
       sendMessage(joinLobbyMsg);
     }
