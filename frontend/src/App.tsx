@@ -60,7 +60,7 @@ if (!password) {
 const [search, setSearch] = createSignal([]);
 
 export const startWS = () => {
-  ws = new WebSocket(`${import.meta.env.VITE_backend_url}/ws/${id}`);
+  ws = new WebSocket(`${import.meta.env.VITE_backend_url}/ws/${id}/${password}`);
 
   ws.onopen = (_) => {
     setConnection(true);

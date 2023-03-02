@@ -1,6 +1,6 @@
 
 import logging
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, Depends
 from starlette.websockets import WebSocketDisconnect
 from game.settings.logsetup import logger
 from time import sleep
@@ -25,9 +25,10 @@ def index() -> str:
     return "hallo"
 
 
-@app.websocket("/ws/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, client_id: str):
-    player = await manager.connect(websocket, id=client_id)
+@app.websocket("/ws/{client_id}/{password}")
+async def websocket_endpoint(websocket: WebSocket, client_id: str, password: str | None = None):
+    print(password)
+    player = await manager.connect(websocket, id=client_id, password=password)
     try:
         while True:
             try:

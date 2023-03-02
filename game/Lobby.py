@@ -22,12 +22,5 @@ class Lobby:
             self.players.remove(player)
 
     def join(self, player) -> None:
-        if player.id in self.password_dict:
-            if password == self.password_dict[player.id]:
-                self.players.append(player)
-                return
-            logger.error("wrong password")
-            return
 
-        self.password_dict[player.id] = password
         self.players.append(player)
