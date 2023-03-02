@@ -12,7 +12,7 @@ import PlayerList from "./lobby/PlayerList";
 import { updateWiki } from "./lobby/Wiki";
 
 let [connected, setConnection] = createSignal<boolean>(false);
-let [hasUserName, setHasUserName] = createSignal<boolean>(false);
+let [hasUsername, setHasUsername] = createSignal<boolean>(false);
 let ws: WebSocket | null = null;
 
 let missedMessages: string[] = [];
@@ -40,7 +40,7 @@ export function sendMessage(msg: any) {
 let id = localStorage.getItem("id");
 let [wiki, setWiki] = createSignal<TWiki>();
 
-let setUserNameMsg = {
+let setUsernameMsg = {
   type: "player",
   method: "set_user_name",
   args: { name: "Gast" },
@@ -60,10 +60,10 @@ export const startWS = () => {
     setConnection(true);
     let username = localStorage.getItem("username");
     if (username) {
-      let msg = setUserNameMsg;
-      setUserNameMsg.args.name = username;
+      let msg = setUsernameMsg;
+      setUsernameMsg.args.name = username;
       sendMessage(msg);
-      setHasUserName(true);
+      setHasUsername(true);
     }
     // joining lobby if you were in a lobby before
     const urlSearchParams = new URLSearchParams(window.location.search);
@@ -159,7 +159,7 @@ const App: Component = () => {
         </div>
       </Show>
       <div class="w-full">
-        <Show when={lobby() && hasUserName()}>
+        <Show when={lobby() && hasUsername()}>
           <Header lobby={lobby} id={id} />
         </Show>
 
@@ -180,11 +180,11 @@ const App: Component = () => {
                     Wikipedia!
                   </p>
                 </div>
-                <Show when={!hasUserName()}>
-                  <SetUserName setHasUserName={setHasUserName} />
+                <Show when={!hasUsername()}>
+                  <SetUserName setHasUserName={setHasUsername} />
                 </Show>
-                <Show when={hasUserName()}>
-                  <Show when={!lobby() && hasUserName()}>
+                <Show when={hasUsername()}>
+                  <Show when={!lobby() && hasUsername()}>
                     <JoinOrCreateLobby />
                   </Show>
                 </Show>

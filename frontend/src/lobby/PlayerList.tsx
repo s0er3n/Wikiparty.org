@@ -1,7 +1,7 @@
 import { Accessor, Component, For, Show, createSignal } from "solid-js";
 import { TPlayer } from "../types";
 
-export const [userName, setUserName] = createSignal<string>("");
+export const [username, setUsername] = createSignal<string>("");
 
 const PlayerList: Component<{
   players: Accessor<TPlayer[] | null>;
@@ -9,7 +9,7 @@ const PlayerList: Component<{
   id: string;
 }> = (props) => {
   let id = localStorage.getItem("id");
-  setUserName(props.players().find(player => player[0].id === id)[0].name);
+  setUsername(props.players().find(player => player[0].id === id)[0].name);
 
   return (
     <For

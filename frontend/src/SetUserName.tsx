@@ -1,12 +1,12 @@
 import { Component, createEffect, createSignal } from "solid-js";
 
 import { sendMessage, startWS } from "./App";
-let [userName, setUserName] = createSignal<string>(``);
+let [username, setUsername] = createSignal<string>(``);
 
-export let setUserNameMsg = {
+export let setUsernameMsg = {
   type: "player",
   method: "set_user_name",
-  args: { name: userName() },
+  args: { name: username() },
 };
 
 const SetUserNameComponent: Component<any> = (props) => {
@@ -15,8 +15,8 @@ const SetUserNameComponent: Component<any> = (props) => {
       <div class="bg-base-100 shadow-md rounded-md p-3">
         <div class="flex space-x-3">
           <input
-            value={userName()}
-            onchange={(e) => setUserName(e.target.value)}
+            value={username()}
+            onchange={(e) => setUsername(e.target.value)}
             minlength="2"
             maxlength="12"
             type="text"
@@ -25,11 +25,11 @@ const SetUserNameComponent: Component<any> = (props) => {
           <button
             class="btn "
             onclick={() => {
-              if (userName().length > 3) {
-                let msg = setUserNameMsg;
-                setUserNameMsg.args.name = userName();
+              if (username().length > 3) {
+                let msg = setUsernameMsg;
+                setUsernameMsg.args.name = username();
                 sendMessage(msg);
-                localStorage.setItem("username", userName());
+                localStorage.setItem("username", username());
                 props.setHasUserName(true);
                 startWS();
               } else {

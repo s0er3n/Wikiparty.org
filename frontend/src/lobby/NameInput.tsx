@@ -1,12 +1,12 @@
 import { Component, createSignal } from "solid-js";
 
-import { userName, setUserName } from "./PlayerList"
-import { setUserNameMsg } from "../SetUserName";
+import { username, setUsername } from "./PlayerList"
+import { setUsernameMsg } from "../SetUserName";
 import { sendMessage } from "../App";
 
 
 const NameInput: Component = () => {
-  const [tempUsername, setTempUsername] = createSignal<string>(userName())
+  const [tempUsername, setTempUsername] = createSignal<string>(username())
 
   return (
     <>
@@ -26,12 +26,12 @@ const NameInput: Component = () => {
             </input>
             <div class="modal-action">
               <label onclick={() => {
-                setTempUsername(userName())
+                setTempUsername(username())
               }} for="my-modal-6" class="btn">Cancel</label>
               <label onclick={() => {
-                let msg = setUserNameMsg;
-                setUserName(tempUsername())
-                setUserNameMsg.args.name = tempUsername();
+                let msg = setUsernameMsg;
+                setUsername(tempUsername())
+                setUsernameMsg.args.name = tempUsername();
                 sendMessage(msg);
                 localStorage.setItem("username", tempUsername());
               }} for="my-modal-6" class="btn">
