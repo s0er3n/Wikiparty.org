@@ -21,6 +21,7 @@ class ConnectionManager:
         else:
             player = Player(id=id)
             self.players[id] = player
+            self.password_dict[id] = password
 
         self.active_connections[player] = websocket
         return player
