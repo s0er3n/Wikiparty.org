@@ -1,3 +1,5 @@
+import uuid
+
 from game.Player.Player import Player
 from game.SearchGame import SearchGame
 
@@ -6,6 +8,7 @@ class Lobby:
     players: list[Player]
     game: SearchGame | None
     host: Player
+    password_dict: dict[Player, str]
 
     def __init__(self, host: Player, id: str, Game=SearchGame) -> None:
         self.host = host
@@ -18,5 +21,11 @@ class Lobby:
         if player in self.players:
             self.players.remove(player)
 
-    def join(self, player) -> None:
-        self.players.append(player)
+    def join(self, player, password) -> None:
+        if password == self.password_dict[player]:
+            self.players.append(player)
+        else:
+            new_player = Player(id=str(uuid.uuid4()))
+            new_player.set_name(player.name())
+            self.password_dict[new_player] = password
+            self.players.append(new_player)

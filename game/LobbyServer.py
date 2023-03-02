@@ -30,7 +30,11 @@ class LobbyServer:
         player: Player,
         id: str | None = None,
         lobby: Lobby | None = None,
+        password: str | None = None
     ) -> Response | None:
+
+        if not password:
+            password = str(uuid.uuid4())
 
         if player in self.players_lobbies.keys():
             self.players_lobbies[player].leave(player)
@@ -49,7 +53,7 @@ class LobbyServer:
 
         self.players_lobbies[player] = lobby
 
-        lobby.join(player)
+        lobby.join(player, password)
 
         if lobby.game:
             return lobby.game.join(player)
