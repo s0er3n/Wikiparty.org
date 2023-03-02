@@ -1,7 +1,7 @@
 import { Component, createSignal } from "solid-js";
 
 import { username, setUsername } from "./PlayerList"
-import { setUsernameMsg } from "../SetUserName";
+import { setUsernameMsg } from "../SetUsername";
 import { sendMessage } from "../App";
 
 
