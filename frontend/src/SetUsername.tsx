@@ -30,7 +30,7 @@ const SetUsernameComponent: Component<any> = (props) => {
                 setUsernameMsg.args.name = username();
                 sendMessage(msg);
                 localStorage.setItem("username", username());
-                props.setHasUserName(true);
+                props.setHasUsername(true);
                 startWS();
               } else {
                 alert("user name should be longer than 3 chars");

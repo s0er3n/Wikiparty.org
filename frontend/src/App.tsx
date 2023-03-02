@@ -181,7 +181,7 @@ const App: Component = () => {
                   </p>
                 </div>
                 <Show when={!hasUsername()}>
-                  <SetUsername setHasUserName={setHasUsername} />
+                  <SetUsername setHasUsername={setHasUsername} />
                 </Show>
                 <Show when={hasUsername()}>
                   <Show when={!lobby() && hasUsername()}>
