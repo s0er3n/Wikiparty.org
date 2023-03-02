@@ -8,13 +8,11 @@ class Lobby:
     players: list[Player]
     game: SearchGame | None
     host: Player
-    password_dict: dict[str, str]
 
     def __init__(self, host: Player, id: str, Game=SearchGame) -> None:
         self.host = host
         self.players = []
         self.game = Game(host=host, id=id)
-        self.password_dict = {}
 
     def leave(self, player) -> None:
         print("leaving")
@@ -23,7 +21,7 @@ class Lobby:
         if player in self.players:
             self.players.remove(player)
 
-    def join(self, player, password) -> None:
+    def join(self, player) -> None:
         if player.id in self.password_dict:
             if password == self.password_dict[player.id]:
                 self.players.append(player)
