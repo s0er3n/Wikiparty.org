@@ -27,7 +27,7 @@ const NameInput: Component = () => {
             <div class="modal-action">
               <label onclick={() => {
                 setTempUsername(userName())
-              }} for="my-modal-6" class="btn">Cancle</label>
+              }} for="my-modal-6" class="btn">Cancel</label>
               <label onclick={() => {
                 let msg = setUserNameMsg;
                 setUserName(tempUsername())
