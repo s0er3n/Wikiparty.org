@@ -9,7 +9,7 @@ export let setUsernameMsg = {
   args: { name: username() },
 };
 
-const SetUserNameComponent: Component<any> = (props) => {
+const SetUsernameComponent: Component<any> = (props) => {
   return (
     <div class="w-full flex flex-row items-center justify-center justify-items-center">
       <div class="bg-base-100 shadow-md rounded-md p-3">
@@ -45,4 +45,4 @@ const SetUserNameComponent: Component<any> = (props) => {
   );
 };
 
-export default SetUserNameComponent;
+export default SetUsernameComponent;

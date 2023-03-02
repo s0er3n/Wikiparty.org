@@ -3,7 +3,7 @@ import { createSignal } from "solid-js";
 
 import Header from "./lobby/Header";
 import JoinOrCreateLobby from "./JoinOrCreateLobby";
-import SetUserName from "./SetUserName";
+import SetUsername from "./SetUsername";
 import Lobby, { setGoToLobby } from "./lobby/Lobby";
 import { TLobby, TWiki, TPlayer } from "./types";
 import { addRandomArticles } from "./RandomArticle";
@@ -181,7 +181,7 @@ const App: Component = () => {
                   </p>
                 </div>
                 <Show when={!hasUsername()}>
-                  <SetUserName setHasUserName={setHasUsername} />
+                  <SetUsername setHasUserName={setHasUsername} />
                 </Show>
                 <Show when={hasUsername()}>
                   <Show when={!lobby() && hasUsername()}>
