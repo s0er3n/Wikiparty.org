@@ -61,6 +61,7 @@ class LobbyServer:
 
     def leave_lobby(self, player: Player) -> None:
         lobby = self.players_lobbies.get(player)
+        print(lobby.players)
         if player not in lobby.players:
             logger.warning("player not in lobby doing nothing")
             return
