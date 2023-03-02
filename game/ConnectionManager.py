@@ -22,7 +22,7 @@ class ConnectionManager:
             player = Player(id=id)
             self.players[id] = player
             self.password_dict[id] = password
-
+        else await websocket.close()
         self.active_connections[player] = websocket
         return player
 
