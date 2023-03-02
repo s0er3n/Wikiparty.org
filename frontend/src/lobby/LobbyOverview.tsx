@@ -1,8 +1,6 @@
 import {
   Show,
   Component,
-  createEffect,
-  createSignal,
   Accessor,
   For,
 } from "solid-js";
@@ -10,7 +8,8 @@ import {
 import { sendMessage } from "./../App";
 import { isHost } from "./Lobby";
 import PlayerList from "./PlayerList";
-import type { TLobby } from "../types";
+import type { TLobby, TPlayer } from "../types";
+import NameInput from "./NameInput";
 
 let startGameMsg = { type: "game", method: "start", args: {} };
 
@@ -25,7 +24,12 @@ type Props = {
   lobby: Accessor<TLobby | null>;
 };
 
-const LobbyOverview: Component<any> = (props) => {
+const LobbyOverview: Component<{
+  id?: string;
+  lobby: Accessor<TLobby | null>
+  players: Accessor<TPlayer[] | null>
+
+}> = (props) => {
   return (
     <div class="flex justify-center bg-base-100 rounded-md shadow-md p-3">
       <div class="flex flex-col justify-between space-y-3">
@@ -87,12 +91,13 @@ const LobbyOverview: Component<any> = (props) => {
         <div>
           <h3 class="text-xl font-bold">Players in Lobby:</h3>
           <PlayerList
-            players={props.lobby()?.players}
+            players={props.players}
             pointsKey="points"
             id={props.id}
           />
         </div>
       </div>
+      <NameInput />
     </div>
   );
 };

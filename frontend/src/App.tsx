@@ -3,16 +3,16 @@ import { createSignal } from "solid-js";
 
 import Header from "./lobby/Header";
 import JoinOrCreateLobby from "./JoinOrCreateLobby";
-import SetUserName from "./SetUserName";
+import SetUsername from "./SetUsername";
 import Lobby, { setGoToLobby } from "./lobby/Lobby";
-import { TLobby, TWiki } from "./types";
+import { TLobby, TWiki, TPlayer } from "./types";
 import { addRandomArticles } from "./RandomArticle";
 
 import PlayerList from "./lobby/PlayerList";
 import { updateWiki } from "./lobby/Wiki";
 
 let [connected, setConnection] = createSignal<boolean>(false);
-let [hasUserName, setHasUserName] = createSignal<boolean>(false);
+let [hasUsername, setHasUsername] = createSignal<boolean>(false);
 let ws: WebSocket | null = null;
 
 let missedMessages: string[] = [];
@@ -40,7 +40,7 @@ export function sendMessage(msg: any) {
 let id = localStorage.getItem("id");
 let [wiki, setWiki] = createSignal<TWiki>();
 
-let setUserNameMsg = {
+let setUsernameMsg = {
   type: "player",
   method: "set_user_name",
   args: { name: "Gast" },
@@ -60,10 +60,10 @@ export const startWS = () => {
     setConnection(true);
     let username = localStorage.getItem("username");
     if (username) {
-      let msg = setUserNameMsg;
-      setUserNameMsg.args.name = username;
+      let msg = setUsernameMsg;
+      setUsernameMsg.args.name = username;
       sendMessage(msg);
-      setHasUserName(true);
+      setHasUsername(true);
     }
     // joining lobby if you were in a lobby before
     const urlSearchParams = new URLSearchParams(window.location.search);
@@ -106,6 +106,8 @@ export const startWS = () => {
         setGoToLobby(false);
       }
       setLobby(data);
+      console.log(data.players)
+      setPlayers(data.players);
     } else if (data.method === "Wiki" && !Array.isArray(data.data)) {
       setWiki(data.data);
       window.scrollTo(0, 0);
@@ -128,9 +130,11 @@ export const startWS = () => {
   };
 };
 
-let [lobby, setLobby] = createSignal<TLobby | null>(null);
+const [lobby, setLobby] = createSignal<TLobby | null>(null);
+const [players, setPlayers] = createSignal<TPlayer[] | null>(null);
 
-let [code, setCode] = createSignal<bool>(false);
+
+const [code, setCode] = createSignal<bool>(false);
 
 if (localStorage.getItem("username")) {
   startWS();
@@ -148,19 +152,19 @@ const App: Component = () => {
               <h3>Players</h3>
             </div>
             <PlayerList
-              players={lobby()?.players}
+              players={players}
               pointsKey="points_current_round"
             />
           </aside>
         </div>
       </Show>
       <div class="w-full">
-        <Show when={lobby() && hasUserName()}>
+        <Show when={lobby() && hasUsername()}>
           <Header lobby={lobby} id={id} />
         </Show>
 
         <Show when={lobby()}>
-          <Lobby wiki={wiki} id={id} lobby={lobby} search={search} />
+          <Lobby players={players} wiki={wiki} id={id} lobby={lobby} search={search} />
         </Show>
         <Show when={!lobby()}>
           <div class="flex flex-col items-center">
@@ -176,11 +180,11 @@ const App: Component = () => {
                     Wikipedia!
                   </p>
                 </div>
-                <Show when={!hasUserName()}>
-                  <SetUserName setHasUserName={setHasUserName} />
+                <Show when={!hasUsername()}>
+                  <SetUsername setHasUsername={setHasUsername} />
                 </Show>
-                <Show when={hasUserName()}>
-                  <Show when={!lobby() && hasUserName()}>
+                <Show when={hasUsername()}>
+                  <Show when={!lobby() && hasUsername()}>
                     <JoinOrCreateLobby />
                   </Show>
                 </Show>
