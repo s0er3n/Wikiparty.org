@@ -28,7 +28,7 @@ const PlayerList: Component<{
               }
               }>
                 {player[0].name.length > 12
-                  ? player[0].name.substring(0, 12)
+                  ? player[0].name.substring(0, 13)
                   : player[0].name}
               </span>
               :<span class="font-bold"> {player[0][props.pointsKey] ?? 0} </span>
@@ -42,7 +42,7 @@ const PlayerList: Component<{
                 }
                 }>
                   {player[0].name.length > 12
-                    ? player[0].name.substring(0, 12)
+                    ? player[0].name.substring(0, 13)
                     : player[0].name}
                 </span>
               </label >
