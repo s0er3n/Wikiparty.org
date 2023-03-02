@@ -105,9 +105,8 @@ export const startWS = () => {
       if (data?.state == "over") {
         setGoToLobby(false);
       }
-      setLobby(data);
-      console.log(data.players)
       setPlayers(data.players);
+      setLobby(data);
     } else if (data.method === "Wiki" && !Array.isArray(data.data)) {
       setWiki(data.data);
       window.scrollTo(0, 0);
