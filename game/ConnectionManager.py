@@ -13,7 +13,7 @@ class ConnectionManager:
         self.players: dict[str, Player] = {}
         self.password_dict: dict[str, str] = {}
 
-    async def connect(self, websocket: WebSocket, id: str, password: str) -> Player:
+    async def connect(self, websocket: WebSocket, id: str, password: str) -> Player | None:
         await websocket.accept()
 
         if self.password_dict.get(id) == password:
@@ -22,7 +22,11 @@ class ConnectionManager:
             player = Player(id=id)
             self.players[id] = player
             self.password_dict[id] = password
-        else await websocket.close()
+        else:
+            await websocket.close()
+            logger.warning(msg='boesewicht')
+            return None
+
         self.active_connections[player] = websocket
         return player
 

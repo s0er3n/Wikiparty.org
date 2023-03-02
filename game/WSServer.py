@@ -29,6 +29,8 @@ def index() -> str:
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
     password = await websocket.receive_text()
     player = await manager.connect(websocket, id=client_id, password=password)
+    if not player:
+        return
     try:
         while True:
             try:
