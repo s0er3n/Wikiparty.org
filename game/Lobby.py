@@ -14,6 +14,7 @@ class Lobby:
         self.host = host
         self.players = []
         self.game = Game(host=host, id=id)
+        self.password_dict = {}
 
     def leave(self, player) -> None:
         if isinstance(self.game, SearchGame):
@@ -22,10 +23,13 @@ class Lobby:
             self.players.remove(player)
 
     def join(self, player, password) -> None:
-        if password == self.password_dict[player]:
-            self.players.append(player)
-        else:
-            new_player = Player(id=str(uuid.uuid4()))
-            new_player.set_name(player.name())
-            self.password_dict[new_player] = password
-            self.players.append(new_player)
+        if password in self.password_dict:
+            if password == self.password_dict[player]:
+                self.players.append(player)
+                return
+
+        new_player = Player(id=str(uuid.uuid4()))
+        # print(player.name())
+        # new_player.set_name(player.name())
+        self.password_dict[new_player] = password
+        self.players.append(new_player)
