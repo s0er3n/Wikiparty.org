@@ -15,7 +15,6 @@ class Lobby:
         self.game = Game(host=host, id=id)
 
     def leave(self, player) -> None:
-        print("leaving")
         if isinstance(self.game, SearchGame):
             self.game.leave(player)
         if player in self.players:

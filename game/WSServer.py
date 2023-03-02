@@ -25,9 +25,9 @@ def index() -> str:
     return "hallo"
 
 
-@app.websocket("/ws/{client_id}/{password}")
-async def websocket_endpoint(websocket: WebSocket, client_id: str, password: str | None = None):
-    print(password)
+@app.websocket("/ws/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: str):
+    password = await websocket.receive_text()
     player = await manager.connect(websocket, id=client_id, password=password)
     try:
         while True:

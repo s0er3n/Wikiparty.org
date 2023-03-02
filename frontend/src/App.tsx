@@ -78,7 +78,7 @@ export const startWS = () => {
       let joinLobbyMsg = {
         type: "lobby",
         method: "join_lobby",
-        args: { id: urlSearchParams.get("code"), password: localStorage.getItem("private_key") },
+        args: { id: urlSearchParams.get("code")},
       };
       sendMessage(joinLobbyMsg);
     }
