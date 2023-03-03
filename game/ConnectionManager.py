@@ -1,3 +1,4 @@
+from collections import defaultdict
 from game.settings.logsetup import logger
 from dataclasses import asdict
 
@@ -9,7 +10,8 @@ from game.Response import Response
 
 class ConnectionManager:
     def __init__(self) -> None:
-        self.active_connections: dict[Player, WebSocket] = {}
+        self.active_connections: dict[Player,
+                                      list[WebSocket]] = defaultdict(list)
         self.players: dict[str, Player] = {}
         self.password_dict: dict[str, str] = {}
 
@@ -26,7 +28,7 @@ class ConnectionManager:
             logger.warning(msg='boesewicht')
             return None
 
-        self.active_connections[player] = websocket
+        self.active_connections[player].append(websocket)
         return player
 
     def disconnect(self, player: Player) -> None:
@@ -48,11 +50,12 @@ class ConnectionManager:
             if player not in self.active_connections:
                 logger.warning("player not in active connections")
                 continue
-            try:
                 message._recipients = []
-                await self.active_connections[player].send_json(asdict(message))
-            except Exception as e:
-                print("couldnt send message ", e)
+            for ws in self.active_connections[player]:
+                try:
+                    await ws.send_json(asdict(message))
+                except Exception as e:
+                    print("couldnt send message ", e)
 
 
 manager = ConnectionManager()

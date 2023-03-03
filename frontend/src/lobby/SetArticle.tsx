@@ -41,7 +41,7 @@ const getWikiPreview = async (name: string) => {
   );
   const data: SuggestArticle = await res.json();
 
-  const query_without_referencepages = data.query.search.filter(article => article.size > 3000)
+  const query_without_referencepages = data.query.search?.filter(article => article.size > 3000) ?? []
 
   return query_without_referencepages;
 };
