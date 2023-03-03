@@ -8,5 +8,7 @@ tmux send-keys "uvicorn game.WSServer:app --reload" Enter
 tmux new-window 
 tmux send-keys "cd frontend" Enter
 tmux send-keys "npm run dev" Enter
+tmux new-window 
+tmux send-keys "redis-server" Enter
 tmux attach -t secret-game
 

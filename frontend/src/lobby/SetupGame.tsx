@@ -7,11 +7,11 @@ const SetArticleHeadline: Component<{ lobby: any }> = (props) => {
     <Show
       when={props.lobby().start_article}
       fallback={
-        <h1 class="mt-5 text-3xl font-light">Search for a page to start:</h1>
+        <h1 class="mt-5 text-3xl font-light">Select an article to start on:</h1>
       }
     >
       <h1 class="mt-5 text-3xl font-light">
-        Search for a page or pages to find:
+        Select one or more articles to find:
       </h1>
     </Show>
   );
