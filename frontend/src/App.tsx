@@ -78,7 +78,7 @@ export const startWS = () => {
       let joinLobbyMsg = {
         type: "lobby",
         method: "join_lobby",
-        args: { id: urlSearchParams.get("code")},
+        args: { id: urlSearchParams.get("code") },
       };
       sendMessage(joinLobbyMsg);
     }
@@ -180,7 +180,7 @@ const App: Component = () => {
             >
               <div class="hero-content text-center flex flex-col">
                 <div class="max-w-xl">
-                  <h1 class="text-5xl font-bold">Welcome to WikiParty</h1>
+                  <h1 class="text-5xl font-bold">Try out WikiParty!</h1>
                   <p class="py-6">
                     A game that will take you on a journey through the world of
                     Wikipedia!
