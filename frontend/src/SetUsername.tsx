@@ -17,7 +17,7 @@ const SetUsernameComponent: Component<any> = (props) => {
           <input
             value={username()}
             onchange={(e) => setUsername(e.target.value)}
-            minlength="2"
+            minlength="1"
             maxlength="12"
             type="text"
             class="input input-bordered w-3/4"
