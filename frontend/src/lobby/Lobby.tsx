@@ -5,6 +5,7 @@ import {
   splitProps,
   Setter,
   createSignal,
+  createEffect,
 } from "solid-js";
 import LobbyOverview from "./LobbyOverview";
 import GameOver from "./GameOver";
@@ -32,45 +33,44 @@ const Lobby: Component<{
   wiki: any;
   lobby: Accessor<TLobby | null>;
 }> = (props) => {
-  const [local, others] = splitProps(props, [
-    "setGoToLobby",
-    "lobby",
-    "search",
-    "id",
-    "wiki",
-  ]);
+  let state = () => props.lobby()?.state
+  createEffect(() => {
+    console.log(props.lobby())
+  })
+
+  console.log('test')
 
   return (
     <div class="bg-base-200 md:flex md:flex-col md:items-center ">
       <div class="w-full" align="center">
         <Show
           when={
-            props?.lobby()?.state === "idle" &&
+            state() === "idle" &&
             !goToLobby() &&
             isHost({ lobby: props.lobby, id: props.id })
           }
         >
-          <SetupGame id={local.id} lobby={local.lobby} search={local.search} />
+          <SetupGame id={props.id} lobby={props.lobby} search={props.search} />
         </Show>
         <Show
           when={
-            (local.lobby()?.state === "idle" &&
-              local.lobby()?.start_article &&
+            (props.lobby()?.state === "idle" &&
+              props.lobby()?.start_article &&
               goToLobby()) ||
-            (!isHost(local) && local.lobby()?.state === "idle")
+            (!isHost(props) && props.lobby()?.state === "idle")
           }
         >
-          <LobbyOverview players={props.players} lobby={local.lobby} id={local.id} />
+          <LobbyOverview players={props.players} lobby={props.lobby} id={props.id} />
         </Show>
-        <Show when={local.lobby()?.state === "ingame"}>
+        <Show when={state() === "ingame"}>
           <Wiki lobby={props.lobby} />
         </Show>
 
-        <Show when={local.lobby()?.state === "over"}>
+        <Show when={state() === "over"}>
           <GameOver
-            lobby={local.lobby}
-            id={local.id}
-            players={local.lobby()?.players}
+            lobby={props.lobby}
+            id={props.id}
+            players={props.lobby()?.players}
           />
         </Show>
       </div>

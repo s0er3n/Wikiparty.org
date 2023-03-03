@@ -38,6 +38,7 @@ export function sendMessage(msg: any) {
 // let [players, setPlayers = createSignal([])
 
 let id = localStorage.getItem("id");
+let password = localStorage.getItem("private_key");
 let [wiki, setWiki] = createSignal<TWiki>();
 
 let setUsernameMsg = {
@@ -51,12 +52,18 @@ if (!id) {
   localStorage.setItem("id", id);
 }
 
+if (!password) {
+  password = self.crypto.randomUUID();
+  localStorage.setItem("private_key", password);
+}
+
 const [search, setSearch] = createSignal([]);
 
 export const startWS = () => {
   ws = new WebSocket(`${import.meta.env.VITE_backend_url}/ws/${id}`);
 
   ws.onopen = (_) => {
+    ws?.send(password)
     setConnection(true);
     let username = localStorage.getItem("username");
     if (username) {
@@ -71,7 +78,7 @@ export const startWS = () => {
       let joinLobbyMsg = {
         type: "lobby",
         method: "join_lobby",
-        args: { id: urlSearchParams.get("code") },
+        args: { id: urlSearchParams.get("code")},
       };
       sendMessage(joinLobbyMsg);
     }

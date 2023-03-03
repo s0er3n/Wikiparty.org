@@ -9,7 +9,7 @@ const PlayerList: Component<{
   id: string;
 }> = (props) => {
   let id = localStorage.getItem("id");
-  setUsername(props.players().find(player => player[0].id === id)[0].name);
+  setUsername(props.players()?.find(player => player[0].id === id)?.[0]?.name ?? '');
 
   return (
     <For

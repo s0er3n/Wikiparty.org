@@ -5,6 +5,7 @@ export interface TLobby {
   id: string;
   players: TPlayer[];
   articles_to_find: string[];
+  articles_to_find_description: string[];
   articles_found: any[];
   start_article: string;
   time: number;

@@ -16,6 +16,7 @@ const NameInput: Component = () => {
           <h3 class="font-bold text-lg">Change username</h3>
           <form>
             <input
+              class="input input-bordered"
               value={tempUsername()}
               minlength="2"
               maxlength="12"

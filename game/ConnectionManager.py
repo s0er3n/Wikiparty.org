@@ -11,13 +11,20 @@ class ConnectionManager:
     def __init__(self) -> None:
         self.active_connections: dict[Player, WebSocket] = {}
         self.players: dict[str, Player] = {}
+        self.password_dict: dict[str, str] = {}
 
-    async def connect(self, websocket: WebSocket, id: str) -> Player:
-        await websocket.accept()
-        player = self.players.get(id)
-        if not player:
+    async def connect(self, websocket: WebSocket, id: str, password: str) -> Player | None:
+
+        if self.password_dict.get(id) == password:
+            player = self.players.get(id)
+        elif not self.password_dict.get(id):
             player = Player(id=id)
             self.players[id] = player
+            self.password_dict[id] = password
+        else:
+            await websocket.close()
+            logger.warning(msg='boesewicht')
+            return None
 
         self.active_connections[player] = websocket
         return player
