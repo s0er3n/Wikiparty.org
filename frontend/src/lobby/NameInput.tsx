@@ -14,7 +14,7 @@ const NameInput: Component = () => {
       <div class="modal modal-bottom sm:modal-middle">
         <div class="modal-box">
           <h3 class="font-bold text-lg">Change username</h3>
-          <form>
+          <div>
             <input
               class="input input-bordered"
               value={tempUsername()}
@@ -38,9 +38,8 @@ const NameInput: Component = () => {
               }} for="my-modal-6" class="btn">
                 Submit
               </label>
-
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </>
