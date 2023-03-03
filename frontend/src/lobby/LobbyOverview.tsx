@@ -66,28 +66,26 @@ const LobbyOverview: Component<{
           <SetTime time={props.lobby().time} id={props.id} lobby={props.lobby} />
           <span class="ml-2"> minutes</span>
         </div>
-        <Show when={isHost(props)} article>
-          <p>
-            <button
-              class="btn btn-wide"
-              onclick={() => {
-                sendMessage(startGameMsg);
-              }}
-            >
-              start game
-            </button>
-          </p>
-          <h3 class="text-xl font-bold">How do I get Points?</h3>
-          <p>
-            for every article you find you get 10 points and 5 extra points if
-            you are the first person to find the article
-          </p>
-          <h3 class="text-xl font-bold">When does the game end?</h3>
-          <p>
-            the game ends if one person has found every article or the time runs
-            out
-          </p>
-        </Show>
+        <p>
+          <button
+            class="btn btn-wide"
+            onclick={() => {
+              sendMessage(startGameMsg);
+            }}
+          >
+            start game
+          </button>
+        </p>
+        <h3 class="text-xl font-bold">How do I get Points?</h3>
+        <p>
+          for every article you find you get 10 points and 5 extra points if
+          you are the first person to find the article
+        </p>
+        <h3 class="text-xl font-bold">When does the game end?</h3>
+        <p>
+          the game ends if one person has found every article or the time runs
+          out
+        </p>
         <div>
           <h3 class="text-xl font-bold">Players in Lobby:</h3>
           <PlayerList
