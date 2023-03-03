@@ -66,16 +66,18 @@ const LobbyOverview: Component<{
           <SetTime time={props.lobby().time} id={props.id} lobby={props.lobby} />
           <span class="ml-2"> minutes</span>
         </div>
-        <p>
-          <button
-            class="btn btn-wide"
-            onclick={() => {
-              sendMessage(startGameMsg);
-            }}
-          >
-            start game
-          </button>
-        </p>
+        <Show when={isHost({ lobby: props.lobby, id: props.id })}>
+          <p>
+            <button
+              class="btn btn-wide"
+              onclick={() => {
+                sendMessage(startGameMsg);
+              }}
+            >
+              start game
+            </button>
+          </p>
+        </Show>
         <h3 class="text-xl font-bold">How do I get Points?</h3>
         <p>
           for every article you find you get 10 points and 5 extra points if
