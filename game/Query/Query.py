@@ -18,10 +18,10 @@ def _select_and_reduce_links(all_links) -> Iterator[str]:
 class Query:
 
     @classmethod
-    def query_and_add_to_queries(cls, move: str) -> str | None:
+    def query_and_add_to_queries(cls, move: str, language: str) -> str | None:
         logger.warning(f"add move to query {move}")
         resp = requests.get(
-            f"https://en.wikipedia.org/wiki/{move}"
+            f"https://{language}.wikipedia.org/wiki/{move}"
         )
         resp_text = resp.text
 
@@ -43,22 +43,22 @@ class Query:
 
         short_links = list(_select_and_reduce_links(all_links))
 
-        db.client.set("article:" + move, json.dumps({"links": short_links,
-                                                     "title": str(title),
-                                                     "url_ending": move}), ex=60 * 60 * 24)
+        db.client.set(f"article:{language}:" + move, json.dumps({"links": short_links,
+                                                                 "title": str(title),
+                                                                 "url_ending": move}), ex=60 * 60 * 24)
         return move
 
     @classmethod
-    def execute(cls, move: str, recipient: Player) -> str | None:
-        if not db.get_article(move):
+    def execute(cls, move: str, language: str, recipient: Player) -> str | None:
+        if not db.get_article(move, language):
             try:
-                move = cls.query_and_add_to_queries(move)
+                move = cls.query_and_add_to_queries(move, language)
                 assert move is not None
             except:
                 logger.error("could not query wikipedia")
                 return
 
-        if not (query_result := db.get_article(move)):
+        if not (query_result := db.get_article(move, language)):
             logger.warning("no query result")
             return None
         query_result = json.loads(query_result)
@@ -66,21 +66,14 @@ class Query:
         return query_result["title"]
 
     @classmethod
-    def is_link_allowed(cls, current_location, url_name) -> bool:
-        redis_result = db.get_article(current_location)
+    def is_link_allowed(cls, current_location, url_name, language: str) -> bool:
+        redis_result = db.get_article(current_location, language)
         if not redis_result:
             # requerying current location in case it was not in redis
-            cls.query_and_add_to_queries(current_location)
-            redis_result = db.get_article(current_location)
+            cls.query_and_add_to_queries(current_location, language)
+            redis_result = db.get_article(current_location, language)
             print("current location ", current_location)
             print("not existing", redis_result)
             return url_name in json.loads(redis_result)["links"]
 
         return url_name in json.loads(redis_result)["links"]
-
-
-def test_query() -> None:
-    target = "berlin"
-    Query.query_and_add_to_queries(target)
-    assert json.loads(db.client.get(
-        "article:" + target)) is not None

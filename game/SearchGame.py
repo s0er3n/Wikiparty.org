@@ -50,6 +50,7 @@ class SearchGame(Game):
         self.points_counter = points_counter(round_data)
         self.round_end_checker = round_end_checker()
         self.players_handler = PlayersHandler()
+        self.language = 'en'
 
     def set_time(self, player: Player, time: int) -> Response | None:
         if self._check_host(player):
@@ -72,7 +73,7 @@ class SearchGame(Game):
 
             next_move = self.rounds[-1].get_current_article(player)
             Query.execute(
-                move=next_move.url_name, recipient=player
+                move=next_move.url_name, recipient=player, language=self.language
             )
         return self._make_lobby_update_response()
 
@@ -125,7 +126,13 @@ class SearchGame(Game):
     def set_starting_position(self) -> None:
         for player in self.players_handler.get_all_players():
             Query.execute(
-                move=self.rounds[-1].start_article.url_name, recipient=player)
+                move=self.rounds[-1].start_article.url_name, recipient=player, language=self.language)
+
+    def set_language(self, host: Player, language: str):
+        if not self._check_host(host):
+            return
+        self.language = language
+        return self._make_lobby_update_response()
 
     def _calculate_points_total(self, player: Player) -> int:
         points = 0
@@ -148,6 +155,7 @@ class SearchGame(Game):
             id=self.id,
             state=self.state.value,
             time=self.play_time,
+            language=self.language,
             players=[
                 (
                     PlayerCopy(
@@ -177,7 +185,7 @@ class SearchGame(Game):
             )
 
         r = requests.get(
-            f"https://en.wikipedia.org/w/api.php?action=query&prop=info&pageids={page_id}&inprop=url&format=json")
+            f"https://{self.language}.wikipedia.org/w/api.php?action=query&prop=info&pageids={page_id}&inprop=url&format=json")
         if r.status_code != 200:
             return Error(
                 e="couldnt find article",
@@ -229,7 +237,8 @@ class SearchGame(Game):
 
         logger.info("move to " + url_name)
 
-        pretty_name = Query.execute(move=url_name, recipient=player)
+        pretty_name = Query.execute(
+            move=url_name, recipient=player, language=self.language)
 
         if pretty_name is None:
             logger.warning("move failed")
@@ -258,7 +267,7 @@ class SearchGame(Game):
         url_name = self.rounds[-1].get_current_article(player).url_name
 
         Query.execute(move=url_name,
-                      recipient=player)
+                      recipient=player, language=self.language)
         return SyncMove(_recipients=[player], url_name=url_name)
 
     def page_forward(self, player: Player):
@@ -272,7 +281,7 @@ class SearchGame(Game):
         url_name = self.rounds[-1].get_current_article(player).url_name
 
         Query.execute(move=url_name,
-                      recipient=player)
+                      recipient=player, language=self.language)
         return SyncMove(_recipients=[player], url_name=url_name)
 
     def _is_move_allowed(self, url_name: str, player: Player) -> bool:
@@ -280,4 +289,4 @@ class SearchGame(Game):
         # links is a list of pretty names and the key of queries is the url name
         # WARNING pretty confusing WARNING
 
-        return Query().is_link_allowed(current_location, url_name)
+        return Query().is_link_allowed(current_location, url_name, language=self.language)
