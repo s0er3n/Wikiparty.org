@@ -32,11 +32,11 @@ def sorted_moves_list(node: Node, res: list | None = None) -> list[Node]:
         return []
     if res is None:
         res = []
-    if node not in res:
+    if int(id(node)) not in [int(id(n2)) for n2 in res]:
         res.append(node)
     for child in node.children:
-        if child not in res:
-            res = sorted_moves_list(child, res=res)
+        if int(id(child)) not in [int(id(n2)) for n2 in res]:
+            sorted_moves_list(child, res=res)
     return res
 
 
