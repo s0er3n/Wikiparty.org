@@ -33,6 +33,7 @@ class LobbyUpdate(Response):
     start_article: str
     start_article_description: str
     time: int
+    language: str
 
 
 @dataclasses.dataclass(kw_only=True)

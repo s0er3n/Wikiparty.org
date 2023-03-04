@@ -33,9 +33,9 @@ export interface Text {
   "*": string;
 }
 
-const getWiki = async (name: string) => {
+const getWiki = async (name: string, language: string) => {
   const res = await fetch(
-    `https://wiki.soeren-michaels.workers.dev/wiki/${name}`
+    `https://wiki.soeren-michaels.workers.dev/wiki/${language}/${name}`
   );
   const data: WikiRes = await res.json();
   return {
@@ -74,8 +74,8 @@ function fixMobileView() {
 
 }
 
-export const updateWiki = async (url: string) => {
-  let res = await getWiki(url)
+export const updateWiki = async (url: string, language: string) => {
+  let res = await getWiki(url, language)
   setCurrentWiki(res);
   fixMobileView()
   window.scrollTo({ top: 0 });
@@ -86,7 +86,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
   let current_position = props?.lobby()?.players?.find((player) => {
     return player[0].id === id;
   })[1]?.current_position;
-  updateWiki(current_position);
+  updateWiki(current_position, props.lobby().language);
 
   if (import.meta.env.DEV) {
     setShow(true)
@@ -177,7 +177,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                     };
 
                     // awaiting it here so that the sync move happens after you click and not before
-                    await updateWiki(url_name);
+                    await updateWiki(url_name, props.lobby().language);
                     sendMessage(moveMsg);
                   }
                 }}
