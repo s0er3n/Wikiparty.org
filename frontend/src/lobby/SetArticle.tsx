@@ -35,9 +35,9 @@ export interface Searchinfo {
   totalhits: number;
 }
 
-const getWikiPreview = async (name: string) => {
+const getWikiPreview = async (name: string, language: string) => {
   const res = await fetch(
-    `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${name}&utf8=&format=json&origin=*`
+    `https://${language}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${name}&utf8=&format=json&origin=*`
   );
   const data: SuggestArticle = await res.json();
 
@@ -48,8 +48,8 @@ const getWikiPreview = async (name: string) => {
 
 const [sugestion, setSugestion] = createSignal<Array<Search>>();
 
-const findArticle = async (name) => {
-  let query = await getWikiPreview(name);
+const findArticle = async (name, language: string) => {
+  let query = await getWikiPreview(name, language);
   setSugestion(query);
   return query;
 };
@@ -76,12 +76,12 @@ const SetArticle: Component<{
                   }
                   timeout = setTimeout(() => {
                     if (!regex_slash.exec(e.target.value)) {
-                      findArticle(e.target.value);
+                      findArticle(e.target.value, props.lobby().language);
 
                       setArticle(e.target.value);
                     }
                     else {
-                      findArticle("")
+                      findArticle("", props.lobby().language)
                       console.log("dont use /")
                     }
                   }, 200);
