@@ -3,6 +3,8 @@ import { TLobby } from "../types";
 import { sendMessage } from "./../App";
 import RandomArticle from "./../RandomArticle";
 import { isHost, setGoToLobby } from "./Lobby";
+import SetLang from "./LangSelection";
+
 let [article, setArticle] = createSignal("");
 
 export interface SuggestArticle {
@@ -60,11 +62,14 @@ const SetArticle: Component<{
 }> = (props) => {
   let timeout: any = null;
   const regex_slash = new RegExp('[/]')
+
+
   return (
     <>
       <div class="flex justify-center w-full mt-2">
         <div class="flex flex-col space-y-2 w-96" >
           <div class="flex w-full ">
+            <SetLang />
             <div class="w-2/3 flex justify-center">
               <input
                 class="input input-bordered  text-center"
