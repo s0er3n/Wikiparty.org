@@ -3,7 +3,6 @@ import { TLobby } from "../types";
 import { sendMessage } from "./../App";
 import RandomArticle from "./../RandomArticle";
 import { isHost, setGoToLobby } from "./Lobby";
-import SetLang from "./LangSelection";
 
 let [article, setArticle] = createSignal("");
 
