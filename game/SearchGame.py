@@ -131,8 +131,11 @@ class SearchGame(Game):
     def set_language(self, host: Player, language: str):
         if not self._check_host(host):
             return
-        self.language = language
-        return self._make_lobby_update_response()
+        if self.language != language:
+            self.rounds[-1].start_article = Article("", "")
+            self.rounds[-1].articles_to_find = set()
+            self.language = language
+            return self._make_lobby_update_response()
 
     def _calculate_points_total(self, player: Player) -> int:
         points = 0

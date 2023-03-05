@@ -65,10 +65,10 @@ const SetArticle: Component<{
 
   return (
     <>
+
       <div class="flex justify-center w-full mt-2">
         <div class="flex flex-col space-y-2 w-96" >
           <div class="flex w-full ">
-            <SetLang />
             <div class="w-2/3 flex justify-center">
               <input
                 class="input input-bordered  text-center"
@@ -93,14 +93,16 @@ const SetArticle: Component<{
                 value={article()}
               />
             </div>
-            <div class="w-1/3 flex justify-center ml-2">
-              <RandomArticle
-                setter={async (random_article: string) => {
-                  findArticle(random_article);
-                  setArticle(random_article);
-                }}
-              />
-            </div>
+            <Show when={props.lobby().language == 'en'} >
+              <div class="w-1/3 flex justify-center ml-2">
+                <RandomArticle
+                  setter={async (random_article: string) => {
+                    findArticle(random_article, props.lobby().language);
+                    setArticle(random_article);
+                  }}
+                />
+              </div>
+            </Show>
             <Show
               when={
                 props.lobby().state === "idle" &&

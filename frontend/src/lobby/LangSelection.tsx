@@ -1,33 +1,32 @@
 import { Component, createSignal, For } from "solid-js";
 import { sendMessage } from "./../App"
 
-const [lang, setLang] = createSignal<string>("en")
 
-const SetLang: Component<{}> = () => {
+const SetLang: Component<any> = (props) => {
 
-  const lang_dict = { "english": "en", "deutsch": "de", "francaise": "fr", "Русский": "ru", "español": "es" }
+  const languages = { "english": "en", "deutsch": "de", "francais": "fr", "Русский": "ru", "español": "es" }
 
   return (
-    <div>
-      <div class="form-control" >
-        <select class="select w-full max-w-xs" onchange={(e) => {
-          sendMessage({
-            type: "game",
-            method: "set_language",
-            args: {
-              language: e.target.value,
-            },
-          })
-            , setLang(e.target.value)
-        }
-        }
-        >
-          <For each={lang_dict}>{(key, value) =>
-            <option selected={props.lobby().language === key} value={value}>{key}</option>
+    <>
+      <select value={props.lobby().language} class="select select-bordered" onchange={(e) => {
+        sendMessage({
+          type: "game",
+          method: "set_language",
+          args: {
+            language: e.target.value,
+          },
+        })
+      }
+      }
+      >
+        <For each={Object.entries(languages)}>
+          {(entry) => {
+            return <option value={entry[1]
+            }>{entry[0]}</option>
+          }
           }</For>
-        </select>
-      </div>
-    </div >
+      </select>
+    </>
   )
 }
 
