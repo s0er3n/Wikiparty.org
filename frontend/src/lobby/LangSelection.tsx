@@ -5,7 +5,7 @@ const [lang, setLang] = createSignal<string>("en")
 
 const SetLang: Component<{}> = () => {
 
-  const lang_dict = { "englisch": "en", "deutsch": "de", "francaise": "fr", "blyat": "ru", "espaniol": "es" }
+  const lang_dict = { "english": "en", "deutsch": "de", "francaise": "fr", "Русский": "ru", "español": "es" }
 
   return (
     <div>
