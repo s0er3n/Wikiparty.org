@@ -3,6 +3,7 @@ import { TLobby } from "../types";
 import { sendMessage } from "./../App";
 import RandomArticle from "./../RandomArticle";
 import { isHost, setGoToLobby } from "./Lobby";
+
 let [article, setArticle] = createSignal("");
 
 export interface SuggestArticle {
@@ -35,21 +36,23 @@ export interface Searchinfo {
   totalhits: number;
 }
 
-const getWikiPreview = async (name: string) => {
+const getWikiPreview = async (name: string, language: string) => {
   const res = await fetch(
-    `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${name}&utf8=&format=json&origin=*`
+    `https://${language}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${name}&utf8=&format=json&origin=*`
   );
   const data: SuggestArticle = await res.json();
 
-  const query_without_referencepages = data.query.search?.filter(article => article.size > 3000) ?? []
+  const query_without_referencepages = data?.query ? data.query.search.filter(article => article.size > 3000) : []
 
   return query_without_referencepages;
 };
 
 const [sugestion, setSugestion] = createSignal<Array<Search>>();
 
-const findArticle = async (name) => {
-  let query = await getWikiPreview(name);
+
+
+export const findArticle = async (name, language: string) => {
+  let query = await getWikiPreview(name, language);
   setSugestion(query);
   return query;
 };
@@ -60,8 +63,11 @@ const SetArticle: Component<{
 }> = (props) => {
   let timeout: any = null;
   const regex_slash = new RegExp('[/]')
+
+
   return (
     <>
+
       <div class="flex justify-center w-full mt-2">
         <div class="flex flex-col space-y-2 w-96" >
           <div class="flex w-full ">
@@ -76,12 +82,12 @@ const SetArticle: Component<{
                   }
                   timeout = setTimeout(() => {
                     if (!regex_slash.exec(e.target.value)) {
-                      findArticle(e.target.value);
+                      findArticle(e.target.value, props.lobby().language);
 
                       setArticle(e.target.value);
                     }
                     else {
-                      findArticle("")
+                      findArticle("", props.lobby().language)
                       console.log("dont use /")
                     }
                   }, 200);
@@ -89,14 +95,16 @@ const SetArticle: Component<{
                 value={article()}
               />
             </div>
-            <div class="w-1/3 flex justify-center ml-2">
-              <RandomArticle
-                setter={async (random_article: string) => {
-                  findArticle(random_article);
-                  setArticle(random_article);
-                }}
-              />
-            </div>
+            <Show when={props.lobby().language == 'en'} >
+              <div class="w-1/3 flex justify-center ml-2">
+                <RandomArticle
+                  setter={async (random_article: string) => {
+                    findArticle(random_article, props.lobby().language);
+                    setArticle(random_article);
+                  }}
+                />
+              </div>
+            </Show>
             <Show
               when={
                 props.lobby().state === "idle" &&

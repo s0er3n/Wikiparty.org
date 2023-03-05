@@ -56,6 +56,7 @@ class ConnectionManager:
                     await ws.send_json(asdict(message))
                 except Exception as e:
                     print("couldnt send message ", e)
+                    self.active_connections[player].remove(ws)
 
 
 manager = ConnectionManager()

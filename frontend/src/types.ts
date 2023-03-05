@@ -9,6 +9,7 @@ export interface TLobby {
   articles_found: any[];
   start_article: string;
   time: number;
+  language: string;
 }
 
 export type TPlayer = [

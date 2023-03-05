@@ -1,4 +1,5 @@
 import { Accessor, Component, createSignal, For, Show } from "solid-js";
+import SetLang from "./LangSelection";
 import { isHost, goToLobby, setGoToLobby } from "./Lobby";
 import SetArticle from "./SetArticle";
 
@@ -24,6 +25,9 @@ const SetupGame: Component<{
 }> = (props) => {
   return (
     <div class="bg-base-100 shadow-md rounded-md p-3">
+      <div class="w-full flex justify-center">
+        <SetLang lobby={props.lobby} />
+      </div>
       <p>
         <b>start article:</b> {props.lobby().start_article}
       </p>
@@ -33,7 +37,7 @@ const SetupGame: Component<{
       <SetArticleHeadline lobby={props.lobby} />
 
       <SetArticle lobby={props.lobby} search={props.search} />
-    </div>
+    </div >
   );
 };
 
