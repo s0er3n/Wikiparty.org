@@ -124,7 +124,7 @@ export const startWS = () => {
     } else if (data.method === "LobbyNotFound") {
       setLobby(null);
     } else if (data.method === "SyncMove") {
-      updateWiki(data.url_name);
+      updateWiki(data.url_name, lobby()?.language);
     } else if (typeof data.data === "object") {
       console.log(data.data);
       if (!data.data.error) {
