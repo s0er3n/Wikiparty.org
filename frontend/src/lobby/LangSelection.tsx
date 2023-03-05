@@ -15,7 +15,7 @@ const SetLang: Component<{}> = () => {
             type: "game",
             method: "set_language",
             args: {
-              lang: e.target.value,
+              language: e.target.value,
             },
           })
             , setLang(e.target.value)
