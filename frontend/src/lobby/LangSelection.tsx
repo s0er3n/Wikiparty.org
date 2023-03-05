@@ -1,10 +1,11 @@
 import { Component, createSignal, For } from "solid-js";
 import { sendMessage } from "./../App"
+import { findArticle } from "./SetArticle";
 
 
 const SetLang: Component<any> = (props) => {
 
-  const languages = { "english": "en", "deutsch": "de", "francais": "fr", "Русский": "ru", "español": "es" }
+  const languages = { "english": "en", "deutsch": "de", "francais": "fr", "Русский": "ru", "español": "es", 'українська': 'uk', 'nederlands': 'nl', 'português': 'pt' }
 
   return (
     <>
@@ -16,6 +17,7 @@ const SetLang: Component<any> = (props) => {
             language: e.target.value,
           },
         })
+        findArticle('', e.target.value)
       }
       }
       >
