@@ -1,7 +1,7 @@
 import { Component, createEffect, createSignal } from "solid-js";
 
 import { sendMessage, startWS } from "./App";
-let [username, setUsername] = createSignal<string>(``);
+let [username, setUsername] = createSignal<string>(`Anonymous-${Math.floor(Math.random() * 100)}`);
 
 export let setUsernameMsg = {
   type: "player",

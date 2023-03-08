@@ -83,9 +83,7 @@ export const updateWiki = async (url: string, language: string) => {
 
 const [show, setShow] = createSignal(false);
 const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
-  let current_position = props?.lobby()?.players?.find((player) => {
-    return player[0].id === id;
-  })[1]?.current_position;
+  let current_position = props?.lobby()?.players?.find((player) => player[0].id === id)[1]?.current_position;
   updateWiki(current_position, props.lobby().language);
 
   if (import.meta.env.DEV) {
