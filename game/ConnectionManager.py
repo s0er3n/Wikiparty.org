@@ -28,6 +28,7 @@ class ConnectionManager:
             logger.warning(msg='boesewicht')
             return None
 
+        print('connected', websocket)
         self.active_connections[player].append(websocket)
         return player
 
@@ -45,18 +46,19 @@ class ConnectionManager:
             return
         if message.method == "Error":
             logger.warning(message.e)
-
-        for player in message._recipients:
+        recepients = message._recipients
+        message._recipients = []
+        for player in recepients:
             if player not in self.active_connections:
                 logger.warning("player not in active connections")
                 continue
-                message._recipients = []
-            for ws in self.active_connections[player]:
+            ws_connections = self.active_connections[player].copy()
+            for i, ws in enumerate(ws_connections):
                 try:
                     await ws.send_json(asdict(message))
                 except Exception as e:
                     print("couldnt send message ", e)
-                    self.active_connections[player].remove(ws)
+                    del self.active_connections[player][i]
 
 
 manager = ConnectionManager()
