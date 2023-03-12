@@ -1,28 +1,29 @@
-from game.settings.logsetup import logger
+from src.game.settings.logsetup import logger
 from typing import Iterator
 import json
 import requests
 from bs4 import BeautifulSoup
 
-from game.Player.Player import Player
+from src.game.Player.Player import Player
 
-from game.settings import db
+from src.game.settings import db
 
 
 def _select_and_reduce_links(all_links) -> Iterator[str]:
     for link in all_links:
-        if link["href"].startswith("/wiki/") and not link["href"].startswith("/wiki/Help") and not link["href"].startswith("/wiki/File"):
+        if (
+            link["href"].startswith("/wiki/")
+            and not link["href"].startswith("/wiki/Help")
+            and not link["href"].startswith("/wiki/File")
+        ):
             yield link["href"][6::]
 
 
 class Query:
-
     @classmethod
     def query_and_add_to_queries(cls, move: str, language: str) -> str | None:
         logger.warning(f"add move to query {move}")
-        resp = requests.get(
-            f"https://{language}.wikipedia.org/wiki/{move}"
-        )
+        resp = requests.get(f"https://{language}.wikipedia.org/wiki/{move}")
         resp_text = resp.text
 
         if resp.history:
@@ -35,7 +36,7 @@ class Query:
             return None
         title = h1.text
 
-        article = soup.find("div", {"id": "mw-content-text"})
+        soup.find("div", {"id": "mw-content-text"})
 
         # data = _skip_if_redirect(data)
 
@@ -43,9 +44,11 @@ class Query:
 
         short_links = list(_select_and_reduce_links(all_links))
 
-        db.client.set(f"article:{language}:" + move, json.dumps({"links": short_links,
-                                                                 "title": str(title),
-                                                                 "url_ending": move}), ex=60 * 60 * 24)
+        db.client.set(
+            f"article:{language}:" + move,
+            json.dumps({"links": short_links, "title": str(title), "url_ending": move}),
+            ex=60 * 60 * 24,
+        )
         return move
 
     @classmethod

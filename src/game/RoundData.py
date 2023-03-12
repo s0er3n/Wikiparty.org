@@ -1,7 +1,7 @@
-from game.Player.Player import Player
-from game.Moves import Moves
-from game.Article import Article
-from game.Player.PlayerData import Node
+from src.game.Player.Player import Player
+from src.game.Moves import Moves
+from src.game.Article import Article
+from src.game.Player.PlayerData import Node
 
 from dataclasses import dataclass, field
 from collections import defaultdict
@@ -31,7 +31,10 @@ class RoundData:
         return set(article.pretty_name for article in self.articles_to_find)
 
     def get_articles_to_find_description(self) -> dict[str, str]:
-        return {article.pretty_name:  article.description for article in self.articles_to_find}
+        return {
+            article.pretty_name: article.description
+            for article in self.articles_to_find
+        }
 
     def get_found_articles_pretty_name(self) -> set[str]:
         return set(article.pretty_name for article in self.found_articles)
@@ -43,8 +46,7 @@ class RoundData:
             new_node = start_node.add_child(article)
             self.moves[player] = Moves(start_node, new_node)
         else:
-            self.moves[player].current = self.moves[player].current.add_child(
-                article)
+            self.moves[player].current = self.moves[player].current.add_child(article)
 
     def get_current_points(self, player: Player) -> int:
         """Get the points of a player."""

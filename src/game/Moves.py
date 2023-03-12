@@ -1,5 +1,5 @@
-from game.Article import Article
-from game.Player.PlayerData import Node, sorted_moves_list
+from src.game.Article import Article
+from src.game.Player.PlayerData import Node, sorted_moves_list
 
 from dataclasses import dataclass
 

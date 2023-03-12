@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import dataclasses
 
-from game.Player.Player import Player, PlayerCopy
-from game.Player.PlayerData import PlayerDataNoNode
-from game.Query.QueryResult import QueryResult
+from src.game.Player.Player import Player, PlayerCopy
+from src.game.Player.PlayerData import PlayerDataNoNode
+from src.game.Query.QueryResult import QueryResult
 
 
 @dataclasses.dataclass(kw_only=True)

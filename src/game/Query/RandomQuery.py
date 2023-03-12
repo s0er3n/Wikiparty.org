@@ -1,13 +1,12 @@
 from __future__ import annotations
 import asyncio
 from threading import Thread
-import random
 import requests
 
-from game.ConnectionManager import manager
-from game.Player.Player import Player
-from game.Response import Random
-from game.settings import db
+from src.game.ConnectionManager import manager
+from src.game.Player.Player import Player
+from src.game.Response import Random
+from src.game.settings import db
 
 
 from typing import List, TypedDict
@@ -43,27 +42,27 @@ class RandomQuery:
         # querying 100K pages
 
         if not db.client.exists("randomwords"):
-
             r = requests.get(
-                f"http://wikirank-2022.di.unimi.it/Q/?filter%5Btext%5D=Harmonic+centrality&filter%5Bselected%5D=true&filter%5Bvalue%5D=harmonic&view=list&pageSize=100000&pageIndex=0&type=harmonic&score=false"
+                "http://wikirank-2022.di.unimi.it/Q/?filter%5Btext%5D=Harmonic+centrality&filter%5Bselected%5D=true&filter%5Bvalue%5D=harmonic&view=list&pageSize=100000&pageIndex=0&type=harmonic&score=false"
             )
             data: Response = r.json()
 
             print(data)
 
-            article_names = [article["harmonic"].split(
-                ">")[1].split("<")[0] for article in data["items"]]
+            article_names = [
+                article["harmonic"].split(">")[1].split("<")[0]
+                for article in data["items"]
+            ]
 
             if r.status_code == 200:
-                db.client.sadd(
-                    "randomwords", *article_names)
+                db.client.sadd("randomwords", *article_names)
 
-        random_words = db.client.srandmember(
-            "randomwords", 10)
+        random_words = db.client.srandmember("randomwords", 10)
         random_words = [word.decode("utf-8") for word in random_words]
         thread = Thread(
             target=asyncio.run,
-            args=(manager.send_response(
-                Random(data=random_words, _recipients=[player])),),
+            args=(
+                manager.send_response(Random(data=random_words, _recipients=[player])),
+            ),
         )
         thread.start()

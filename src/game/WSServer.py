@@ -1,16 +1,14 @@
-import uvicorn
 import logging
 from fastapi import FastAPI, WebSocket
 from starlette.websockets import WebSocketDisconnect
-from game.settings.logsetup import logger
-from time import sleep
+from src.game.settings.logsetup import logger
 
-from game.ConnectionManager import manager
-from game.LobbyServer import LobbyServer
-from game.Response import Error
-from game.SearchGame import Player, SearchGame
-from game.Query.SearchQuery import SearchQuery
-from game.Query.RandomQuery import RandomQuery
+from src.game.ConnectionManager import manager
+from src.game.LobbyServer import LobbyServer
+from src.game.Response import Error
+from src.game.SearchGame import Player, SearchGame
+from src.game.Query.SearchQuery import SearchQuery
+from src.game.Query.RandomQuery import RandomQuery
 
 app = FastAPI()
 
@@ -27,7 +25,6 @@ def index() -> str:
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
-
     await websocket.accept()
     password = await websocket.receive_text()
     player = await manager.connect(websocket, id=client_id, password=password)
@@ -48,16 +45,19 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             logger.info(data)
 
             match data:
-
                 case {
                     "type": "game" | "lobby" | "player" | "search" | "random",
                     "method": method,
                     "args": args,
                 }:
                     if method.startswith("_"):
-                        await manager.send_response(Error(e="not allowed", _recipients=[player]))
+                        await manager.send_response(
+                            Error(e="not allowed", _recipients=[player])
+                        )
                         continue
-                    target: SearchQuery | RandomQuery | SearchGame | LobbyServer | Player | None = None
+                    target: SearchQuery | RandomQuery | SearchGame | LobbyServer | Player | None = (
+                        None
+                    )
                     if data.get("type") == "player":
                         target = player
                     elif data.get("type") == "game":

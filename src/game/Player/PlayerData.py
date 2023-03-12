@@ -1,10 +1,10 @@
 from __future__ import annotations
-from game.settings.logsetup import logger
+from src.game.settings.logsetup import logger
 
 import dataclasses
 from enum import Enum
 
-from game.Article import Article
+from src.game.Article import Article
 
 
 class PlayerRights(str, Enum):
@@ -19,9 +19,7 @@ class Node:
     children: list[Node] = dataclasses.field(default_factory=list)
 
     def add_child(self, article: Article) -> Node:
-        new_node = Node(
-            article=article, parent=self
-        )
+        new_node = Node(article=article, parent=self)
         self.children.append(new_node)
         return new_node
 

@@ -1,5 +1,5 @@
-from game.Player.Player import Player
-from game.Response import Response
+from src.game.Player.Player import Player
+from src.game.Response import Response
 from enum import Enum
 
 

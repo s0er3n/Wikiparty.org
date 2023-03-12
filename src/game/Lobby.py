@@ -1,7 +1,5 @@
-from game.settings.logsetup import logger
-
-from game.Player.Player import Player
-from game.SearchGame import SearchGame
+from src.game.Player.Player import Player
+from src.game.SearchGame import SearchGame
 
 
 class Lobby:
@@ -21,5 +19,4 @@ class Lobby:
             self.players.remove(player)
 
     def join(self, player) -> None:
-
         self.players.append(player)

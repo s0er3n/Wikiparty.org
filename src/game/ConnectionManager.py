@@ -1,22 +1,22 @@
 from collections import defaultdict
-from game.settings.logsetup import logger
+from src.game.settings.logsetup import logger
 from dataclasses import asdict
 
 from fastapi import WebSocket
 
-from game.Player.Player import Player
-from game.Response import Response
+from src.game.Player.Player import Player
+from src.game.Response import Response
 
 
 class ConnectionManager:
     def __init__(self) -> None:
-        self.active_connections: dict[Player,
-                                      list[WebSocket]] = defaultdict(list)
+        self.active_connections: dict[Player, list[WebSocket]] = defaultdict(list)
         self.players: dict[str, Player] = {}
         self.password_dict: dict[str, str] = {}
 
-    async def connect(self, websocket: WebSocket, id: str, password: str) -> Player | None:
-
+    async def connect(
+        self, websocket: WebSocket, id: str, password: str
+    ) -> Player | None:
         if self.password_dict.get(id) == password:
             player = self.players.get(id)
         elif not self.password_dict.get(id):
@@ -25,10 +25,10 @@ class ConnectionManager:
             self.password_dict[id] = password
         else:
             await websocket.close()
-            logger.warning(msg='boesewicht')
+            logger.warning(msg="boesewicht")
             return None
 
-        print('connected', websocket)
+        print("connected", websocket)
         self.active_connections[player].append(websocket)
         return player
 

@@ -1,9 +1,8 @@
-from game.Player.Player import Player
-from game.Player.PlayerData import PlayerData
+from src.game.Player.Player import Player
+from src.game.Player.PlayerData import PlayerData
 
 
 class PlayersHandler:
-
     players: dict[Player, PlayerData]
 
     players_offline: dict[Player, PlayerData]

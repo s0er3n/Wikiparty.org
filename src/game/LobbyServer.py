@@ -1,9 +1,9 @@
-from game.settings.logsetup import logger
+from src.game.settings.logsetup import logger
 import uuid
 
-from game.Lobby import Lobby
-from game.Player.Player import Player
-from game.Response import Response, LobbyNotFound
+from src.game.Lobby import Lobby
+from src.game.Player.Player import Player
+from src.game.Response import Response, LobbyNotFound
 
 
 class LobbyServer:
@@ -14,7 +14,6 @@ class LobbyServer:
     id_lobbies: dict[str, Lobby] = {}
 
     def new_lobby(self, player: Player) -> Response | None:
-
         id = str(uuid.uuid4())
         lobby = Lobby(host=player, id=id)
 
@@ -31,7 +30,6 @@ class LobbyServer:
         id: str | None = None,
         lobby: Lobby | None = None,
     ) -> Response | None:
-
         if self.players_lobbies.get(player):
             self.players_lobbies[player].leave(player)
             self.leave_lobby(player)
