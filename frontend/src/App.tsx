@@ -93,13 +93,10 @@ export const startWS = () => {
   };
   ws.onclose = function(e) {
     console.log(
-      "Socket is closed. Reconnect will be attempted in 1 second.",
+      "Socket is closed",
       e.reason
     );
     setConnection(false);
-    setTimeout(function() {
-      startWS();
-    }, 1000);
   };
   ws.onmessage = (e) => {
     let data = JSON.parse(e.data);
@@ -144,6 +141,13 @@ const [code, setCode] = createSignal<bool>(false);
 
 if (localStorage.getItem("username")) {
   startWS();
+  setInterval(() => {
+    // 1 = conection open
+    if (ws?.readyState !== 1) {
+      console.info("starting new connection")
+      startWS();
+    }
+  }, 1000)
 }
 
 const App: Component = () => {
