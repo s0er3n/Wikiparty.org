@@ -1,11 +1,15 @@
 from collections import defaultdict
+from re import T
 from game.settings.logsetup import logger
 from dataclasses import asdict
 
+from threading import Thread
 from fastapi import WebSocket
 
 from game.Player.Player import Player
 from game.Response import Response
+
+import asyncio
 
 
 class ConnectionManager:
@@ -14,9 +18,29 @@ class ConnectionManager:
                                       list[WebSocket]] = defaultdict(list)
         self.players: dict[str, Player] = {}
         self.password_dict: dict[str, str] = {}
+        self.start_ping_thread()
+
+    def start_ping_thread(self):
+        async def ping_function():
+            while True:
+                for player, ws_connections in self.active_connections.items():
+                    for i,ws in enumerate(ws_connections.copy()):
+                        try:
+                            await ws.send_text("ping")
+                        except Exception as e:
+                            try:
+                                await ws.close()
+                                del self.active_connections[player][i]
+                            except Exception as e:
+                                logger.warning(f"couldnt close websocket {e}")
+                await asyncio.sleep(1)
+
+        thread = Thread(
+            target=asyncio.run,
+            args=(ping_function(),))
+        thread.start()
 
     async def connect(self, websocket: WebSocket, id: str, password: str) -> Player | None:
-
         if self.password_dict.get(id) == password:
             player = self.players.get(id)
         elif not self.password_dict.get(id):
@@ -57,7 +81,12 @@ class ConnectionManager:
                 try:
                     await ws.send_json(asdict(message))
                 except Exception as e:
-                    print("couldnt send message ", e)
+                    # print("couldnt send message ", e)
+                    try:
+                        await ws.close()
+                    except Exception as e:
+                            logger.warning(f"couldnt close websocket {e}")
+
                     del self.active_connections[player][i]
 
 

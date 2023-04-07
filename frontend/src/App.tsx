@@ -15,6 +15,9 @@ let [connected, setConnection] = createSignal<boolean>(false);
 let [hasUsername, setHasUsername] = createSignal<boolean>(false);
 let ws: WebSocket | null = null;
 
+let oldConnections: Set<WebSocket> = new Set()
+let ping = Infinity;
+
 let missedMessages: string[] = [];
 export function sendMessage(msg: any) {
   if (ws) {
@@ -30,7 +33,7 @@ export function sendMessage(msg: any) {
       missedMessages.push(JSON.stringify(msg));
     }
   } else {
-    missedMessages.push(JSON.stringify(msg));
+    // missedMessages.push(JSON.stringify(msg));
     console.warn("websocket not connected");
   }
 }
@@ -62,7 +65,10 @@ const [search, setSearch] = createSignal([]);
 export const startWS = () => {
   ws = new WebSocket(`${import.meta.env.VITE_backend_url}/ws/${id}`);
 
+  oldConnections.add(ws)
+
   ws.onopen = (_) => {
+    ping = Date.now()
     ws?.send(password)
     setConnection(true);
     let username = localStorage.getItem("username");
@@ -98,7 +104,18 @@ export const startWS = () => {
     );
     setConnection(false);
   };
+
   ws.onmessage = (e) => {
+    if (e.data === "ping") {
+      // time now in unixtimestamp
+      ping = Date.now();
+      if (ws?.readyState === 1) {
+        // TODO: not sure if needed
+        // needs to be implemented in the future in Backend
+        // ws?.send("pong");
+      }
+      return
+    }
     let data = JSON.parse(e.data);
     if (data.method === "LobbyUpdate") {
       const urlParams = new URLSearchParams(window.location.search);
@@ -143,11 +160,20 @@ if (localStorage.getItem("username")) {
   startWS();
   setInterval(() => {
     // 1 = conection open
-    if (ws?.readyState !== 1) {
+    if (ws?.readyState === 3) {
       console.info("starting new connection")
       startWS();
     }
-  }, 1000)
+    if ((ws?.readyState !== 0) && (Date.now() - ping) > 5000) {
+      oldConnections.forEach(() => {
+        ws?.close()
+        console.log("test")
+      })
+      oldConnections.clear()
+      console.warn("timeout closing connection")
+    }
+
+  }, 2000)
 }
 
 const App: Component = () => {
