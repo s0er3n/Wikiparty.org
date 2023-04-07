@@ -57,6 +57,11 @@ function fixMobileView() {
   for (const collapsible_section of document.getElementsByClassName("collapsible-block")) {
     collapsible_section.hidden = true
   }
+  for (const a_tag of document.querySelectorAll('a:not([href^="/wiki"]):not([href^="#"])')) {
+    a_tag.style.color = "gray"
+    a_tag.style.textDecoration = "none"
+  }
+
   for (const edit_button of document.getElementsByClassName("mw-editsection")) {
     edit_button.hidden = true
   }
