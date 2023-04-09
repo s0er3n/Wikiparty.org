@@ -1,9 +1,7 @@
 import asyncio
 from threading import Thread
 from time import sleep
-import json
 from typing import Any
-import json_diff
 import requests
 import time
 
@@ -45,7 +43,6 @@ class SearchGame(Game):
 
     play_time: int = 600
 
-    lastResponse: Any
 
     def __init__(self, id, host, points_counter=PointsCounter, round_end_checker=RoundEndChecker) -> None:
         self.id = id
@@ -56,7 +53,6 @@ class SearchGame(Game):
         self.round_end_checker = round_end_checker()
         self.players_handler = PlayersHandler()
         self.language = 'en'
-        self.lastResponse = None
 
     def set_time(self, player: Player, time: int) -> Response | None:
         if self._check_host(player):
@@ -186,10 +182,7 @@ class SearchGame(Game):
             _recipients=list(self.players_handler.get_all_players()),
         )
 
-        if self.lastResponse:
-            print("diff", json_diff.Comparator()._compare_elements(self.lastResponse,update.players))
 
-        self.lastResponse = update.players
 
     
 
