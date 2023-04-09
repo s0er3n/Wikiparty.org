@@ -1,6 +1,9 @@
 import asyncio
 from threading import Thread
 from time import sleep
+import json
+from typing import Any
+import json_diff
 import requests
 import time
 
@@ -42,6 +45,8 @@ class SearchGame(Game):
 
     play_time: int = 600
 
+    lastResponse: Any
+
     def __init__(self, id, host, points_counter=PointsCounter, round_end_checker=RoundEndChecker) -> None:
         self.id = id
         self.host = host
@@ -51,6 +56,7 @@ class SearchGame(Game):
         self.round_end_checker = round_end_checker()
         self.players_handler = PlayersHandler()
         self.language = 'en'
+        self.lastResponse = None
 
     def set_time(self, player: Player, time: int) -> Response | None:
         if self._check_host(player):
@@ -145,7 +151,7 @@ class SearchGame(Game):
         return points
 
     def _make_lobby_update_response(self) -> LobbyUpdate:
-        return LobbyUpdate(
+        update =  LobbyUpdate(
             articles_to_find=list(
                 self.rounds[-1].get_articles_to_find_pretty_name()),
             articles_to_find_description=self.rounds[-1].get_articles_to_find_description(
@@ -179,6 +185,15 @@ class SearchGame(Game):
             ],
             _recipients=list(self.players_handler.get_all_players()),
         )
+
+        if self.lastResponse:
+            print("diff", json_diff.Comparator()._compare_elements(self.lastResponse,update.players))
+
+        self.lastResponse = update.players
+
+    
+
+        return update
 
     def set_article(self, player: Player, page_id: str, better_name: str, description: str = "", start=False) -> Response:
         if not self._check_host(player):

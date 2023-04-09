@@ -32,7 +32,8 @@ class ConnectionManager:
                                 await ws.close()
                                 del self.active_connections[player][i]
                             except Exception as e:
-                                logger.warning(f"couldnt close websocket {e}")
+                                # logger.warning(f"couldnt close websocket {e}")
+                            del self.active_connections[player][i]
                 await asyncio.sleep(1)
 
         thread = Thread(
