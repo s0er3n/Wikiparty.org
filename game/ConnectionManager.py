@@ -33,6 +33,7 @@ class ConnectionManager:
                                 del self.active_connections[player][i]
                             except Exception as e:
                                 # logger.warning(f"couldnt close websocket {e}")
+                                pass
                             del self.active_connections[player][i]
                 await asyncio.sleep(1)
 
