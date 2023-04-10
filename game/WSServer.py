@@ -29,7 +29,11 @@ def index() -> str:
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
 
     await websocket.accept()
-    password = await websocket.receive_text()
+    try:
+        password = await websocket.receive_text()
+    except Exception:
+        await websocket.close()
+        return
     player = await manager.connect(websocket, id=client_id, password=password)
     if not player:
         return

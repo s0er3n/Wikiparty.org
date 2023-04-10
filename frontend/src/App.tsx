@@ -18,9 +18,11 @@ let ws: WebSocket | null = null;
 let oldConnections: Set<WebSocket> = new Set()
 let ping = Infinity;
 
+let passwordSend = false;
 let missedMessages: string[] = [];
 export function sendMessage(msg: any) {
-  if (ws) {
+  // password needs to be send first
+  if (ws && passwordSend) {
     try {
       ws.send(JSON.stringify(msg));
     } catch (e) {
@@ -33,7 +35,7 @@ export function sendMessage(msg: any) {
       missedMessages.push(JSON.stringify(msg));
     }
   } else {
-    // missedMessages.push(JSON.stringify(msg));
+    missedMessages.push(JSON.stringify(msg));
     console.warn("websocket not connected");
   }
 }
@@ -70,6 +72,7 @@ export const startWS = () => {
   ws.onopen = (_) => {
     ping = Date.now()
     ws?.send(password)
+    passwordSend = true;
     setConnection(true);
     let username = localStorage.getItem("username");
     if (username) {
@@ -160,17 +163,18 @@ if (localStorage.getItem("username")) {
   startWS();
   setInterval(() => {
     // 1 = conection open
-    if (ws?.readyState === 3) {
-      console.info("starting new connection")
-      startWS();
-    }
     if ((ws?.readyState !== 0) && (Date.now() - ping) > 5000) {
       oldConnections.forEach(() => {
         ws?.close()
         console.log("test")
       })
       oldConnections.clear()
+      passwordSend == false
       console.warn("timeout closing connection")
+    }
+    if (ws?.readyState === 3) {
+      console.info("starting new connection")
+      startWS();
     }
 
   }, 2000)
