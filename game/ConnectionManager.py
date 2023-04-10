@@ -24,7 +24,7 @@ class ConnectionManager:
         async def ping_function():
             while True:
                 for player, ws_connections in self.active_connections.items():
-                    for i,ws in enumerate(ws_connections.copy()):
+                    for ws in ws_connections.copy():
                         try:
                             await ws.send_text("ping")
                         except Exception as e:
@@ -34,7 +34,11 @@ class ConnectionManager:
                             except Exception as e:
                                 # logger.warning(f"couldnt close websocket {e}")
                                 pass
-                            del self.active_connections[player][i]
+                            try:
+                                logger.info("disconnecting ws")
+                                self.active_connections[player].remove(ws)
+                            except Exception as e:
+                                logger.warning(f"already removed {e}")
                 await asyncio.sleep(1)
 
         thread = Thread(
@@ -79,7 +83,7 @@ class ConnectionManager:
                 logger.warning("player not in active connections")
                 continue
             ws_connections = self.active_connections[player].copy()
-            for i, ws in enumerate(ws_connections):
+            for ws in ws_connections:
                 try:
                     await ws.send_json(asdict(message))
                 except Exception as e:
@@ -89,7 +93,13 @@ class ConnectionManager:
                     except Exception as e:
                             logger.warning(f"couldnt close websocket {e}")
 
-                    del self.active_connections[player][i]
+                    try:
+                        logger.info("disconnecting ws")
+                        self.active_connections[player].remove(ws)
+                    except Exception as e:
+                        logger.warning(f"already removed {e}")
+
+
 
 
 manager = ConnectionManager()
