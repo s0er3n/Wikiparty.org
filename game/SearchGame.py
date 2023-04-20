@@ -236,15 +236,14 @@ class SearchGame(Game):
                 _recipients=[player],
             )
 
-        print(url_name)
+
+        url_name = url_name.split("#")[0]
 
         if not self._is_move_allowed(url_name=url_name, player=player):
             logger.warning("cheate detected/ or double click")
             # forcing player to reload to correct page
             return SyncMove(_recipients=[player], url_name=self.rounds[-1].get_current_article(player).url_name)
 
-        # needs be after is move allowed otherwise links with # are not allowed bc they are not in the link list
-        url_name = url_name.split("#")[0]
 
         logger.info("move to " + url_name)
 
