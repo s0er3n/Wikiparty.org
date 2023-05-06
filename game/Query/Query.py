@@ -3,6 +3,7 @@ from typing import Iterator
 import json
 import requests
 from bs4 import BeautifulSoup
+import urllib.parse
 
 from game.Player.Player import Player
 
@@ -21,7 +22,7 @@ class Query:
     def query_and_add_to_queries(cls, move: str, language: str) -> str | None:
         logger.warning(f"add move to query {move}")
         resp = requests.get(
-            f"https://{language}.wikipedia.org/wiki/{move}"
+            f"https://{language}.wikipedia.org/wiki/{urllib.parse.quote_plus(move)}"
         )
         resp_text = resp.text
 

@@ -35,7 +35,7 @@ export interface Text {
 
 const getWiki = async (name: string, language: string) => {
   const res = await fetch(
-    `https://wiki.soeren-michaels.workers.dev/wiki/${language}/${name}`
+    `https://wiki.soeren-michaels.workers.dev/wiki/${language}/${encodeURIComponent(name)}`
   );
   const data: WikiRes = await res.json();
   return {
@@ -165,9 +165,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                   if (
                     targetValue?.includes("wiki") &&
                     !targetValue?.includes("wiki/Help") &&
-                    !targetValue?.includes("wiki/File") &&
-                    !targetValue?.split("wiki/").pop()?.includes("/")
-
+                    !targetValue?.includes("wiki/File") 
                   ) {
                     let url_name = targetValue?.split("wiki/").pop();
                     url_name = url_name?.split("#")[0];
