@@ -35,7 +35,7 @@ export interface Text {
 
 const getWiki = async (name: string, language: string) => {
   const res = await fetch(
-    `https://wiki.soeren-michaels.workers.dev/wiki/${language}/${encodeURIComponent(name)}`
+    `https://wiki.soeren-michaels.workers.dev/wiki/${language}/${!name.includes("%") ? encodeURIComponent(name) : name}`
   );
   const data: WikiRes = await res.json();
   return {
