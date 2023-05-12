@@ -14,8 +14,7 @@ import asyncio
 
 class ConnectionManager:
     def __init__(self) -> None:
-        self.active_connections: dict[Player,
-                                      list[WebSocket]] = defaultdict(list)
+        self.active_connections: dict[Player, list[WebSocket]] = defaultdict(list)
         self.players: dict[str, Player] = {}
         self.password_dict: dict[str, str] = {}
         self.start_ping_thread()
@@ -30,7 +29,7 @@ class ConnectionManager:
                         except Exception as e:
                             try:
                                 await ws.close()
-                                del self.active_connections[player][i]
+                                self.active_connections[player].remove(ws)
                             except Exception as e:
                                 # logger.warning(f"couldnt close websocket {e}")
                                 pass
@@ -41,12 +40,12 @@ class ConnectionManager:
                                 logger.warning(f"already removed {e}")
                 await asyncio.sleep(1)
 
-        thread = Thread(
-            target=asyncio.run,
-            args=(ping_function(),))
+        thread = Thread(target=asyncio.run, args=(ping_function(),))
         thread.start()
 
-    async def connect(self, websocket: WebSocket, id: str, password: str) -> Player | None:
+    async def connect(
+        self, websocket: WebSocket, id: str, password: str
+    ) -> Player | None:
         if self.password_dict.get(id) == password:
             player = self.players.get(id)
         elif not self.password_dict.get(id):
@@ -55,10 +54,10 @@ class ConnectionManager:
             self.password_dict[id] = password
         else:
             await websocket.close()
-            logger.warning(msg='boesewicht')
+            logger.warning(msg="boesewicht")
             return None
 
-        print('connected', websocket)
+        print("connected", websocket)
         self.active_connections[player].append(websocket)
         return player
 
@@ -91,15 +90,13 @@ class ConnectionManager:
                     try:
                         await ws.close()
                     except Exception as e:
-                            logger.warning(f"couldnt close websocket {e}")
+                        logger.warning(f"couldnt close websocket {e}")
 
                     try:
                         logger.info("disconnecting ws")
                         self.active_connections[player].remove(ws)
                     except Exception as e:
                         logger.warning(f"already removed {e}")
-
-
 
 
 manager = ConnectionManager()
