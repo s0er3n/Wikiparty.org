@@ -22,7 +22,7 @@ class Query:
     def query_and_add_to_queries(cls, move: str, language: str) -> str | None:
         logger.warning(f"add move to query {move}")
         resp = requests.get(
-            f"https://{language}.wikipedia.org/wiki/{urllib.parse.quote_plus(move)}"
+            f"https://{language}.wikipedia.org/wiki/{urllib.parse.quote_plus(move) if '%' not in move  else move}"
         )
         resp_text = resp.text
 
