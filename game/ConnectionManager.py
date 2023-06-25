@@ -29,7 +29,6 @@ class ConnectionManager:
                         except Exception as e:
                             try:
                                 await ws.close()
-                                self.active_connections[player].remove(ws)
                             except Exception as e:
                                 # logger.warning(f"couldnt close websocket {e}")
                                 pass

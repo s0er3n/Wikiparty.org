@@ -43,7 +43,6 @@ class SearchGame(Game):
 
     play_time: int = 600
 
-
     def __init__(self, id, host, points_counter=PointsCounter, round_end_checker=RoundEndChecker) -> None:
         self.id = id
         self.host = host
@@ -147,7 +146,7 @@ class SearchGame(Game):
         return points
 
     def _make_lobby_update_response(self) -> LobbyUpdate:
-        update =  LobbyUpdate(
+        update = LobbyUpdate(
             articles_to_find=list(
                 self.rounds[-1].get_articles_to_find_pretty_name()),
             articles_to_find_description=self.rounds[-1].get_articles_to_find_description(
@@ -182,10 +181,6 @@ class SearchGame(Game):
             _recipients=list(self.players_handler.get_all_players()),
         )
 
-
-
-    
-
         return update
 
     def set_article(self, player: Player, page_id: str, better_name: str, description: str = "", start=False) -> Response:
@@ -205,11 +200,6 @@ class SearchGame(Game):
         data = r.json()
         url_name = data["query"]["pages"][str(page_id)]["canonicalurl"].split(
             "/wiki/")[-1]
-        if ":" in url_name:
-            return Error(
-                e="pick a different start article pls :)",
-                _recipients=[player]
-            )
 
         if url_name is None:
             return Error(
@@ -236,14 +226,12 @@ class SearchGame(Game):
                 _recipients=[player],
             )
 
-
         url_name = url_name.split("#")[0]
 
         if not self._is_move_allowed(url_name=url_name, player=player):
-            logger.warning("cheate detected/ or double click")
+            logger.warning("cheating detected/ or double click")
             # forcing player to reload to correct page
             return SyncMove(_recipients=[player], url_name=self.rounds[-1].get_current_article(player).url_name)
-
 
         logger.info("move to " + url_name)
 

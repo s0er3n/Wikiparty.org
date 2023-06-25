@@ -72,6 +72,22 @@ export const startWS = () => {
   ws.onopen = (_) => {
     ping = Date.now()
     ws?.send(password)
+  };
+  ws.onerror = function(err) {
+    console.error("Socket encountered error: ", err, "Closing socket");
+    ws?.close();
+  };
+  ws.onclose = function(e) {
+    console.log(
+      "Socket is closed",
+      e.reason
+    );
+    setConnection(false);
+  };
+
+  ws.onmessage = (e) => {
+    if (e.data === "password") {
+
     passwordSend = true;
     setConnection(true);
     let username = localStorage.getItem("username");
@@ -95,20 +111,7 @@ export const startWS = () => {
       ws?.send(msg);
     });
     missedMessages = [];
-  };
-  ws.onerror = function(err) {
-    console.error("Socket encountered error: ", err, "Closing socket");
-    ws?.close();
-  };
-  ws.onclose = function(e) {
-    console.log(
-      "Socket is closed",
-      e.reason
-    );
-    setConnection(false);
-  };
-
-  ws.onmessage = (e) => {
+      return}
     if (e.data === "ping") {
       // time now in unixtimestamp
       ping = Date.now();

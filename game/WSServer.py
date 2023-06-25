@@ -31,6 +31,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     await websocket.accept()
     try:
         password = await websocket.receive_text()
+        await websocket.send_text("password")
     except Exception:
         await websocket.close()
         return

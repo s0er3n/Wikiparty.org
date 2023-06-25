@@ -13,7 +13,7 @@ from game.settings import db
 def _select_and_reduce_links(all_links) -> Iterator[str]:
     for link in all_links:
         if link["href"].startswith("/wiki/") and not link["href"].startswith("/wiki/Help") and not link["href"].startswith("/wiki/File"):
-            yield link["href"][6::]
+            yield link["href"][6::].split("#")[0]
 
 
 class Query:
@@ -68,6 +68,7 @@ class Query:
 
     @classmethod
     def is_link_allowed(cls, current_location, url_name, language: str) -> bool:
+        url_name = url_name.split("#")[0]
         redis_result = db.get_article(current_location, language)
         if not redis_result:
             # requerying current location in case it was not in redis
