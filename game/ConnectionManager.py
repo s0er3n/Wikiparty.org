@@ -14,7 +14,8 @@ import asyncio
 
 class ConnectionManager:
     def __init__(self) -> None:
-        self.active_connections: dict[Player, list[WebSocket]] = defaultdict(list)
+        self.active_connections: dict[Player,
+                                      list[WebSocket]] = defaultdict(list)
         self.players: dict[str, Player] = {}
         self.password_dict: dict[str, str] = {}
         self.start_ping_thread()
@@ -41,10 +42,15 @@ class ConnectionManager:
 
         thread = Thread(target=asyncio.run, args=(ping_function(),))
         thread.start()
+        self.thread = thread
 
     async def connect(
         self, websocket: WebSocket, id: str, password: str
     ) -> Player | None:
+        if self.thread and not self.thread.is_alive():
+            logger.error("restarting ping thread")
+            self.start_ping_thread()
+
         if self.password_dict.get(id) == password:
             player = self.players.get(id)
         elif not self.password_dict.get(id):
