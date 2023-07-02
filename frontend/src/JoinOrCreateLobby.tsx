@@ -3,6 +3,7 @@ import { Component, createEffect, createSignal } from "solid-js";
 import { sendMessage } from "./App";
 let [idToJoin, setIdToJoin] = createSignal<string>("");
 
+import { Trans, useTransContext } from "@mbarzda/solid-i18next"
 let joinLobbyMsg = {
   type: "lobby",
   method: "join_lobby",
@@ -20,6 +21,7 @@ createEffect(() => {
 let newLobbyMsg = { type: "lobby", method: "new_lobby", args: {} };
 
 const JoinOrCreateLobby: Component = () => {
+  let [t] = useTransContext()
   return (
     <div class="bg-base-100 shadow-md rounded-md p-3">
       <div class="md:flex ">
@@ -27,7 +29,7 @@ const JoinOrCreateLobby: Component = () => {
           <input
             onchange={(e) => setIdToJoin(e.target.value)}
             type="text"
-            placeholder="paste lobby id…"
+            placeholder={t("createOrJoinLobby.input")}
             class="input input-bordered w-3/5"
           />
           <button
@@ -36,7 +38,7 @@ const JoinOrCreateLobby: Component = () => {
               sendMessage(joinLobbyMsg);
             }}
           >
-            join lobby
+            <Trans key="createOrJoinLobby.join" />
           </button>
         </div>
         <br />
@@ -46,7 +48,7 @@ const JoinOrCreateLobby: Component = () => {
             sendMessage(newLobbyMsg);
           }}
         >
-          create a new lobby
+          <Trans key="createOrJoinLobby.create" />
         </button>
       </div>
     </div >

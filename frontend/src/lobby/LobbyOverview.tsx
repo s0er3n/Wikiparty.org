@@ -11,6 +11,7 @@ import PlayerList from "./PlayerList";
 import type { TLobby, TPlayer } from "../types";
 import NameInput from "./NameInput";
 
+import { Trans, useTransContext } from "@mbarzda/solid-i18next"
 let startGameMsg = { type: "game", method: "start", args: {} };
 
 let setTimeMsg = {
@@ -35,7 +36,7 @@ const LobbyOverview: Component<{
       <div class="flex flex-col justify-between space-y-3">
         <h3 class="text-xl font-bold">Settings:</h3>
         <div>
-          <b>start:</b>{" "}
+          <b><Trans key="setArticle.start" /></b>{" "}
           <span
             class="tooltip tooltip-bottom"
             data-tip={props.lobby().start_article_description}
@@ -44,7 +45,7 @@ const LobbyOverview: Component<{
           </span>
         </div>
         <div>
-          <b>find: </b>
+          <b><Trans key="setArticle.articlesToFind" /></b>
           <For each={props.lobby().articles_to_find}>
             {(article, i) => (
               <>
@@ -62,9 +63,9 @@ const LobbyOverview: Component<{
           </For>
         </div>
         <div class="flex w-full justify-center items-center">
-          <span class="mr-2">time: </span>
+          <span class="mr-2"><Trans key="lobby.time" /></span>
           <SetTime time={props.lobby().time} id={props.id} lobby={props.lobby} />
-          <span class="ml-2"> minutes</span>
+          <span class="ml-2"> <Trans key="lobby.minutes" /></span>
         </div>
         <Show when={isHost({ lobby: props.lobby, id: props.id })}>
           <p>
@@ -74,19 +75,21 @@ const LobbyOverview: Component<{
                 sendMessage(startGameMsg);
               }}
             >
-              start game
+              <Trans key="lobby.start" />
             </button>
           </p>
         </Show>
-        <h3 class="text-xl font-bold">How do I get Points?</h3>
+        <h3 class="text-xl font-bold">
+          <Trans key="lobby.faq.points.q" />
+        </h3>
         <p>
-          for every article you find you get 10 points and 5 extra points if
-          you are the first person to find the article
+          <Trans key="lobby.faq.points.a" />
         </p>
-        <h3 class="text-xl font-bold">When does the game end?</h3>
+        <h3 class="text-xl font-bold">
+          <Trans key="lobby.faq.end.q" />
+        </h3>
         <p>
-          the game ends if one person has found every article or the time runs
-          out
+          <Trans key="lobby.faq.end.a" />
         </p>
         <div>
           <h3 class="text-xl font-bold">Players in Lobby:</h3>

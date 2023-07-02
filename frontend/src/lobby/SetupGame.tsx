@@ -1,6 +1,8 @@
 import { Accessor, Component, createSignal, For, Show } from "solid-js";
 import SetLang from "./LangSelection";
 import { isHost, goToLobby, setGoToLobby } from "./Lobby";
+
+import { Trans, useTransContext } from "@mbarzda/solid-i18next"
 import SetArticle from "./SetArticle";
 
 const SetArticleHeadline: Component<{ lobby: any }> = (props) => {
@@ -8,11 +10,13 @@ const SetArticleHeadline: Component<{ lobby: any }> = (props) => {
     <Show
       when={props.lobby().start_article}
       fallback={
-        <h1 class="mt-5 text-3xl font-light">Select an article to start on:</h1>
+        <h1 class="mt-5 text-3xl font-light">
+          <Trans key="setArticle.start" />
+        </h1>
       }
     >
       <h1 class="mt-5 text-3xl font-light">
-        Select one or more articles to find:
+        <Trans key="setArticle.selectNextArticle" />
       </h1>
     </Show>
   );
@@ -29,10 +33,10 @@ const SetupGame: Component<{
         <SetLang lobby={props.lobby} />
       </div>
       <p>
-        <b>start article:</b> {props.lobby().start_article}
+        <b><Trans key="setArticle.start" /></b> {props.lobby().start_article}
       </p>
       <p>
-        <b>articles to find:</b> {props.lobby().articles_to_find.join(" | ")}
+        <b><Trans key="setArticle.articlesToFind" /></b> {props.lobby().articles_to_find.join(" | ")}
       </p>
       <SetArticleHeadline lobby={props.lobby} />
 

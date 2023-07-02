@@ -1,6 +1,7 @@
 import { Accessor, Component, Show, For } from "solid-js";
 import { sendMessage } from "../App";
 
+import { Trans, useTransContext } from "@mbarzda/solid-i18next"
 import Article from "../Article";
 import Timer from "../Timer";
 import { TLobby, TPlayer } from "../types";
@@ -130,8 +131,7 @@ const Header: Component<{
               />
             </svg>
             <span >
-              WARNING: This game is really new. Join our Discord if you have
-              suggestions or bugs:
+              <Trans key="notice" />
               <a
                 class="ml-2 font-bold underline"
                 href="https://discord.gg/GvqXjxc3xx"

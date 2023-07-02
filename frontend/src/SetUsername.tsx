@@ -1,5 +1,6 @@
 import { Component, createEffect, createSignal } from "solid-js";
 
+import { Trans, useTransContext } from "@mbarzda/solid-i18next"
 import { sendMessage, startWS } from "./App";
 let [username, setUsername] = createSignal<string>(`Anonymous-${Math.floor(Math.random() * 100)}`);
 
@@ -37,7 +38,7 @@ const SetUsernameComponent: Component<any> = (props) => {
               }
             }}
           >
-            set username
+            <Trans key="setUserName.submit" />
           </button>
         </div>
       </div>

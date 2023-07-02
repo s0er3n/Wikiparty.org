@@ -1,5 +1,7 @@
 import { Accessor, Component, createSignal, For, Show } from "solid-js";
 import { TLobby } from "../types";
+import { Trans, useTransContext } from "@mbarzda/solid-i18next"
+
 import { sendMessage } from "./../App";
 import RandomArticle from "./../RandomArticle";
 import { isHost, setGoToLobby } from "./Lobby";
@@ -79,9 +81,9 @@ const SetArticle: Component<{
                     clearTimeout(timeout);
                   }
                   timeout = setTimeout(() => {
-                      findArticle(e.target.value, props.lobby().language);
+                    findArticle(e.target.value, props.lobby().language);
 
-                      setArticle(e.target.value);
+                    setArticle(e.target.value);
                   }, 200);
                 }}
                 value={article()}
@@ -111,7 +113,7 @@ const SetArticle: Component<{
                     setGoToLobby(true);
                   }}
                 >
-                  go to lobby
+                  <Trans key="setArticle.goToLobby" />
                 </button>
               </div>
             </Show>
@@ -162,7 +164,7 @@ const ArticleSuggestionsList: Component<{
               }}
               class="btn"
             >
-              select
+              <Trans key="setArticle.select" />
             </button>
           </div>
         </div>

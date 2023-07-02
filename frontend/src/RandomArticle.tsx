@@ -1,4 +1,6 @@
 import { Component } from "solid-js";
+import { Trans, useTransContext } from "@mbarzda/solid-i18next"
+
 import { sendMessage } from "./App";
 
 let getRandomArticleMsg = {
@@ -35,8 +37,9 @@ const RandomArticle: Component<{ setter: (random_article: string) => void }> = (
         }
       }}
     >
-      random
+      <Trans key="setArticle.random" />
     </button>
+
   );
 };
 export default RandomArticle;

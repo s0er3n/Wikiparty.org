@@ -5,6 +5,8 @@ import { sendMessage } from "./../App";
 import { isHost } from "./Lobby";
 import type { TLobby } from "../types";
 
+import { Trans, useTransContext } from "@mbarzda/solid-i18next"
+
 type Props = {
   players: TPlayer[] | undefined;
   // TOOD: invastigae whats happening here
@@ -59,7 +61,7 @@ const PlayerList: Component<Props> = (props) => {
               sendMessage({ type: "game", method: "go_to_lobby", args: {} });
             }}
           >
-            go to lobby
+            <Trans key="setArticle.goToLobby" />
           </button>
         </p>
       </Show>
