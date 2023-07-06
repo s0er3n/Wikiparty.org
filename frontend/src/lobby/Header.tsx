@@ -98,7 +98,7 @@ const Header: Component<{
 
       <Show when={props.lobby()?.state === "ingame"}>
         <div class="bg-base-100 mt-3 shadow-md rounded-md p-2 ">
-          <span> Articles to find: </span>
+          <span> <Trans key="setArticle.articlesToFind" /> </span>
           <For each={articles_to_find_with_points()}>
             {(article) => (
               <>

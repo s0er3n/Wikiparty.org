@@ -24,7 +24,7 @@ const JoinOrCreateLobby: Component = () => {
   let [t] = useTransContext()
   return (
     <div class="bg-base-100 shadow-md rounded-md p-3">
-      <div class="md:flex ">
+      <div class="md:flex space-x-1">
         <div class="md:flex space-y-1 md:space-y-0 space-x-1 md:space-x-3">
           <input
             onchange={(e) => setIdToJoin(e.target.value)}

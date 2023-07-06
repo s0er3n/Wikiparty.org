@@ -13,7 +13,6 @@ import Wiki from "./Wiki";
 import SetupGame from "./SetupGame";
 import type { TLobby, TPlayer } from "../types";
 
-import { Trans, useTransContext } from "@mbarzda/solid-i18next"
 export const [goToLobby, setGoToLobby] = createSignal(false);
 
 export const isHost = (props: {

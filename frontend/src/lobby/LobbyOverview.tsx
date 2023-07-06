@@ -92,7 +92,9 @@ const LobbyOverview: Component<{
           <Trans key="lobby.faq.end.a" />
         </p>
         <div>
-          <h3 class="text-xl font-bold">Players in Lobby:</h3>
+          <h3 class="text-xl font-bold">
+            <Trans key="lobby.players" />
+          </h3>
           <PlayerList
             players={props.players}
             pointsKey="points"

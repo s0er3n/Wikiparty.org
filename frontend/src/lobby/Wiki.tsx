@@ -88,8 +88,13 @@ export const updateWiki = async (url: string, language: string) => {
 
 const [show, setShow] = createSignal(false);
 const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
-  let current_position = props?.lobby()?.players?.find((player) => player[0].id === id)[1]?.current_position;
-  updateWiki(current_position, props.lobby().language);
+
+  let current_position = props?.lobby()?.players?.find((player) => player[0].id === id)?.[1]?.current_position;
+
+  if (current_position) {
+    updateWiki(current_position, props.lobby().language);
+  }
+  // TODO: check if we need to send the person to the start position
 
   if (import.meta.env.DEV) {
     setShow(true)
@@ -165,7 +170,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                   if (
                     targetValue?.includes("wiki") &&
                     !targetValue?.includes("wiki/Help") &&
-                    !targetValue?.includes("wiki/File") 
+                    !targetValue?.includes("wiki/File")
                   ) {
                     let url_name = targetValue?.split("wiki/").pop();
                     url_name = url_name?.split("#")[0];

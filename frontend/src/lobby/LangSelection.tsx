@@ -1,11 +1,32 @@
-import { Component, createSignal, For } from "solid-js";
+import { Component, createSignal, For, onMount } from "solid-js";
 import { sendMessage } from "./../App"
 import { findArticle } from "./SetArticle";
 
+import { Trans, useTransContext } from "@mbarzda/solid-i18next"
 
 const SetLang: Component<any> = (props) => {
 
   const languages = { "english": "en", "deutsch": "de", "francais": "fr", "Русский": "ru", "español": "es", 'українська': 'uk', 'nederlands': 'nl', 'português': 'pt' }
+
+  const [, { changeLanguage }] = useTransContext();
+  onMount(() =>{
+    let lng;
+    if (!localStorage.getItem("lng")) {
+      lng = navigator.language
+    } else {
+      lng = localStorage.getItem("lng")
+    }
+    
+    sendMessage({
+      type: "game",
+      method: "set_language",
+      args: {
+        language: lng,
+      },
+    })
+    findArticle('', e.target.value)
+
+  })
 
   return (
     <>
@@ -17,6 +38,8 @@ const SetLang: Component<any> = (props) => {
             language: e.target.value,
           },
         })
+        localStorage.setItem("lng", e.target.value)
+        changeLanguage(e.target.value)
         findArticle('', e.target.value)
       }
       }
