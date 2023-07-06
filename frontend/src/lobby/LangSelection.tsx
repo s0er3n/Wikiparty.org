@@ -12,20 +12,26 @@ const SetLang: Component<any> = (props) => {
   onMount(() =>{
     let lng;
     if (!localStorage.getItem("lng")) {
-      lng = navigator.language
+      lng = navigator.language.split("-")[0]
+
+      if (!Object.values(languages).includes(lng)) {
+        console.log(Object.keys(languages))
+        lng = "en"
+      }
     } else {
       lng = localStorage.getItem("lng")
     }
     
-    sendMessage({
-      type: "game",
-      method: "set_language",
-      args: {
-        language: lng,
-      },
-    })
-    findArticle('', e.target.value)
-
+    if (lng !== "en") {
+      sendMessage({
+        type: "game",
+        method: "set_language",
+        args: {
+          language: lng,
+        },
+      })
+    }
+    findArticle('', lng)
   })
 
   return (
