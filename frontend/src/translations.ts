@@ -213,5 +213,48 @@ export default {
         "players": "Гравці в кімнаті: "
       }
     }
+},
+  "ko": {
+  "translation": {
+    "players": "플레이어",
+    "home": {
+      "title": "위키파티를 시도해보세요!",
+      "slogan": "위키피디아를 통해 여행을 떠나게 될 게임!" // Reason: There was a "World tour" instead of "through the world of..." //
+    },
+    "createOrJoinLobby": {
+      "input": "로비 ID 붙여넣기...",
+      "join": "로비 참가",
+      "create": "새로운 로비 생성"
+    },
+    "setUserName": {
+      "submit": "사용자 이름 설정"
+    },
+    "notice": "경고: 이 게임은 아주 새로운 게임입니다. 제안이나 버그가 있으면 디스코드에 참여하세요: ",
+    "setArticle": {
+      "start": "초기 기사: ", // Reason: 문서 - document, 기사 - article, that's more appropriate  
+      "articlesToFind": "찾을 기사: ", // Reason: same as above 
+      "selectStartArticle": "시작할 기사를 선택하세요", //Reason: 문서 - document, 기사 - article, that's more appropriate + some tweaks in sentence construction 
+      "random": "랜덤",
+      "selectNextArticle": "찾을 기사를 하나 이상 선택하세요:", // Reason: same as above
+      "goToLobby": "로비로 이동",
+      "select": "선택"
+    },
+    "lobby": {
+      "time": "시간: ",
+      "minutes": "분",
+      "start": "게임 시작",
+      "faq": {
+        "points": {
+          "q": "포인트는 어떻게 얻나요?",
+          "a": "찾는 모든 기사에 대해 10점을 얻고 기사를 처음 찾은 사람이라면 5점을 추가로 얻어요." // Reason: Too official and a lot of journalistic words, we made it simplier and easier to understand
+        },
+        "end": {
+          "q": "게임 언제 끝나요?", // Reason: Changing from formal speech to non-formal, to make it easier to understand
+          "a": "한 명이 모든  기사를 찾거나 시간이 다 되면 게임이 끝나요." // Reason: same as above
+        }
+      },
+      "players": "로비의 플레이어: "
+    }
+  }
 }
 }
