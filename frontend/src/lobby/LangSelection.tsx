@@ -6,7 +6,7 @@ import { Trans, useTransContext } from "@mbarzda/solid-i18next"
 
 const SetLang: Component<any> = (props) => {
 
-  const languages = { "english": "en", "deutsch": "de", "francais": "fr", "Русский": "ru", "español": "es", 'українська': 'uk', 'nederlands': 'nl', 'português': 'pt' }
+  const languages = { "english": "en", "deutsch": "de", "francais": "fr", "korean (한국인)": "ko", "Русский": "ru", "Türkçe": "tr" ,  "español": "es", "slovenščina": "sl", 'українська': 'uk', 'nederlands': 'nl', 'português': 'pt' }
 
   const [, { changeLanguage }] = useTransContext();
   onMount(() =>{
@@ -21,6 +21,7 @@ const SetLang: Component<any> = (props) => {
     } else {
       lng = localStorage.getItem("lng")
     }
+    console.log(lng)
     
     if (lng !== "en") {
       sendMessage({
@@ -44,8 +45,10 @@ const SetLang: Component<any> = (props) => {
             language: e.target.value,
           },
         })
-        localStorage.setItem("lng", e.target.value)
-        changeLanguage(e.target.value)
+
+        let lng = e.target.value;
+        changeLanguage(lng)
+        localStorage.setItem("lng", lng)
         findArticle('', e.target.value)
       }
       }
