@@ -23,25 +23,26 @@ let newLobbyMsg = { type: "lobby", method: "new_lobby", args: {} };
 const JoinOrCreateLobby: Component = () => {
   let [t] = useTransContext()
   return (
-    <div class="bg-base-100 shadow-md rounded-md p-3">
-      <div class="md:flex space-x-1">
-        <div class="md:flex space-y-1 md:space-y-0 space-x-1 md:space-x-3">
-          <input
-            onchange={(e) => setIdToJoin(e.target.value)}
-            type="text"
-            placeholder={t("createOrJoinLobby.input")}
-            class="input input-bordered w-3/5"
-          />
-          <button
-            class="btn "
-            onclick={() => {
-              sendMessage(joinLobbyMsg);
-            }}
-          >
-            <Trans key="createOrJoinLobby.join" />
-          </button>
-        </div>
-        <br />
+    <div class="flex bg-base-100 shadow-md rounded-md p-3 md:flex-row flex-col">
+      <div class="flex justify-center items-center p-2">
+        <input
+          onchange={(e) => setIdToJoin(e.target.value)}
+          type="text"
+          placeholder={t("createOrJoinLobby.input")}
+          class="input input-bordered "
+        />
+      </div>
+      <div class="p-2">
+        <button
+          class="btn "
+          onclick={() => {
+            sendMessage(joinLobbyMsg);
+          }}
+        >
+          <Trans key="createOrJoinLobby.join" />
+        </button>
+      </div>
+      <div class="p-2">
         <button
           class="btn"
           onclick={() => {
@@ -50,7 +51,8 @@ const JoinOrCreateLobby: Component = () => {
         >
           <Trans key="createOrJoinLobby.create" />
         </button>
-      </div>
+
+      </div >
     </div >
   );
 };
