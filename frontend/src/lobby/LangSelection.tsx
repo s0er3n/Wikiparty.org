@@ -24,6 +24,7 @@ const SetLang: Component<any> = (props) => {
     console.log(lng)
     
     if (lng !== "en") {
+      console.log(`setting language ${lng}`)
       sendMessage({
         type: "game",
         method: "set_language",

@@ -34,7 +34,7 @@ const LobbyOverview: Component<{
   return (
     <div class="flex justify-center bg-base-100 rounded-md shadow-md p-3">
       <div class="flex flex-col justify-between space-y-3">
-        <h3 class="text-xl font-bold">Settings:</h3>
+        <h3 class="text-xl font-bold"><Trans key="settings"/>:</h3>
         <div>
           <b><Trans key="setArticle.start" /></b>{" "}
           <span

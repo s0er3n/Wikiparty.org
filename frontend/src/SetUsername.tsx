@@ -2,7 +2,7 @@ import { Component, createEffect, createSignal } from "solid-js";
 
 import { Trans, useTransContext } from "@mbarzda/solid-i18next"
 import { sendMessage, startWS } from "./App";
-let [username, setUsername] = createSignal<string>(`Anonymous-${Math.floor(Math.random() * 100)}`);
+let [username, setUsername] = createSignal<string>(`Guest-${Math.floor(Math.random() * 100)}`);
 
 export let setUsernameMsg = {
   type: "player",

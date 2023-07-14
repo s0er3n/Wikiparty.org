@@ -1,6 +1,7 @@
 export default {
   "en": {
     "translation": {
+      "settings": "settings",
       "players": "Players",
       "home": {
         "title": "Try out WikiParty!",
@@ -44,6 +45,7 @@ export default {
   },
   "ru": {
     "translation": {
+      "settings": "настройки",
       "players": "Игроки",
       "home": {
         "title": "Попробуйте WikiParty!",
@@ -86,6 +88,7 @@ export default {
     }
   },
   "de": {
+    "settings": "Einstellungen",
     "translation": {
       "players": "Spieler",
       "home": {
@@ -130,6 +133,7 @@ export default {
   },
   "sl": {
     "translation": {
+      "settings": "nastavitve",
       "players": "Igralci",
       "home": {
         "title": "Preizkusite WikiParty!",
@@ -173,6 +177,7 @@ export default {
   },
 "uk": {
     "translation": {
+      "settings": "налаштування",
       "players": "Гравці",
       "home": {
         "title": "Спробуйте WikiParty!",
@@ -216,6 +221,7 @@ export default {
 },
   "ko": {
   "translation": {
+    "settings": "설정",
     "players": "플레이어",
     "home": {
       "title": "위키파티를 시도해보세요!",
