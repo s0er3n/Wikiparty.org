@@ -2,6 +2,7 @@ import { For, Component, createEffect, Show, onMount } from "solid-js";
 import { createSignal } from "solid-js";
 import { Trans, useTransContext } from "@mbarzda/solid-i18next"
 
+import Typewriter from 'typewriter-effect/dist/core.js';
 import Header from "./lobby/Header";
 import JoinOrCreateLobby from "./JoinOrCreateLobby";
 import SetUsername from "./SetUsername";
@@ -188,12 +189,22 @@ if (localStorage.getItem("username")) {
 
 const App: Component = () => {
 
-  const [, { changeLanguage }] = useTransContext();
+  const [t, { changeLanguage }] = useTransContext();
   onMount(() => {
     if (!localStorage.getItem("lng")) {
       changeLanguage(navigator.language)
     } else {
       changeLanguage(localStorage.getItem("lng"))
+      const node = document.getElementById("slogan")
+      new Typewriter(node, {
+        strings: [t("home.slogan")],
+        loop: false,
+        autoStart: true
+      }).callFunction((node) => {
+        node.elements.container.remove()
+        console.log(node)
+        console.log("test")
+      })
     }
   })
   return (
@@ -230,7 +241,7 @@ const App: Component = () => {
                   <h1 class="text-5xl font-bold">
                     <Trans key="home.title" />
                   </h1>
-                  <p class="py-6">
+                  <p class="py-6" id="slogan">
                     <Trans key="home.slogan" />
                   </p>
                 </div>

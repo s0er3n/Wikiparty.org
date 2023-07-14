@@ -22,6 +22,7 @@
     "@mbarzda/solid-i18next": "^1.2.2",
     "daisyui": "^2.51.3",
     "i18next": "^23.2.6",
-    "solid-js": "^1.6.11"
+    "solid-js": "^1.6.11",
+    "typewriter-effect": "^2.20.1"
   }
 }
