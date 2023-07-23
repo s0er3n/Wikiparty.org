@@ -45,7 +45,7 @@ class ConnectionManager:
         self.thread = thread
 
     async def connect(
-        self, websocket: WebSocket, id: str, password: str
+        self, websocket: WebSocket | None, id: str, password: str
     ) -> Player | None:
         if self.thread and not self.thread.is_alive():
             logger.error("restarting ping thread")
@@ -58,12 +58,14 @@ class ConnectionManager:
             self.players[id] = player
             self.password_dict[id] = password
         else:
-            await websocket.close()
+            if websocket:
+                await websocket.close()
             logger.warning(msg="boesewicht")
             return None
 
         print("connected", websocket)
-        self.active_connections[player].append(websocket)
+        if websocket:
+            self.active_connections[player].append(websocket)
         return player
 
     def disconnect(self, player: Player) -> None:

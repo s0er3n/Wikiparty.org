@@ -23,8 +23,25 @@ let ping = Infinity;
 
 let passwordSend = false;
 let missedMessages: string[] = [];
-export function sendMessage(msg: any) {
-  // password needs to be send first
+export function sendMessage(msg: any, http=true) {
+  if (http) {
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+
+    msg.password = localStorage.getItem("private_key");
+
+    var requestOptions = {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(msg),
+      redirect: 'follow'
+    };
+
+    const url = import.meta.env.VITE_tls ? "https://": "http://" + import.meta.env.VITE_backend_url + ":" + import.meta.env.VITE_port
+    fetch(url + `/message/${id}`, requestOptions)
+      .then(response => response.text())
+    return
+  }
   if (ws && passwordSend) {
     try {
       ws.send(JSON.stringify(msg));
@@ -68,7 +85,8 @@ if (!password) {
 const [search, setSearch] = createSignal([]);
 
 export const startWS = () => {
-  ws = new WebSocket(`${import.meta.env.VITE_backend_url}/ws/${id}`);
+  const url = import.meta.env.VITE_tls ? "wss://": "ws://" + import.meta.env.VITE_backend_url + ":" + import.meta.env.VITE_port
+  ws = new WebSocket(url + `/ws/${id}`);
 
   oldConnections.add(ws)
 

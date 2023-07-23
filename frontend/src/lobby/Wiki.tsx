@@ -184,7 +184,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
 
                     // awaiting it here so that the sync move happens after you click and not before
                     await updateWiki(url_name, props.lobby().language);
-                    sendMessage(moveMsg);
+                    sendMessage(moveMsg, true);
                   }
                 }}
                 innerHTML={currentWiki().html}

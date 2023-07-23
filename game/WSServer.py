@@ -1,6 +1,8 @@
 import uvicorn
+import json
 import logging
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, Request
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocketDisconnect
 from game.settings.logsetup import logger
 from time import sleep
@@ -14,6 +16,15 @@ from game.Query.RandomQuery import RandomQuery
 
 app = FastAPI()
 
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 lobbyServer = LobbyServer()
 
@@ -23,6 +34,51 @@ logger.setLevel(logging.INFO)
 @app.get("/")
 def index() -> str:
     return "hallo"
+
+
+@app.post("/message/{client_id}")
+async def message(payload: Request, client_id: str):
+    data = await payload.json()
+    password = data.get("password")
+    player = await manager.connect(None, id=client_id, password=password)
+    print(player)
+
+    match data:
+
+        case {
+            "type": "game" | "lobby" | "player" | "search" | "random",
+            "method": method,
+            "args": args,
+        }:
+            if method.startswith("_"):
+                await manager.send_response(Error(e="not allowed", _recipients=[player]))
+                return
+            target: SearchQuery | RandomQuery | SearchGame | LobbyServer | Player | None = None
+            if data.get("type") == "player":
+                target = player
+            elif data.get("type") == "game":
+                lobby = lobbyServer.players_lobbies.get(player)
+                if lobby and (game := lobby.game):
+                    target = game
+            elif data.get("type") == "search":
+                target = SearchQuery()
+            elif data.get("type") == "random":
+                target = RandomQuery()
+            else:
+                target = lobbyServer
+            # try:
+            await manager.send_response(getattr(target, method)(player, **args))
+            # except Exception as e:
+            #     await manager.send_response(Error(e=str(e), _recipients=[player]))
+            #
+        case _:
+            await manager.send_response(
+                message=Error(
+                    _recipients=[player],
+                    e="not matching anything",
+                )
+            )
+    return
 
 
 @app.websocket("/ws/{client_id}")
