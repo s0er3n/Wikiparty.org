@@ -37,7 +37,7 @@ export function sendMessage(msg: any, http=true) {
       redirect: 'follow'
     };
 
-    const url = import.meta.env.VITE_tls ? "https://": "http://" + import.meta.env.VITE_backend_url + ":" + import.meta.env.VITE_port
+    const url = (import.meta.env.VITE_tls === "true" ? "https://" : "http://" )+ import.meta.env.VITE_backend_url + ":" + import.meta.env.VITE_port
     fetch(url + `/message/${id}`, requestOptions)
       .then(response => response.text())
     return
@@ -85,7 +85,8 @@ if (!password) {
 const [search, setSearch] = createSignal([]);
 
 export const startWS = () => {
-  const url = import.meta.env.VITE_tls ? "wss://": "ws://" + import.meta.env.VITE_backend_url + ":" + import.meta.env.VITE_port
+  const url = (import.meta.env.VITE_tls === "true" ? "wss://": "ws://") + import.meta.env.VITE_backend_url + ":" + import.meta.env.VITE_port
+  console.log(url)
   ws = new WebSocket(url + `/ws/${id}`);
 
   oldConnections.add(ws)
