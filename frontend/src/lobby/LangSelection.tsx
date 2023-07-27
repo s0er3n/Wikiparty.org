@@ -38,7 +38,7 @@ const SetLang: Component<any> = (props) => {
 
   return (
     <>
-      <select value={props.lobby().language} class="select select-bordered" onchange={(e) => {
+      <select value={props.lobby().language} class="select select-bordered select-xs" onchange={(e) => {
         sendMessage({
           type: "game",
           method: "set_language",
@@ -57,7 +57,7 @@ const SetLang: Component<any> = (props) => {
         <For each={Object.entries(languages)}>
           {(entry) => {
             return <option value={entry[1]
-            }>{entry[0]}</option>
+            }>{entry[0].toUpperCase()}</option>
           }
           }</For>
       </select>

@@ -34,15 +34,12 @@ const Lobby: Component<{
   lobby: Accessor<TLobby | null>;
 }> = (props) => {
   let state = () => props.lobby()?.state
-  createEffect(() => {
-    console.log(props.lobby())
-  })
 
-  console.log('test')
 
   return (
-    <div class="bg-base-200 md:flex md:flex-col md:items-center ">
-      <div class="w-full" align="center">
+    <div class="flex justify-center">
+      <div class="">
+      
         <Show
           when={
             state() === "idle" &&
@@ -73,8 +70,8 @@ const Lobby: Component<{
             players={props.lobby()?.players}
           />
         </Show>
-      </div>
-    </div>
+        </div>
+        </div>
   );
 };
 

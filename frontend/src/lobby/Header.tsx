@@ -30,7 +30,7 @@ const Header: Component<{
       });
   };
   return (
-    <div id="header" class="bg-base-200 p-3 sticky top-0 z-50 ">
+    <div id="header" class="bg-base-200 p-3 sticky top-0 z-50">
       <div>
         <div class="navbar rounded-md shadow-md bg-base-100 mb-3">
           <div class="flex-1">
@@ -47,7 +47,7 @@ const Header: Component<{
               }}
               class=" text-center sm:flex btn normal-case text-xl"
             >
-              <span class="hidden md:flex">WikiParty.org (alpha)</span>
+              <span class="hidden md:flex">WikiParty.org (beta)</span>
               <svg xmlns="http://www.w3.org/2000/svg" class="md:hidden h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
             </div>
           </div>
@@ -114,34 +114,37 @@ const Header: Component<{
           </For>
         </div>
       </Show>
-      <div class="mt-3" style="display: flex; justify-content: space-between;">
-        <div class="hidden md:block alert alert-warning  dark:alert-info shadow-lg">
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="stroke-current flex-shrink-0 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-            <span >
-              <Trans key="notice" />
-              <a
-                class="ml-2 font-bold underline"
-                href="https://discord.gg/GvqXjxc3xx"
+
+      <Show when={props.lobby()?.state !== "ingame"}>
+        <div class="mt-3" style="display: flex; justify-content: space-between;">
+          <div class="hidden md:block alert alert-warning  dark:alert-info shadow-lg">
+            <div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="stroke-current flex-shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
               >
-                https://discord.gg/GvqXjxc3xx
-              </a>
-            </span>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+              <span >
+                <Trans key="notice" />
+                <a
+                  class="ml-2 font-bold underline"
+                  href="https://discord.gg/GvqXjxc3xx"
+                >
+                  https://discord.gg/GvqXjxc3xx
+                </a>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </Show>
     </div>
   );
 };

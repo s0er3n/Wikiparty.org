@@ -10,12 +10,12 @@ const SetArticleHeadline: Component<{ lobby: any }> = (props) => {
     <Show
       when={props.lobby().start_article}
       fallback={
-        <h1 class="mt-5 text-3xl font-light">
+        <h1 class="font-light">
           <Trans key="setArticle.start" />
         </h1>
       }
     >
-      <h1 class="mt-5 text-3xl font-light">
+      <h1 class="font-light">
         <Trans key="setArticle.selectNextArticle" />
       </h1>
     </Show>
@@ -28,17 +28,42 @@ const SetupGame: Component<{
   search: Accessor<Array<Array<string>> | undefined>;
 }> = (props) => {
   return (
-    <div class="bg-base-100 shadow-md rounded-md p-3">
-      <div class="w-full flex justify-center">
+    <div class="bg-base-100 shadow-md rounded-md p-3 max-w-lg">
+      <div class="flex justify-center">
         <SetLang lobby={props.lobby} />
       </div>
-      <p>
-        <b><Trans key="setArticle.start" /></b> {props.lobby().start_article}
-      </p>
-      <p>
-        <b><Trans key="setArticle.articlesToFind" /></b> {props.lobby().articles_to_find.join(" | ")}
-      </p>
-      <SetArticleHeadline lobby={props.lobby} />
+      <div class="divider max-w-full"></div>
+      <div class="mx-2 font-thin text-sm break-words">
+        <p>
+          <Trans key="setArticle.start" /> <span class="font-bold"> {props.lobby().start_article}</span>
+        </p>
+        <div class="p-2" />
+        <p>
+          <Trans key="setArticle.articlesToFind" />
+          <For each={props.lobby().articles_to_find}>
+            {(article, i) => (
+              <>
+                <Show when={i()}>
+                  <span> | </span>
+                </Show>
+                <span
+                  class="tooltip tooltip-bottom"
+                  data-tip={props.lobby().articles_to_find_description[article]}
+                >
+                  <span class="font-bold">{article}</span>
+                </span>
+              </>
+            )}
+          </For>
+        </p>
+      </div>
+
+      <div class="flex flex-col w-full border-opacity-50">
+        <div class="divider"></div>
+      </div>
+      <div class="mx-2">
+        <SetArticleHeadline lobby={props.lobby} />
+      </div>
 
       <SetArticle lobby={props.lobby} search={props.search} />
     </div >

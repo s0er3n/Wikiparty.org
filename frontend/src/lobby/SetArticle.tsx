@@ -70,34 +70,31 @@ const SetArticle: Component<{
     <>
 
       <div class="flex justify-center w-full mt-2">
-        <div class="flex flex-col space-y-2 w-96" >
-          <div class="flex w-full ">
-            <div class="w-2/3 flex justify-center">
-              <input
-                class="input input-bordered  text-center"
-                type="text"
-                onkeyup={(e: any) => {
-                  if (timeout != null) {
-                    clearTimeout(timeout);
-                  }
-                  timeout = setTimeout(() => {
-                    findArticle(e.target.value, props.lobby().language);
+        <div class="flex flex-col flex-wrap" >
+          <div class="flex w-full justify-around flex-wrap">
 
-                    setArticle(e.target.value);
-                  }, 200);
-                }}
-                value={article()}
-              />
-            </div>
+            <input
+              class="input input-bordered text-center m-2"
+              type="text"
+              onkeyup={(e: any) => {
+                if (timeout != null) {
+                  clearTimeout(timeout);
+                }
+                timeout = setTimeout(() => {
+                  findArticle(e.target.value, props.lobby().language);
+
+                  setArticle(e.target.value);
+                }, 200);
+              }}
+              value={article()}
+            />
             <Show when={props.lobby().language == 'en'} >
-              <div class="w-1/3 flex justify-center ml-2">
-                <RandomArticle
-                  setter={async (random_article: string) => {
-                    findArticle(random_article, props.lobby().language);
-                    setArticle(random_article);
-                  }}
-                />
-              </div>
+              <RandomArticle
+                setter={async (random_article: string) => {
+                  findArticle(random_article, props.lobby().language);
+                  setArticle(random_article);
+                }}
+              />
             </Show>
             <Show
               when={
@@ -108,7 +105,7 @@ const SetArticle: Component<{
             >
               <div>
                 <button
-                  class="btn mx-3"
+                  class="btn m-2"
                   onclick={() => {
                     setGoToLobby(true);
                   }}
@@ -134,7 +131,7 @@ const ArticleSuggestionsList: Component<{
   return (
     <For each={props?.query ?? []}>
       {(result, i) => (
-        <div class="flex w-96">
+        <div class="flex flex-wrap my-2">
           <div class="w-2/3 flex justify-center">
             <div class="flex items-center">
               <span

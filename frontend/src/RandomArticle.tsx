@@ -20,7 +20,7 @@ const RandomArticle: Component<{ setter: (random_article: string) => void }> = (
   sendMessage(getRandomArticleMsg);
   return (
     <button
-      class="btn w-full"
+      class="m-2 btn "
       onclick={async () => {
         if (random_articles.length === 5 || random_articles.length === 0) {
           try {

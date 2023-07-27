@@ -32,53 +32,33 @@ const LobbyOverview: Component<{
 
 }> = (props) => {
   return (
-    <div class="flex justify-center bg-base-100 rounded-md shadow-md p-3">
+    <div class="flex justify-center bg-base-100 rounded-md shadow-md p-3 max-w-lg">
       <div class="flex flex-col justify-between space-y-3">
-        <h3 class="text-xl font-bold"><Trans key="settings"/>:</h3>
-        <div>
-          <b><Trans key="setArticle.start" /></b>{" "}
-          <span
-            class="tooltip tooltip-bottom"
-            data-tip={props.lobby().start_article_description}
-          >
-            {props.lobby().start_article}
-          </span>
-        </div>
-        <div>
-          <b><Trans key="setArticle.articlesToFind" /></b>
-          <For each={props.lobby().articles_to_find}>
-            {(article, i) => (
-              <>
-                <Show when={i()}>
-                  <span> | </span>
-                </Show>
-                <span
-                  class="tooltip tooltip-bottom"
-                  data-tip={props.lobby().articles_to_find_description[article]}
-                >
-                  {article}
-                </span>
-              </>
-            )}
-          </For>
-        </div>
-        <div class="flex w-full justify-center items-center">
-          <span class="mr-2"><Trans key="lobby.time" /></span>
-          <SetTime time={props.lobby().time} id={props.id} lobby={props.lobby} />
-          <span class="ml-2"> <Trans key="lobby.minutes" /></span>
-        </div>
-        <Show when={isHost({ lobby: props.lobby, id: props.id })}>
+        <div class="mx-2 font-thin text-sm break-words">
           <p>
-            <button
-              class="btn btn-wide"
-              onclick={() => {
-                sendMessage(startGameMsg);
-              }}
-            >
-              <Trans key="lobby.start" />
-            </button>
+            <Trans key="setArticle.start" /> <span class="font-bold"> {props.lobby().start_article}</span>
           </p>
-        </Show>
+          <div class="p-2" />
+          <p>
+            <Trans key="setArticle.articlesToFind" />
+            <For each={props.lobby().articles_to_find}>
+              {(article, i) => (
+                <>
+                  <Show when={i()}>
+                    <span> | </span>
+                  </Show>
+                  <span
+                    class="tooltip tooltip-bottom"
+                    data-tip={props.lobby().articles_to_find_description[article]}
+                  >
+                    <span class="font-bold">{article}</span>
+                  </span>
+                </>
+              )}
+            </For>
+          </p>
+        </div>
+        <div class="divider max-w-full"></div>
         <h3 class="text-xl font-bold">
           <Trans key="lobby.faq.points.q" />
         </h3>
@@ -91,19 +71,38 @@ const LobbyOverview: Component<{
         <p>
           <Trans key="lobby.faq.end.a" />
         </p>
+        <div class="divider max-w-full"></div>
         <div>
-          <h3 class="text-xl font-bold">
-            <Trans key="lobby.players" />
-          </h3>
-          <PlayerList
-            players={props.players}
-            pointsKey="points"
-            id={props.id}
-          />
+          <div class="flex justify-around flex-wrap">
+            <div class="flex justify-center text-center align-middle items-center">
+              <SetTime time={props.lobby().time} id={props.id} lobby={props.lobby} />
+              <span class="ml-2"> <Trans key="lobby.minutes" /></span>
+            </div>
+            <Show when={isHost({ lobby: props.lobby, id: props.id })}>
+              <button
+                class="btn btn-wide m-2"
+                onclick={() => {
+                  sendMessage(startGameMsg);
+                }}
+              >
+                <Trans key="lobby.start" />
+              </button>
+            </Show>
+          </div>
         </div>
+        <div class="divider max-w-full"></div>
+        <h3 class="text-xl">
+          <Trans key="lobby.players" />
+        </h3>
+        <PlayerList
+          players={props.players}
+          pointsKey="points"
+          id={props.id}
+        />
+
+        <NameInput />
       </div>
-      <NameInput />
-    </div>
+    </div >
   );
 };
 

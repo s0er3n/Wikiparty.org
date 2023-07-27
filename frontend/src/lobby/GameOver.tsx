@@ -48,13 +48,14 @@ const PlayerList: Component<Props> = (props) => {
                   )}
                 </For>
               </ol>
+              <div class="divider" />
             </div>
           )}
         </For>
       </div>
 
       <Show when={isHost({ lobby: props.lobby, id: props.id })}>
-        <p>
+        <div class="flex justify-center">
           <button
             class="btn mt-3"
             onclick={() => {
@@ -63,7 +64,7 @@ const PlayerList: Component<Props> = (props) => {
           >
             <Trans key="setArticle.goToLobby" />
           </button>
-        </p>
+        </div>
       </Show>
     </div>
   );
