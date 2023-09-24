@@ -162,8 +162,7 @@ const Wiki: Component<{ lobby: Accessor<TLobby> }> = (props) => {
                   }
 
                   if (
-                    targetValue.startsWith("http") ||
-                    targetValue.includes(":")
+                    targetValue.startsWith("http")
                   ) {
                     return;
                   }
