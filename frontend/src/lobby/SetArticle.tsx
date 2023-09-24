@@ -76,6 +76,7 @@ const SetArticle: Component<{
             <input
               class="input input-bordered text-center m-2"
               type="text"
+              id="input"
               onkeyup={(e: any) => {
                 if (timeout != null) {
                   clearTimeout(timeout);
@@ -158,6 +159,7 @@ const ArticleSuggestionsList: Component<{
                 };
                 sendMessage(setArticleMsg);
                 setArticle("");
+                document.getElementById("input")?.focus()
               }}
               class="btn"
             >
