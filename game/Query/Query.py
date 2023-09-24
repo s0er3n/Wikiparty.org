@@ -1,5 +1,6 @@
 from game.settings.logsetup import logger
 from typing import Iterator
+from retrying import retry
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -16,15 +17,26 @@ def _select_and_reduce_links(all_links) -> Iterator[str]:
             yield link["href"][6::].split("#")[0]
 
 
+@retry(stop_max_attempt_number=5, wait_exponential_multiplier=1000, wait_exponential_max=10000)
+def make_request(lang: str, move: str) -> requests.Response:
+    resp = requests.get(
+        f"https://{lang}.wikipedia.org/wiki/{urllib.parse.quote_plus(move) if '%' not in move  else move}"
+    )
+    resp.raise_for_status()
+    return resp
+
+
 class Query:
 
     @classmethod
     def query_and_add_to_queries(cls, move: str, language: str) -> str | None:
         logger.warning(f"add move to query {move}")
-        resp = requests.get(
-            f"https://{language}.wikipedia.org/wiki/{urllib.parse.quote_plus(move) if '%' not in move  else move}"
-        )
-        resp_text = resp.text
+        try:
+            resp = make_request(language, move)
+            resp_text = resp.text
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to make the request: {e}")
+            return None
 
         if resp.history:
             move = resp.history[-1].url
@@ -35,8 +47,6 @@ class Query:
             logger.warning("no h1 in wikipedia response")
             return None
         title = h1.text
-
-        article = soup.find("div", {"id": "mw-content-text"})
 
         # data = _skip_if_redirect(data)
 

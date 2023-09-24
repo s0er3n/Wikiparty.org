@@ -26,7 +26,7 @@ const JoinOrCreateLobby: Component = () => {
     <div class="flex bg-base-100 shadow-md rounded-md p-3 md:flex-row flex-col">
       <div class="flex justify-center items-center p-2">
         <input
-          onchange={(e) => setIdToJoin(e.target.value)}
+          oninput={(e) => setIdToJoin(e.currentTarget.value)}
           type="text"
           placeholder={t("createOrJoinLobby.input")}
           class="input input-bordered "
